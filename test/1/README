@@ -1,0 +1,4 @@
+COMPILE LIKE THIS:
+
+cmake .
+make
