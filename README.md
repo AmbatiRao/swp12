@@ -17,5 +17,5 @@ Options for VIM:
 Modeline for vim is:
 
 ```c++
-// vim: si:ts=4:sw=4
+// vim: si:ts=4:sw=4:set expandtab
 ````

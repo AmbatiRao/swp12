@@ -1,4 +1,4 @@
-// vim: si:ts=4:sw=4
+// vim: si:ts=4:sw=4:set expandtab
 
 #include <CGAL/Cartesian.h>
 
