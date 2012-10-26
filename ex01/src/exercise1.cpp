@@ -27,17 +27,11 @@ void newline (){
 
 // Kernel type
 typedef CGAL::Cartesian<double> Kernel;
-
-// Point type
-typedef Kernel::Point_2 Point_2;
-
-// Segment type
-typedef Kernel::Segment_2 Segment_2;
-
-// Line type
-typedef Kernel::Line_2 Line_2;
-
-// Orientation enum
+// some convenience typedefs
+typedef CGAL::Object Object;
+typedef Kernel::Point_2 Point;
+typedef Kernel::Segment_2 Segment;
+typedef Kernel::Line_2 Line;
 typedef CGAL::Oriented_side Oriented_side;
 
 /*
@@ -46,20 +40,20 @@ typedef CGAL::Oriented_side Oriented_side;
  */
 
 // test whether two segments intersect
-bool intersection1a(Segment_2 s1, Segment_2 s2){
+bool intersection1a(Segment s1, Segment s2){
     //check for intersection of to segments
     return do_intersect(s1, s2);
 }
 
 // compute the intersection of two segments
-CGAL::Object intersection2a(Segment_2 s1, Segment_2 s2){
+Object intersection2a(Segment s1, Segment s2){
     //compte the actual intersection
     Kernel::Intersect_2 intersection;
     return intersection(s1, s2);
 }
 
 // test whether a point lies on a segment
-bool on(Segment_2 s, Point_2 p) {
+bool on(Segment s, Point p) {
     //check whether the point lies on the segment
     return do_intersect(s, p);
 }
@@ -69,17 +63,17 @@ bool on(Segment_2 s, Point_2 p) {
  * these use predicates and constructions
  */
 
-void printSegments(Segment_2 s1, Segment_2 s2){
+void printSegments(Segment s1, Segment s2){
     std::cout << "s1: " << s1 << " s2: " << s2 << std::endl;
 }
 
-void testForIntersectionAndPrint(Segment_2 s1, Segment_2 s2){
+void testForIntersectionAndPrint(Segment s1, Segment s2){
     bool intersects = intersection1a(s1, s2);
     std::cout << "Do s1 and s2 intersect? Computer says: " << intersects << std::endl;
 }
 
-void doIntersectionAndPrint(Segment_2 s1, Segment_2 s2){
-    CGAL::Object result = intersection2a(s1, s2);
+void doIntersectionAndPrint(Segment s1, Segment s2){
+    Object result = intersection2a(s1, s2);
 
     if (const CGAL::Point_2<Kernel> *ipoint = CGAL::object_cast<CGAL::Point_2<Kernel> >(&result)) {
         // handle the point intersection case with *ipoint.
@@ -100,16 +94,16 @@ void doIntersectionAndPrint(Segment_2 s1, Segment_2 s2){
  * these DO NOT use predicates and constructions
  */
 
-bool intersection1b(Segment_2 s1, Segment_2 s2){
+bool intersection1b(Segment s1, Segment s2){
     //check for intersection of to segments
     // get start end end points of segments
-    Point_2 p1 = s1.source();
-    Point_2 p2 = s1.target();
-    Point_2 p3 = s2.source();
-    Point_2 p4 = s2.target();
+    Point p1 = s1.source();
+    Point p2 = s1.target();
+    Point p3 = s2.source();
+    Point p4 = s2.target();
     // create line objects from the points
-    Line_2 l1(p1, p2);
-    Line_2 l2(p3, p4);
+    Line l1(p1, p2);
+    Line l2(p3, p4);
     // compute orientation of each point relative to the other line
     Oriented_side side1 = l1.oriented_side(p3);
     Oriented_side side2 = l1.oriented_side(p4);
@@ -142,21 +136,21 @@ bool intersection1b(Segment_2 s1, Segment_2 s2){
     return side1 != side2 && side3 != side4;
 }
 
-CGAL::Object intersection2b(Segment_2 s1, Segment_2 s2){
+Object intersection2b(Segment s1, Segment s2){
     // if there is no intersection, just return an empty object
     if (!intersection1b(s1, s2)) {
-        return CGAL::Object();
+        return Object();
     }
     // well, let's find out what kind of intersection this is
 
     // get start end end points of segments
-    Point_2 p1 = s1.source();
-    Point_2 p2 = s1.target();
-    Point_2 p3 = s2.source();
-    Point_2 p4 = s2.target();
+    Point p1 = s1.source();
+    Point p2 = s1.target();
+    Point p3 = s2.source();
+    Point p4 = s2.target();
     // create line objects from the points
-    Line_2 l1(p1, p2);
-    Line_2 l2(p3, p4);
+    Line l1(p1, p2);
+    Line l2(p3, p4);
     // compute orientation of each point relative to the other line
     Oriented_side side1 = l1.oriented_side(p3);
     Oriented_side side2 = l1.oriented_side(p4);
@@ -186,12 +180,12 @@ CGAL::Object intersection2b(Segment_2 s1, Segment_2 s2){
             / ((x1-x2)*(y3-y4) - (y1-y2)*(x3-x4));
         double y = ((x1*y2 - y1*x2)*(y3-y4)-(y1-y2)*(x3*y4-y3*x4))
             / ((x1-x2)*(y3-y4) - (y1-y2)*(x3-x4));
-        Point_2 p = Point_2(x,y);    
+        Point p = Point(x,y);    
         return make_object(p);
     }
 
     // collect points that are on the other segment
-    std::vector<Point_2> onPoints;
+    std::vector<Point> onPoints;
     if (s1.has_on(p3)) {
         onPoints.push_back(p3);
     }
@@ -208,7 +202,7 @@ CGAL::Object intersection2b(Segment_2 s1, Segment_2 s2){
 
     if (onPoints.size() == 1) {
         // one point lies on the other line
-        Point_2 p = onPoints.at(0);
+        Point p = onPoints.at(0);
         return make_object(p);
     }
 
@@ -217,27 +211,27 @@ CGAL::Object intersection2b(Segment_2 s1, Segment_2 s2){
         // take the first two entries in the onPoints vector.
         // this should be ok, even if there are more than 2 points in the
         // vector because of the order in which we fill that vector.
-        Point_2 p = onPoints.at(0);
-        Point_2 q = onPoints.at(1);
-        Segment_2 s(p, q);
+        Point p = onPoints.at(0);
+        Point q = onPoints.at(1);
+        Segment s(p, q);
         return make_object(s);
     }
 
     // in principal this is impossible
-    return CGAL::Object();
+    return Object();
 }
 
 /*
  * helper functions that DO NOT use predicates or constructions
  */
 
-void testForIntersectionAndPrint2(Segment_2 s1, Segment_2 s2){
+void testForIntersectionAndPrint2(Segment s1, Segment s2){
     bool intersects = intersection1b(s1, s2);
     std::cout << "Do s1 and s2 intersect? Computer says: " << intersects << std::endl;
 }
 
-void doIntersectionAndPrint2(Segment_2 s1, Segment_2 s2){
-    CGAL::Object result = intersection2b(s1, s2);
+void doIntersectionAndPrint2(Segment s1, Segment s2){
+    Object result = intersection2b(s1, s2);
 
     if (const CGAL::Point_2<Kernel> *ipoint = CGAL::object_cast<CGAL::Point_2<Kernel> >(&result)) {
         // handle the point intersection case with *ipoint.
@@ -260,18 +254,18 @@ void doIntersectionAndPrint2(Segment_2 s1, Segment_2 s2){
 int main( int argc, char* argv[]) {
 
     // create some points in the plane
-    Point_2 p1(1,2), p2(4,2);
-    Point_2 p3(2,1), p4(4,3);
-    Point_2 p5(2,2), p6(6,2);
-    Point_2 p7(1,4), p8(2,3);
-    Point_2 p9(3,2), p10(5,0);
+    Point p1(1,2), p2(4,2);
+    Point p3(2,1), p4(4,3);
+    Point p5(2,2), p6(6,2);
+    Point p7(1,4), p8(2,3);
+    Point p9(3,2), p10(5,0);
 
     // create some segments
-    Segment_2 s1(p1, p2);
-    Segment_2 s2(p3, p4);
-    Segment_2 s3(p5, p6);
-    Segment_2 s4(p7, p8);
-    Segment_2 s5(p9, p10);
+    Segment s1(p1, p2);
+    Segment s2(p3, p4);
+    Segment s3(p5, p6);
+    Segment s4(p7, p8);
+    Segment s5(p9, p10);
 
     // test with predicate functions
     echo("*****************************************************************");
