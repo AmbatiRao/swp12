@@ -1,8 +1,8 @@
 // vim: si:ts=4:sw=4:expandtab
 
 /*
- * TODO: implement own version of "oriented_side"
- * TODO: implement own version of "has_on"
+ * TODO: implement own version of "oriented_side" (with some cross product formula)
+ * TODO: implement own version of "has_on" (this also is on() from the exercise)
  *
  */
 
