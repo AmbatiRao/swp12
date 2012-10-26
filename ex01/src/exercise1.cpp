@@ -172,8 +172,21 @@ CGAL::Object intersection2b(Segment_2 s1, Segment_2 s2){
 
     if (onCount == 0) {
         // simple, non-colinear intersection
-        // TODO: implement this
-        Point_2 p = Point_2(1,1);    
+        // formula is from http://en.wikipedia.org/wiki/Line-line_intersection
+        // the determinants written out
+        double x1 = p1.x();
+        double x2 = p2.x();
+        double x3 = p3.x();
+        double x4 = p4.x();
+        double y1 = p1.y();
+        double y2 = p2.y();
+        double y3 = p3.y();
+        double y4 = p4.y();
+        double x = ((x1*y2 - y1*x2)*(x3-x4)-(x1-x2)*(x3*y4-y3*x4))
+            / ((x1-x2)*(y3-y4) - (y1-y2)*(x3-x4));
+        double y = ((x1*y2 - y1*x2)*(y3-y4)-(y1-y2)*(x3*y4-y3*x4))
+            / ((x1-x2)*(y3-y4) - (y1-y2)*(x3-x4));
+        Point_2 p = Point_2(x,y);    
         return make_object(p);
     }
 
@@ -191,7 +204,7 @@ CGAL::Object intersection2b(Segment_2 s1, Segment_2 s2){
     if (s2.has_on(p2)) {
         onPoints.push_back(p2);
     }
-    std::cout << "size: " << onPoints.size() << std::endl;
+    //std::cout << "size: " << onPoints.size() << std::endl;
 
     if (onPoints.size() == 1) {
         // one point lies on the other line
@@ -284,6 +297,12 @@ int main( int argc, char* argv[]) {
     printSegments(s2, s5);
     testForIntersectionAndPrint(s2, s5);
     doIntersectionAndPrint(s2, s5);
+    newline();
+
+    echo("Segment 2 and 2, they should intersect at segment (2,1), (4,3)");
+    printSegments(s2, s2);
+    testForIntersectionAndPrint(s2, s2);
+    doIntersectionAndPrint(s2, s2);
     newline();
 
     // test with non-predicate functions
