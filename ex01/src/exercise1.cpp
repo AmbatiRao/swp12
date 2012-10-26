@@ -1,3 +1,4 @@
+// vim: si:ts=4:sw=4
 
 #include <CGAL/Cartesian.h>
 
