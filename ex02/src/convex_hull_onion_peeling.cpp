@@ -33,77 +33,97 @@ typedef CGAL::Creator_uniform_2<double,Point>       Creator;
 
 int main(int argc , char* argv[]) {
   
-  PointSet points;
-  int NPOINTS;
-  std::cout << "Enter the number of points to sample: ";
-  std::cin >> NPOINTS;
+    PointSet points;
+    int NPOINTS;
+    std::cout << "Enter the number of points to sample: ";
+    std::cin >> NPOINTS;
   
-  /*
-   * Generate a random sample for the pointset.
-   * Use CGAL's generating tools for this!
-   */
+    /*
+    * Generate a random sample for the pointset.
+    * Use CGAL's generating tools for this!
+    */
 
-   /*for (int i = 0; i < NPOINTS; i++) {
+    /*for (int i = 0; i < NPOINTS; i++) {
        points.push_back(Point(i, i));
-   }*/
-   CGAL::Random_points_in_disc_2<Point,Creator> g(200.0);
-   CGAL::copy_n(g, NPOINTS, std::back_inserter(points));
+    }*/
+    CGAL::Random_points_in_disc_2<Point,Creator> g(200.0);
+    CGAL::copy_n(g, NPOINTS, std::back_inserter(points));
 
-  /*
-   * Compute the convex layers of the point set
-   */
+    /*
+    * Compute the convex layers of the point set
+    */
 
-   Layers layers;
-  
-  
-  /*
-   * This part deals with the visualization. This is a basic template.
-   * Feel free to tweak it!
-   */
+    Layers layers;
+    std::vector<Point> hull;
 
-  QApplication app(argc, argv);
-  
-  // Prepare scene
-  QGraphicsScene scene;
-  scene.setSceneRect(-400, -400, 800, 800); //Has the format: (x,y,width,height)
-  
-  // Draw points
-  // (Qt doesn't have a graphics item for 0-dim points / use an ellipse)
-  for(std::vector<Point>::iterator it = points.begin(); it != points.end(); ++it) {
-    Point i = *it;
-    // (i is a pointer to a point in the point set */){
-    //scene.addEllipse(i->x()-0.5, -(i->y())-0.5, 10, 10);
-    scene.addEllipse(i.x()-0.5, -(i.y())-0.5, 10, 10);
-  }
+    while(points.size() >= 3) {
+        CGAL::convex_hull_2(points.begin(), points.end(), std::back_inserter(hull));
 
-  // Draw the convex layers
-  //for (/* each layer which was computed before */)
-  for(std::vector<PointSet>::iterator it = layers.begin(); it != layers.end(); ++it) {
-      PointSet layer = *it;
-      // Draw segments (Qt's Lines are segments)
-      // use CGAL circulator adaptor for the convex hull
-      CGAL::Const_circulator_from_container<PointSet> 
-    c1(&layer), c2(&layer), c3(&layer);
-      if (c1 != 0){
-    do {
-      ++c2;
-      scene.addLine(
-            QLineF((*c1).x(), -(*c1).y(), (*c2).x(), -(*c2).y()),
-            QPen(Qt::green, 5,  Qt::DashDotLine, Qt::RoundCap, Qt::RoundJoin)
-            );
-    } while (++c1 != c3);    
-      }
+        layers.push_back(hull);
+
+        std::cout << "#points: " << points.size() << std::endl;
+        // for each hull points
+        for(std::vector<Point>::iterator it = hull.begin(); it != hull.end(); ++it) {
+            Point i = *it;
+            std::vector<Point>::iterator it = find (points.begin(), points.end(), i);
+            if (it == points.end()) {
+                continue;
+            }
+            std::cout << *it << std::endl;
+            points.erase(it);
+        }
+        std::cout << "#points: " << points.size() << std::endl;
+    }
+  
+    /*
+    * This part deals with the visualization. This is a basic template.
+    * Feel free to tweak it!
+    */
+
+    QApplication app(argc, argv);
+  
+    // Prepare scene
+    QGraphicsScene scene;
+    scene.setSceneRect(-400, -400, 800, 800); //Has the format: (x,y,width,height)
+  
+    // Draw points
+    // (Qt doesn't have a graphics item for 0-dim points / use an ellipse)
+    for(std::vector<Point>::iterator it = points.begin(); it != points.end(); ++it) {
+        Point i = *it;
+        // (i is a pointer to a point in the point set */){
+        //scene.addEllipse(i->x()-0.5, -(i->y())-0.5, 10, 10);
+        scene.addEllipse(i.x()-5, -(i.y())-5, 10, 10);
     }
 
-  // Prepare view, add scene, show
-  QGraphicsView* view = new QGraphicsView(&scene);
-  view->show();
+    // Draw the convex layers
+    //for (/* each layer which was computed before */)
+    for(std::vector<PointSet>::iterator it = layers.begin(); it != layers.end(); ++it) {
+        PointSet layer = *it;
+        // Draw segments (Qt's Lines are segments)
+        // use CGAL circulator adaptor for the convex hull
+        CGAL::Const_circulator_from_container<PointSet> 
+            c1(&layer), c2(&layer), c3(&layer);
+        if (c1 != 0){
+            do {
+                ++c2;
+                scene.addLine(
+                    QLineF((*c1).x(), -(*c1).y(), (*c2).x(), -(*c2).y()),
+                        QPen(Qt::green, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin)
+                );
+                scene.addEllipse((*c1).x()-5, -((*c1).y())-5, 10, 10);
+            } while (++c1 != c3);    
+        }
+    }
 
-  // Add CGAL's navigation filter
-  CGAL::Qt::GraphicsViewNavigation navigation;
-  view->installEventFilter(&navigation);
-  view->viewport()->installEventFilter(&navigation);
-  view->setRenderHint(QPainter::Antialiasing);
+    // Prepare view, add scene, show
+    QGraphicsView* view = new QGraphicsView(&scene);
+    view->show();
+
+    // Add CGAL's navigation filter
+    CGAL::Qt::GraphicsViewNavigation navigation;
+    view->installEventFilter(&navigation);
+    view->viewport()->installEventFilter(&navigation);
+    view->setRenderHint(QPainter::Antialiasing);
   
-  return app.exec();  
+    return app.exec();  
 }
