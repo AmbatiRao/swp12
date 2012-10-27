@@ -57,6 +57,7 @@ int main(int argc , char* argv[]) {
     std::vector<Point> hull;
 
     while(points.size() >= 3) {
+        hull = std::vector<Point>();
         CGAL::convex_hull_2(points.begin(), points.end(), std::back_inserter(hull));
 
         layers.push_back(hull);
@@ -67,9 +68,10 @@ int main(int argc , char* argv[]) {
             Point i = *it;
             std::vector<Point>::iterator it = find (points.begin(), points.end(), i);
             if (it == points.end()) {
+                std::cout << "not found" << std::endl;
                 continue;
             }
-            std::cout << *it << std::endl;
+            std::cout << "remove: " << *it << std::endl;
             points.erase(it);
         }
         std::cout << "#points: " << points.size() << std::endl;
