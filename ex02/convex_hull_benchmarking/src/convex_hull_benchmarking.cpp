@@ -53,6 +53,8 @@ int main(int argc, char* argv[]) {
     std::vector<Point> hull;
     CGAL::convex_hull_2(points.begin(), points.end(), std::back_inserter(hull));
 
+    QApplication app(argc, argv);
+
     for (int config = 0; config <= 4; config++) {
         go(hull, NPOINTS, config);
     }
@@ -175,10 +177,6 @@ void go(std::vector<Point> hull, int NPOINTS, int config) {
     /*
      * show with QT
      */
-
-    int argc = 0;
-    char* argv[0];
-    QApplication app(argc, argv);
   
     // Prepare scene
     QGraphicsScene scene;
