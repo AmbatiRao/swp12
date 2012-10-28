@@ -32,7 +32,9 @@ typedef CGAL::Random                                Random;
 typedef CGAL::Polygon_2<Kernel>                     Polygon;
 typedef CGAL::Bbox_2                                Bbox;
 
-int main(int argc , char* argv[]) {
+void go(std::vector<Point> hull, int NPOINTS, int config);
+
+int main(int argc, char* argv[]) {
   
     PointSet points;
     int NPOINTS;
@@ -51,19 +53,26 @@ int main(int argc , char* argv[]) {
     std::vector<Point> hull;
     CGAL::convex_hull_2(points.begin(), points.end(), std::back_inserter(hull));
 
+    for (int config = 0; config <= 4; config++) {
+        go(hull, NPOINTS, config);
+    }
+
+    return 0;
+}
+
+void go(std::vector<Point> hull, int NPOINTS, int config) {
     /*
-     * compute points on the boundary and with the convex hull
+     * compute points on the boundary and within the convex hull
      */
 
-    int nOn = NPOINTS;
-    int nIn = NPOINTS;
+    int nOn = (int) (config / 4.0 * NPOINTS);
+    int nIn = NPOINTS - nOn;
 
     std::vector<Point> onHull;
     std::vector<Point> inHull;
 
     Random random;
     int vertices = hull.size();
-    std::cout << "#vertices: " << vertices << std::endl;
 
     /*
      * Another approach to generate points on the boundary of the convex hull.
@@ -167,11 +176,13 @@ int main(int argc , char* argv[]) {
      * show with QT
      */
 
+    int argc = 0;
+    char* argv[0];
     QApplication app(argc, argv);
   
     // Prepare scene
     QGraphicsScene scene;
-    scene.setSceneRect(-400, -400, 800, 800); //Has the format: (x,y,width,height)
+    scene.setSceneRect(-250, -250, 500, 500);
   
     // Draw points
     for(std::vector<Point>::iterator it = onHull.begin(); it != onHull.end(); ++it) {
@@ -203,15 +214,33 @@ int main(int argc , char* argv[]) {
         } while (++c1 != c3);    
     }
 
+    /*
+     * create an image
+     */
+    char buffer[100];
+    sprintf(buffer, "image%d.png", config);
+
+    QImage image(scene.sceneRect().size().toSize(), QImage::Format_ARGB32);
+    image.fill(Qt::transparent);
+    QPainter painter(&image);
+    painter.setRenderHint(QPainter::Antialiasing);
+    scene.render(&painter);
+    image.save(buffer);
+
+    /*
+     * show stuff in QT window
+     */
+
     // Prepare view, add scene, show
-    QGraphicsView* view = new QGraphicsView(&scene);
-    view->show();
+//    QGraphicsView* view = new QGraphicsView(&scene);
+//    view->show();
 
     // Add CGAL's navigation filter
-    CGAL::Qt::GraphicsViewNavigation navigation;
-    view->installEventFilter(&navigation);
-    view->viewport()->installEventFilter(&navigation);
-    view->setRenderHint(QPainter::Antialiasing);
-  
-    return app.exec();  
+//    CGAL::Qt::GraphicsViewNavigation navigation;
+//    view->installEventFilter(&navigation);
+//    view->viewport()->installEventFilter(&navigation);
+//    view->setRenderHint(QPainter::Antialiasing);
+
+    //return app.exec();  
+
 }
