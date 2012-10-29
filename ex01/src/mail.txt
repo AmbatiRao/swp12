@@ -1,0 +1,87 @@
+Hi Panos, hi Dror,
+
+attached is our (partial) solution of exercise1.
+
+We implemented two functions intersection1a, intersection2a which
+simply call the CGAL library functions do_intersect and intersection.
+
+The next two functions intersection1b, intersection2b are implemented a
+little more low-level fashion on top of the orientation tests that
+Line_2 objects offer for Point_2 input.
+
+The main function contains some testing involving 5 different segments.
+The output consists of two sections:
+  1) the tests executed using intersection1a/intersection2a
+  2) the tests executed using intersection1b/intersection2b (low-level)
+
+The output indicates that the implementation of our low-level methods
+is correct at least for those cases tested here. The test cases cover
+  1) segments intersecting in points
+  2) segments intersecting in segments
+  3) non-intersecting segments
+  4) segments intersecting at a node of one of the segments and
+  5) input of the same segment twice
+
+The methods could be implemented even on lower levels of abstraction by
+implementing the orientation function for three input points by means
+of the cross product, i.e. calculating the sign of the determinant of
+the orientation matrix.
+
+Best,
+Sebastian
+
+*****************************************************************
+
+Output of './exercise1':
+
+*****************************************************************
+Segment 1 and 2, they should intersect at point (3,2)
+s1: 1 2 4 2 s2: 2 1 4 3
+Do s1 and s2 intersect? Computer says: 1
+Where do s1 and s2 intersect? Computer says: 3 2
+
+Segment 1 and 3, they should intersect at segment (2,2), (4,2)
+s1: 1 2 4 2 s2: 2 2 6 2
+Do s1 and s2 intersect? Computer says: 1
+Where do s1 and s2 intersect? Computer says: 2 2 4 2
+
+Segment 1 and 4, they should not intersect
+s1: 1 2 4 2 s2: 1 4 2 3
+Do s1 and s2 intersect? Computer says: 0
+Where do s1 and s2 intersect? Computer says: nowhere
+
+Segment 2 and 5, they should intersect at point (3,2)
+s1: 2 1 4 3 s2: 3 2 5 0
+Do s1 and s2 intersect? Computer says: 1
+Where do s1 and s2 intersect? Computer says: 3 2
+
+Segment 2 and 2, they should intersect at segment (2,1), (4,3)
+s1: 2 1 4 3 s2: 2 1 4 3
+Do s1 and s2 intersect? Computer says: 1
+Where do s1 and s2 intersect? Computer says: 2 1 4 3
+
+*****************************************************************
+Segment 1 and 2, they should intersect at point (3,2)
+s1: 1 2 4 2 s2: 2 1 4 3
+Do s1 and s2 intersect? Computer says: 1
+Where do s1 and s2 intersect? Computer says: 3 2
+
+Segment 1 and 3, they should intersect at segment (2,2), (4,2)
+s1: 1 2 4 2 s2: 2 2 6 2
+Do s1 and s2 intersect? Computer says: 1
+Where do s1 and s2 intersect? Computer says: 2 2 4 2
+
+Segment 1 and 4, they should not intersect
+s1: 1 2 4 2 s2: 1 4 2 3
+Do s1 and s2 intersect? Computer says: 0
+Where do s1 and s2 intersect? Computer says: nowhere
+
+Segment 2 and 5, they should intersect at point (3,2)
+s1: 2 1 4 3 s2: 3 2 5 0
+Do s1 and s2 intersect? Computer says: 1
+Where do s1 and s2 intersect? Computer says: 3 2
+
+Segment 2 and 2, they should intersect at segment (2,1), (4,3)
+s1: 2 1 4 3 s2: 2 1 4 3
+Do s1 and s2 intersect? Computer says: 1
+Where do s1 and s2 intersect? Computer says: 2 1 4 3
