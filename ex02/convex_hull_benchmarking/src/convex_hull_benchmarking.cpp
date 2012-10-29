@@ -19,6 +19,8 @@
 #include <QtGui/QGraphicsView>
 #include <QLineF>
 
+#include <sys/time.h>
+
 typedef CGAL::Cartesian<double>                     Kernel;
 //typedef CGAL::Exact_predicates_inexact_constructions_kernel     Kernel;
 typedef Kernel::Point_2                             Point;
@@ -32,20 +34,23 @@ typedef CGAL::Random                                Random;
 typedef CGAL::Polygon_2<Kernel>                     Polygon;
 typedef CGAL::Bbox_2                                Bbox;
 
-void go(std::vector<Point> hull, int NPOINTS, int config);
+std::vector<Point> createOnHull(std::vector<Point> hull, int nOn, int config);
+std::vector<Point> createInHull(std::vector<Point> hull, int nIn, int config);
+void createImage(std::vector<Point> hull, std::vector<Point> onHull,
+    std::vector<Point> inHull, char * name);
 
 int main(int argc, char* argv[]) {
   
     PointSet points;
-    int NPOINTS;
+    int NPOINTS_IMAGE;
     std::cout << "Enter the number of points to sample: ";
-    std::cin >> NPOINTS;
+    std::cin >> NPOINTS_IMAGE;
 
     // Number of points to generate to compute the convex hull, which in turn
     // will be used for generating points.
     int INITPOINTS = 100;
   
-    // Generate a random sample for computing the convex hull
+    // Generate a random sample for computing the initial convex hull
     CGAL::Random_points_in_disc_2<Point,Creator> g(200.0);
     CGAL::copy_n(g, INITPOINTS, std::back_inserter(points));
 
@@ -55,29 +60,59 @@ int main(int argc, char* argv[]) {
 
     QApplication app(argc, argv);
 
+    // create some images
     for (int config = 0; config <= 4; config++) {
-        go(hull, NPOINTS, config);
+        int nOn = (int) (config / 4.0 * NPOINTS_IMAGE);
+        int nIn = NPOINTS_IMAGE - nOn;
+        std::vector<Point> onHull = createOnHull(hull, nOn, config);
+        std::vector<Point> inHull = createInHull(hull, nIn, config);
+        char buffer[100];
+        sprintf(buffer, "image%d.png", config);
+        createImage(hull, onHull, inHull, buffer);
+    }
+
+    // perform benchmarking
+    // TODO: for different NPOINTS
+    int NPOINTS_BENCH = 100000;
+    for (int config = 0; config <= 4; config++) {
+        int nOn = (int) (config / 4.0 * NPOINTS_BENCH);
+        int nIn = NPOINTS_BENCH - nOn;
+        std::vector<Point> onHull = createOnHull(hull, nOn, config);
+        std::vector<Point> inHull = createInHull(hull, nIn, config);
+        std::vector<Point> sample;
+        sample.insert(sample.end(), onHull.begin(), onHull.end());
+        sample.insert(sample.end(), inHull.begin(), inHull.end());
+        random_shuffle(sample.begin(), sample.end());
+        std::cout << "on: " << onHull.size() << std::endl;
+        std::cout << "in: " << inHull.size() << std::endl;
+        std::cout << "both: " << sample.size() << std::endl;
+
+        // TODO: for each convex hull implementation
+        std::vector<Point> s;
+        std::vector<Point> sh;
+        s.insert(s.end(), sample.begin(), sample.end());
+        timeval t1, t2;
+        gettimeofday(&t1, NULL);
+        CGAL::convex_hull_2(s.begin(), s.end(), std::back_inserter(sh));
+        gettimeofday(&t2, NULL);
+        time_t sdiff = t2.tv_sec - t1.tv_sec;
+        suseconds_t msdiff = sdiff * 1000000 + t2.tv_usec - t1.tv_usec;
+        std::cout << "time(ms): " << msdiff << std::endl;
     }
 
     return 0;
 }
 
-void go(std::vector<Point> hull, int NPOINTS, int config) {
-    /*
-     * compute points on the boundary and within the convex hull
-     */
-
-    int nOn = (int) (config / 4.0 * NPOINTS);
-    int nIn = NPOINTS - nOn;
-
+/*
+ * compute points on the boundary of the convex hull
+ */
+std::vector<Point> createOnHull(std::vector<Point> hull, int nOn, int config) {
     std::vector<Point> onHull;
-    std::vector<Point> inHull;
-
     Random random;
     int vertices = hull.size();
 
     /*
-     * Another approach to generate points on the boundary of the convex hull.
+     * One approach to generate points on the boundary of the convex hull.
      * This algorithm picks a random segment and then picks a random points
      * within this segment. This penalizes long segments.
      */
@@ -93,7 +128,7 @@ void go(std::vector<Point> hull, int NPOINTS, int config) {
 //    }
 
     /*
-     * Compute random points on the boundary of the convex hull.
+     * Another approach to generate points on the boundary of the convex hull.
      * Do this by first calculating the length of the boundary 'sum' and
      * then selecting 'c' randomly from the interval [0, sum). This c
      * denotes a position on the boundary of the convex hull, which we take
@@ -129,6 +164,17 @@ void go(std::vector<Point> hull, int NPOINTS, int config) {
         Point p = p1 + d * (rem / lengths[k]);
         onHull.push_back(p);
     }
+
+    return onHull;
+}
+
+/*
+ * compute points on within the convex hull
+ */
+std::vector<Point> createInHull(std::vector<Point> hull, int nIn, int config) {
+    std::vector<Point> inHull;
+    Random random;
+    int vertices = hull.size();
 
     /*
      * One approach for generating points within the convex hull.
@@ -174,8 +220,13 @@ void go(std::vector<Point> hull, int NPOINTS, int config) {
         }
     }
 
+    return inHull;
+}
+
+void createImage(std::vector<Point> hull, std::vector<Point> onHull,
+    std::vector<Point> inHull, char * name){
     /*
-     * show with QT
+     * create image with QT
      */
   
     // Prepare scene
@@ -215,15 +266,12 @@ void go(std::vector<Point> hull, int NPOINTS, int config) {
     /*
      * create an image
      */
-    char buffer[100];
-    sprintf(buffer, "image%d.png", config);
-
     QImage image(scene.sceneRect().size().toSize(), QImage::Format_ARGB32);
     image.fill(Qt::transparent);
     QPainter painter(&image);
     painter.setRenderHint(QPainter::Antialiasing);
     scene.render(&painter);
-    image.save(buffer);
+    image.save(name);
 
     /*
      * show stuff in QT window
