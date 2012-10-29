@@ -115,6 +115,14 @@ int main(int argc , char* argv[]) {
     view->installEventFilter(&navigation);
     view->viewport()->installEventFilter(&navigation);
     view->setRenderHint(QPainter::Antialiasing);
+
+    // create an image
+    QImage image(scene.sceneRect().size().toSize(), QImage::Format_ARGB32);
+    image.fill(Qt::transparent);
+    QPainter painter(&image);
+    painter.setRenderHint(QPainter::Antialiasing);
+    scene.render(&painter);
+    image.save("image.png");
   
     return app.exec();  
 }
