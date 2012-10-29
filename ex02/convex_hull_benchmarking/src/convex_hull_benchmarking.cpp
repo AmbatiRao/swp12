@@ -21,6 +21,12 @@
 
 #include <sys/time.h>
 
+#include <CGAL/ch_akl_toussaint.h>
+#include <CGAL/ch_bykat.h>
+#include <CGAL/ch_eddy.h>
+#include <CGAL/ch_graham_andrew.h>
+#include <CGAL/ch_jarvis.h>
+
 typedef CGAL::Cartesian<double>                     Kernel;
 //typedef CGAL::Exact_predicates_inexact_constructions_kernel     Kernel;
 typedef Kernel::Point_2                             Point;
@@ -38,6 +44,29 @@ std::vector<Point> createOnHull(std::vector<Point> hull, int nOn, int config);
 std::vector<Point> createInHull(std::vector<Point> hull, int nIn, int config);
 void createImage(std::vector<Point> hull, std::vector<Point> onHull,
     std::vector<Point> inHull, char * name);
+
+static int NALGORITHMS = 5;
+
+void ch(std::vector<Point> points, std::vector<Point> hull, int algorithm)
+{
+    switch(algorithm) {
+        case 1: 
+            ch_akl_toussaint(points.begin(), points.end(), std::back_inserter(hull));
+            break;
+        case 2: 
+            ch_bykat(points.begin(), points.end(), std::back_inserter(hull));
+            break;
+        case 3: 
+            ch_eddy(points.begin(), points.end(), std::back_inserter(hull));
+            break;
+        case 4: 
+            ch_graham_andrew(points.begin(), points.end(), std::back_inserter(hull));
+            break;
+        case 5: 
+            ch_jarvis(points.begin(), points.end(), std::back_inserter(hull));
+            break;
+    }
+}
 
 int main(int argc, char* argv[]) {
   
@@ -74,7 +103,11 @@ int main(int argc, char* argv[]) {
     // perform benchmarking
     // TODO: for different NPOINTS
     int NPOINTS_BENCH = 100000;
+    std::cout << "Number of points: " << NPOINTS_BENCH << std::endl;
+
     for (int config = 0; config <= 4; config++) {
+        std::cout << "config: " << config << std::endl;
+
         int nOn = (int) (config / 4.0 * NPOINTS_BENCH);
         int nIn = NPOINTS_BENCH - nOn;
         std::vector<Point> onHull = createOnHull(hull, nOn, config);
@@ -87,17 +120,20 @@ int main(int argc, char* argv[]) {
         std::cout << "in: " << inHull.size() << std::endl;
         std::cout << "both: " << sample.size() << std::endl;
 
-        // TODO: for each convex hull implementation
-        std::vector<Point> s;
-        std::vector<Point> sh;
-        s.insert(s.end(), sample.begin(), sample.end());
-        timeval t1, t2;
-        gettimeofday(&t1, NULL);
-        CGAL::convex_hull_2(s.begin(), s.end(), std::back_inserter(sh));
-        gettimeofday(&t2, NULL);
-        time_t sdiff = t2.tv_sec - t1.tv_sec;
-        suseconds_t msdiff = sdiff * 1000000 + t2.tv_usec - t1.tv_usec;
-        std::cout << "time(ms): " << msdiff << std::endl;
+        // for each algorithm
+        for (int a = 1; a <= NALGORITHMS; a++) {
+            std::vector<Point> s;
+            std::vector<Point> sh;
+            s.insert(s.end(), sample.begin(), sample.end());
+            timeval t1, t2;
+            gettimeofday(&t1, NULL);
+            //CGAL::convex_hull_2(s.begin(), s.end(), std::back_inserter(sh));
+            ch(s, sh, a);
+            gettimeofday(&t2, NULL);
+            time_t sdiff = t2.tv_sec - t1.tv_sec;
+            suseconds_t msdiff = sdiff * 1000000 + t2.tv_usec - t1.tv_usec;
+            std::cout << "algorithm " << a << " time(ms): " << msdiff << std::endl;
+        }
     }
 
     return 0;
