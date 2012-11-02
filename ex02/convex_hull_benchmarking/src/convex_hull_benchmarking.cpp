@@ -5,6 +5,7 @@
 
 #include <vector>
 #include <iostream>
+#include <fstream>
 #include <CGAL/Cartesian.h>
 #include <CGAL/convex_hull_2.h>
 #include <CGAL/point_generators_2.h>
@@ -65,7 +66,7 @@ void ch(std::vector<Point> points, std::vector<Point> hull, int algorithm)
         case 5: 
             ch_jarvis(points.begin(), points.end(), std::back_inserter(hull));
             break;
-    }
+    } // TODO: add default
 }
 
 int main(int argc, char* argv[]) {
@@ -101,9 +102,15 @@ int main(int argc, char* argv[]) {
     }
 
     // perform benchmarking
-    int sizes[] = {1000, 10000, 100000, 250000};
+    //int sizes[] = {1000, 10000, 100000, 250000};
+    int sizes[] = {1000, 10000, 50000, 80000, 100000};
+    int nsizes = sizeof(sizes) / sizeof(int);
+
+    // results for Algorithm x Configuration
+    long results[NALGORITHMS][nsizes][4];
+
     // for each number of points in sample
-    for (int i = 0; i < sizeof(sizes) / sizeof(int); i++){
+    for (int i = 0; i < nsizes; i++){
         int NPOINTS_BENCH = sizes[i];
         std::cout << "Number of points: " << NPOINTS_BENCH << std::endl;
         // for each distribution configuration
@@ -135,8 +142,61 @@ int main(int argc, char* argv[]) {
                 time_t sdiff = t2.tv_sec - t1.tv_sec;
                 suseconds_t msdiff = sdiff * 1000000 + t2.tv_usec - t1.tv_usec;
                 std::cout << "algorithm " << a << " time(ms): " << msdiff << std::endl;
+                results[a-1][i][config] = msdiff;
             }
         }
+    }
+
+    // print results
+    for (int config = 0; config <= 4; config++) {
+        std::cout << std::endl;
+        for (int i = 0; i < nsizes; i++) {
+            int size = sizes[i];
+            std::cout << size;
+            if (i < nsizes - 1) {
+                std::cout << ",";
+            }
+        }
+        std::cout << std::endl;
+        for (int a = 0; a < NALGORITHMS; a++) {
+            for (int i = 0; i < nsizes; i++) {
+                long time = results[a][i][config];
+                std::cout << time;
+                if (i < nsizes - 1) {
+                    std::cout << ",";
+                }
+            }
+            std::cout << std::endl;
+        }
+    }
+
+    // output results to files
+    for (int config = 0; config <= 4; config++) {
+        // open an output file
+        char buffer[100];
+        sprintf(buffer, "output-%d.txt", config);
+        std::ofstream file;
+        file.open (buffer);
+
+        for (int i = 0; i < nsizes; i++) {
+            int size = sizes[i];
+            file << size;
+            if (i < nsizes - 1) {
+                file << ",";
+            }
+        }
+        file << std::endl;
+        for (int a = 0; a < NALGORITHMS; a++) {
+            for (int i = 0; i < nsizes; i++) {
+                long time = results[a][i][config];
+                file << time;
+                if (i < nsizes - 1) {
+                    file << ",";
+                }
+            }
+            file << std::endl;
+        }
+        file.close();
     }
 
     return 0;
