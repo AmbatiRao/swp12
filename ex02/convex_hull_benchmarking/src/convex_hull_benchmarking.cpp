@@ -101,38 +101,41 @@ int main(int argc, char* argv[]) {
     }
 
     // perform benchmarking
-    // TODO: for different NPOINTS
-    int NPOINTS_BENCH = 100000;
-    std::cout << "Number of points: " << NPOINTS_BENCH << std::endl;
+    int sizes[] = {1000, 10000, 100000, 250000};
+    // for each number of points in sample
+    for (int i = 0; i < sizeof(sizes) / sizeof(int); i++){
+        int NPOINTS_BENCH = sizes[i];
+        std::cout << "Number of points: " << NPOINTS_BENCH << std::endl;
+        // for each distribution configuration
+        for (int config = 0; config <= 4; config++) {
+            // generate points
+            int nOn = (int) (config / 4.0 * NPOINTS_BENCH);
+            int nIn = NPOINTS_BENCH - nOn;
+            std::vector<Point> onHull = createOnHull(hull, nOn, config);
+            std::vector<Point> inHull = createInHull(hull, nIn, config);
+            std::vector<Point> sample;
+            sample.insert(sample.end(), onHull.begin(), onHull.end());
+            sample.insert(sample.end(), inHull.begin(), inHull.end());
+            random_shuffle(sample.begin(), sample.end());
+            std::cout << "config: " << config;
+            std::cout << " on: " << onHull.size();
+            std::cout << " in: " << inHull.size();
+            std::cout << " both: " << sample.size() << std::endl;
 
-    for (int config = 0; config <= 4; config++) {
-        std::cout << "config: " << config << std::endl;
-
-        int nOn = (int) (config / 4.0 * NPOINTS_BENCH);
-        int nIn = NPOINTS_BENCH - nOn;
-        std::vector<Point> onHull = createOnHull(hull, nOn, config);
-        std::vector<Point> inHull = createInHull(hull, nIn, config);
-        std::vector<Point> sample;
-        sample.insert(sample.end(), onHull.begin(), onHull.end());
-        sample.insert(sample.end(), inHull.begin(), inHull.end());
-        random_shuffle(sample.begin(), sample.end());
-        std::cout << "on: " << onHull.size() << std::endl;
-        std::cout << "in: " << inHull.size() << std::endl;
-        std::cout << "both: " << sample.size() << std::endl;
-
-        // for each algorithm
-        for (int a = 1; a <= NALGORITHMS; a++) {
-            std::vector<Point> s;
-            std::vector<Point> sh;
-            s.insert(s.end(), sample.begin(), sample.end());
-            timeval t1, t2;
-            gettimeofday(&t1, NULL);
-            //CGAL::convex_hull_2(s.begin(), s.end(), std::back_inserter(sh));
-            ch(s, sh, a);
-            gettimeofday(&t2, NULL);
-            time_t sdiff = t2.tv_sec - t1.tv_sec;
-            suseconds_t msdiff = sdiff * 1000000 + t2.tv_usec - t1.tv_usec;
-            std::cout << "algorithm " << a << " time(ms): " << msdiff << std::endl;
+            // for each algorithm
+            for (int a = 1; a <= NALGORITHMS; a++) {
+                std::vector<Point> s;
+                std::vector<Point> sh;
+                s.insert(s.end(), sample.begin(), sample.end());
+                timeval t1, t2;
+                gettimeofday(&t1, NULL);
+                // compute convex hull with algorithm no. a
+                ch(s, sh, a); 
+                gettimeofday(&t2, NULL);
+                time_t sdiff = t2.tv_sec - t1.tv_sec;
+                suseconds_t msdiff = sdiff * 1000000 + t2.tv_usec - t1.tv_usec;
+                std::cout << "algorithm " << a << " time(ms): " << msdiff << std::endl;
+            }
         }
     }
 
