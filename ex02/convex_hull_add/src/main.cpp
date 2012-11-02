@@ -83,6 +83,7 @@ int main(int argc , char* argv[]) {
 
 
     QGraphicsView* view = new QGraphicsView(&scene);
+    view->setRenderHint(QPainter::Antialiasing);
     view->show();
 
     return app.exec();
