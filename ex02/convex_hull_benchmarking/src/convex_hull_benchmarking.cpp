@@ -41,8 +41,8 @@ typedef CGAL::Random                                Random;
 typedef CGAL::Polygon_2<Kernel>                     Polygon;
 typedef CGAL::Bbox_2                                Bbox;
 
-std::vector<Point> createOnHull(std::vector<Point> hull, int nOn, int config);
-std::vector<Point> createInHull(std::vector<Point> hull, int nIn, int config);
+std::vector<Point> createOnHull(Random& random, std::vector<Point> hull, int nOn, int config);
+std::vector<Point> createInHull(Random& random, std::vector<Point> hull, int nIn, int config);
 void createImage(std::vector<Point> hull, std::vector<Point> onHull,
     std::vector<Point> inHull, char * name);
 
@@ -77,6 +77,8 @@ int main(int argc, char* argv[]) {
     std::cout << "Enter the number of points to sample: ";
     std::cin >> NPOINTS_IMAGE;
 
+    Random random;
+
     // Number of points to generate to compute the convex hull, which in turn
     // will be used for generating points.
     int INITPOINTS = 100;
@@ -95,55 +97,62 @@ int main(int argc, char* argv[]) {
     for (int config = 0; config <= 4; config++) {
         int nOn = (int) (config / 4.0 * NPOINTS_IMAGE);
         int nIn = NPOINTS_IMAGE - nOn;
-        std::vector<Point> onHull = createOnHull(hull, nOn, config);
-        std::vector<Point> inHull = createInHull(hull, nIn, config);
+        std::vector<Point> onHull = createOnHull(random, hull, nOn, config);
+        std::vector<Point> inHull = createInHull(random, hull, nIn, config);
         char buffer[100];
         sprintf(buffer, "image%d.png", config);
         createImage(hull, onHull, inHull, buffer);
     }
 
+    // number of times to perform each experiment configuration
+    int nSamples = 20;
+
     // perform benchmarking
-    //int sizes[] = {1000, 10000, 100000, 250000};
-    int sizes[] = {1000, 10000, 50000, 80000, 100000};
+    //int sizes[] = {1000, 10000, 20000, 30000};
+    int sizes[] = {1000, 10000, 50000, 80000, 90000, 95000, 100000};
     int nsizes = sizeof(sizes) / sizeof(int);
 
     // results for Algorithm x Configuration
-    long results[NALGORITHMS][nsizes][4];
+    std::vector<long> results[NALGORITHMS][nsizes][5];
 
-    // for each number of points in sample
-    for (int i = 0; i < nsizes; i++){
-        int NPOINTS_BENCH = sizes[i];
-        std::cout << "Number of points: " << NPOINTS_BENCH << std::endl;
-        // for each distribution configuration
-        for (int config = 0; config <= 4; config++) {
-            // generate points
-            int nOn = (int) (config / 4.0 * NPOINTS_BENCH);
-            int nIn = NPOINTS_BENCH - nOn;
-            std::vector<Point> onHull = createOnHull(hull, nOn, config);
-            std::vector<Point> inHull = createInHull(hull, nIn, config);
-            std::vector<Point> sample;
-            sample.insert(sample.end(), onHull.begin(), onHull.end());
-            sample.insert(sample.end(), inHull.begin(), inHull.end());
-            random_shuffle(sample.begin(), sample.end());
-            std::cout << "config: " << config;
-            std::cout << " on: " << onHull.size();
-            std::cout << " in: " << inHull.size();
-            std::cout << " both: " << sample.size() << std::endl;
+    for (int run = 0; run < nSamples; run++){
+        std::cout << "run: " << run << std::endl;
 
-            // for each algorithm
-            for (int a = 1; a <= NALGORITHMS; a++) {
-                std::vector<Point> s;
-                std::vector<Point> sh;
-                s.insert(s.end(), sample.begin(), sample.end());
-                timeval t1, t2;
-                gettimeofday(&t1, NULL);
-                // compute convex hull with algorithm no. a
-                ch(s, sh, a); 
-                gettimeofday(&t2, NULL);
-                time_t sdiff = t2.tv_sec - t1.tv_sec;
-                suseconds_t msdiff = sdiff * 1000000 + t2.tv_usec - t1.tv_usec;
-                std::cout << "algorithm " << a << " time(ms): " << msdiff << std::endl;
-                results[a-1][i][config] = msdiff;
+        // for each number of points in sample
+        for (int i = 0; i < nsizes; i++){
+            int NPOINTS_BENCH = sizes[i];
+            std::cout << "Number of points: " << NPOINTS_BENCH << std::endl;
+            // for each distribution configuration
+            for (int config = 0; config <= 4; config++) {
+                // generate points
+                int nOn = (int) (config / 4.0 * NPOINTS_BENCH);
+                int nIn = NPOINTS_BENCH - nOn;
+                std::vector<Point> onHull = createOnHull(random, hull, nOn, config);
+                std::vector<Point> inHull = createInHull(random, hull, nIn, config);
+                std::vector<Point> sample;
+                sample.insert(sample.end(), onHull.begin(), onHull.end());
+                sample.insert(sample.end(), inHull.begin(), inHull.end());
+                random_shuffle(sample.begin(), sample.end());
+                std::cout << "config: " << config;
+                std::cout << " on: " << onHull.size();
+                std::cout << " in: " << inHull.size();
+                std::cout << " both: " << sample.size() << std::endl;
+
+                // for each algorithm
+                for (int a = 0; a < NALGORITHMS; a++) {
+                    std::vector<Point> s;
+                    std::vector<Point> sh;
+                    s.insert(s.end(), sample.begin(), sample.end());
+                    timeval t1, t2;
+                    gettimeofday(&t1, NULL);
+                    // compute convex hull with algorithm no. a
+                    ch(s, sh, a + 1); 
+                    gettimeofday(&t2, NULL);
+                    time_t sdiff = t2.tv_sec - t1.tv_sec;
+                    suseconds_t msdiff = sdiff * 1000000 + t2.tv_usec - t1.tv_usec;
+                    std::cout << "algorithm " << (a + 1) << " time(ms): " << msdiff << std::endl;
+                    results[a][i][config].push_back(msdiff);
+                }
             }
         }
     }
@@ -161,7 +170,8 @@ int main(int argc, char* argv[]) {
         std::cout << std::endl;
         for (int a = 0; a < NALGORITHMS; a++) {
             for (int i = 0; i < nsizes; i++) {
-                long time = results[a][i][config];
+                std::vector<long> times = results[a][i][config];
+                long time = std::accumulate(times.begin(), times.end(), 0) / nSamples;
                 std::cout << time;
                 if (i < nsizes - 1) {
                     std::cout << ",";
@@ -189,7 +199,8 @@ int main(int argc, char* argv[]) {
         file << std::endl;
         for (int a = 0; a < NALGORITHMS; a++) {
             for (int i = 0; i < nsizes; i++) {
-                long time = results[a][i][config];
+                std::vector<long> times = results[a][i][config];
+                long time = std::accumulate(times.begin(), times.end(), 0) / nSamples;
                 file << time;
                 if (i < nsizes - 1) {
                     file << ",";
@@ -206,9 +217,8 @@ int main(int argc, char* argv[]) {
 /*
  * compute points on the boundary of the convex hull
  */
-std::vector<Point> createOnHull(std::vector<Point> hull, int nOn, int config) {
+std::vector<Point> createOnHull(Random& random, std::vector<Point> hull, int nOn, int config) {
     std::vector<Point> onHull;
-    Random random;
     int vertices = hull.size();
 
     /*
@@ -271,9 +281,8 @@ std::vector<Point> createOnHull(std::vector<Point> hull, int nOn, int config) {
 /*
  * compute points on within the convex hull
  */
-std::vector<Point> createInHull(std::vector<Point> hull, int nIn, int config) {
+std::vector<Point> createInHull(Random& random, std::vector<Point> hull, int nIn, int config) {
     std::vector<Point> inHull;
-    Random random;
     int vertices = hull.size();
 
     /*
