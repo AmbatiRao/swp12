@@ -51,6 +51,7 @@ static int NALGORITHMS = 5;
 void ch(std::vector<Point> points, std::vector<Point> hull, int algorithm)
 {
     switch(algorithm) {
+        default:
         case 1: 
             ch_akl_toussaint(points.begin(), points.end(), std::back_inserter(hull));
             break;
@@ -66,7 +67,7 @@ void ch(std::vector<Point> points, std::vector<Point> hull, int algorithm)
         case 5: 
             ch_jarvis(points.begin(), points.end(), std::back_inserter(hull));
             break;
-    } // TODO: add default
+    }
 }
 
 int main(int argc, char* argv[]) {
