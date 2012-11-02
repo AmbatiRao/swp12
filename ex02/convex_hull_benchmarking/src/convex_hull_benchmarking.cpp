@@ -105,11 +105,11 @@ int main(int argc, char* argv[]) {
     }
 
     // number of times to perform each experiment configuration
-    int nSamples = 20;
+    int nSamples = 4;
 
     // perform benchmarking
     //int sizes[] = {1000, 10000, 20000, 30000};
-    int sizes[] = {1000, 10000, 50000, 80000, 90000, 95000, 100000};
+    int sizes[] = {1000, 10000, 50000, 80000, 100000, 150000, 200000};
     int nsizes = sizeof(sizes) / sizeof(int);
 
     // results for Algorithm x Configuration
