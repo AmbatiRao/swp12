@@ -19,3 +19,5 @@ Modeline for vim is:
 ```c++
 // vim: si:ts=4:sw=4:expandtab
 ````
+
+tar cvfz ex02.tar.gz $(find ex02 -type f | grep -v "latex\|gitignore") 
