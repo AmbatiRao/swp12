@@ -18,7 +18,7 @@ for num = 1:size(algNames,2)
 		inon = [inon;name];
 	end;
 
-	imageName = sprintf ('pics/pic-%s.png', algNames{num});
+	imageName = sprintf ('pics/pic-%s.pdf', algNames{num});
 
 	handle = figure('visible', 'off');
 	plot(data(1,:), c, '--s', 'linewidth', 2, 'markersize', 5)
