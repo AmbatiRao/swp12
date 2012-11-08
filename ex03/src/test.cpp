@@ -36,6 +36,9 @@ typedef CGAL::Oriented_side                         Oriented_side;
 typedef CGAL::Polyhedron_3<Kernel>                  Polyhedron;
 typedef Polyhedron::Facet                           Facet;
 typedef Polyhedron::Facet_iterator                  Facet_iterator;
+typedef Polyhedron::Halfedge                        Halfedge;
+typedef Polyhedron::Halfedge_handle                 Halfedge_handle;
+typedef Polyhedron::Halfedge_iterator               Halfedge_iterator;
 typedef Polyhedron::Halfedge_around_facet_circulator Halfedge_facet_circulator;
 
 PointList grabThreeNonlinearPoints(Halfedge_facet_circulator j){
@@ -177,8 +180,10 @@ int main(int argc, char* argv[]) {
     // for each remaining point
     for(std::vector<Point>::iterator it = points.begin(); it != points.end(); ++it) {
         Point p = *it;
+        std::cout << std::endl;
         std::cout << "point: " << p << std::endl;
         // traverse all facets
+        bool inside = true;
         for (Facet_iterator it = P.facets_begin(); it != P.facets_end(); ++it) {
             Facet f = *it;
             // create plane from facet
@@ -187,32 +192,46 @@ int main(int argc, char* argv[]) {
             Oriented_side o = plane.oriented_side(p);
             bool visible = o == CGAL::NEGATIVE;
             std::cout << "orientation: " << o << ", " << (visible ? "visible" : "invisible") << std::endl;
+            if (visible) {
+                inside = false;
+                std::cout << "removing facet" << std::endl;
+                Halfedge_handle halfedge = f.halfedge();
+                P.erase_facet(halfedge);
+            }
         }
+        if (inside){
+            continue;
+        }
+
+        // find first border halfedge
+        Halfedge_handle borderStart;
+        bool foundBorder = false;
+        // NOTE: could also iterate edges instead of halfedges, may be faster
+        for (Halfedge_iterator it = P.edges_begin(); it != P.edges_end(); it++){
+            Halfedge halfedge = *it;
+            if (halfedge.is_border_edge()){
+                if (halfedge.is_border()){
+                    borderStart = it;
+                }else{
+                    borderStart = halfedge.opposite();
+                }
+                foundBorder = true;
+                break;
+            }
+        }
+        if (!foundBorder){
+            continue;
+        }
+        std::cout << "found border" << std::endl;
+
+        // iterate horizont
+        Halfedge_handle it = borderStart; 
+        do {
+            std::cout << "border halfedge" << std::endl;
+            // TODO: collect vertices
+            
+            it = it -> next();
+        } while(it != borderStart);
     }
 
 }
-
-//    // for each remaining point
-//    for(std::vector<Point>::iterator it = points.begin(); it != points.end(); ++it) {
-//        Point p = *it;
-//        // traverse all facets
-//        for (Facet_iterator it = P.facets_begin(); it != P.facets_end(); ++it) {
-//            Facet f = *it;
-//            PointList ps = grabThreeNonlinearPoints(f.facet_begin());
-//            // grab three points to create a plane
-//            Halfedge_facet_circulator j = f.facet_begin();
-//            // TODO: we should check that the 3 points are not colinear
-//            Point p1 = j->vertex()->point();
-//            j++;
-//            Point p2 = j->vertex()->point();
-//            j++;
-//            Point p3 = j->vertex()->point();
-//            std::cout << "facet: " << p1 << ", " << p2 << ", " << p3 << std::endl;
-//            std::cout << "point: " << p << std::endl;
-//            Plane plane(p1, p2, p3);
-//            // check orientation of point towards plane
-//            Oriented_side o = plane.oriented_side(p);
-//            bool visible = o == CGAL::POSITIVE;
-//            std::cout << "orientation: " << o << ", " << (visible ? "visible" : "invisible") << std::endl;
-//        }
-//    }
