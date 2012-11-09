@@ -10,6 +10,7 @@
 #include <CGAL/circulator.h>
 #include <CGAL/algorithm.h>
 #include <CGAL/Random.h>
+#include <CGAL/IO/Polyhedron_iostream.h>
 
 //#include <CGAL/Qt/GraphicsViewNavigation.h>
 //#include <QtGui/QApplication>
@@ -76,21 +77,26 @@ Plane createPlaneFromFacet(Facet f){
 }
 
 int main(int argc, char* argv[]) {
+
+    if (argc != 4) {
+        std::cout << "usage: " << argv[0] << " <number of points> <output filename> <seed>" << std::endl;
+        exit(1);
+    }
   
-    PointList points;
-    int npoints;
-    std::cout << "Enter the number of points to sample: ";
-    std::cin >> npoints;
-    std::cout << std::endl;
+    char * outputFile = argv[2];
+    int npoints = atoi(argv[1]);
+    int seed = atoi(argv[3]);
 
     if (npoints < 4) {
+        std::cout << "we need at least 4 points" << std::endl;
         exit(1);
     }
 
-    Random random;
+    PointList points;
+    Random random(seed);
   
     // Generate a random sample for computing the initial convex hull
-    CGAL::Random_points_in_sphere_3<Point,Creator> g(200.0, random);
+    CGAL::Random_points_in_sphere_3<Point,Creator> g(10.0, random);
     CGAL::copy_n(g, npoints, std::back_inserter(points));
 
     std::cout << "number of points: " << points.size() << std::endl;
@@ -105,7 +111,7 @@ int main(int argc, char* argv[]) {
         //std::cout << "foo: " << p << std::endl;
         int size = initPoints.size();
         if (size == 0){
-            std::cout << "added first point: " << p << std::endl;
+            std::cout << "added first point:  " << p << std::endl;
             initPoints.push_back(p);
             points.erase(points.begin() + k);
             k--;
@@ -128,7 +134,7 @@ int main(int argc, char* argv[]) {
                 std::cout << "point is collinear with first two points: " << p << std::endl;
                 continue;
             } else {
-                std::cout << "added third point: " << p << std::endl;
+                std::cout << "added third point:  " << p << std::endl;
                 initPoints.push_back(p);
                 points.erase(points.begin() + k);
                 k--;
@@ -172,6 +178,7 @@ int main(int argc, char* argv[]) {
     Vector v = v1 + v2 + v3 + v4;
     Point pv(v.x() / 4, v.y() / 4, v.z() / 4);
     points.push_back(pv);
+    std::cout << "extra point: " << pv << std::endl;
 
     /*
      * Iteratively build the convex hull
@@ -190,7 +197,7 @@ int main(int argc, char* argv[]) {
             Plane plane = createPlaneFromFacet(f);
             // check orientation of point towards plane
             Oriented_side o = plane.oriented_side(p);
-            bool visible = o == CGAL::NEGATIVE;
+            bool visible = o == CGAL::ON_NEGATIVE_SIDE;
             std::cout << "orientation: " << o << ", " << (visible ? "visible" : "invisible") << std::endl;
             if (visible) {
                 inside = false;
@@ -224,14 +231,34 @@ int main(int argc, char* argv[]) {
         }
         std::cout << "found border" << std::endl;
 
-        // iterate horizont
-        Halfedge_handle it = borderStart; 
-        do {
-            std::cout << "border halfedge" << std::endl;
-            // TODO: collect vertices
-            
-            it = it -> next();
-        } while(it != borderStart);
+        // fill the hole
+        P.fill_hole(borderStart);
+        // create a new center vertex at the new face
+        Halfedge_handle h = P.create_center_vertex(borderStart);
+        // move that vertex to our point p
+        h -> vertex() -> point() = p;
+
+        // TODO: check for coplanar neighbours of newly created triangles
+
+        // TODO: this is obsolete (traversal of horizont)
+//        // iterate horizont
+//        Halfedge_handle it = borderStart; 
+//        do {
+//            std::cout << "border halfedge" << std::endl;
+//            // TODO: collect vertices
+//            
+//            it = it -> next();
+//        } while(it != borderStart);
     }
 
+    /*
+     * Output
+     */
+    CGAL::set_ascii_mode( std::cout);
+    std::cout << P;
+
+    std::ofstream file;
+    file.open(outputFile);
+    file << P;
+    file.close();
 }
