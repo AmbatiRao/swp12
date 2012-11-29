@@ -1,7 +1,7 @@
 mkdir pics
 for i = [0:4]
 	inputName = sprintf ('build/output-%d.txt', i);
-	imageName = sprintf ('pics/pic-%d-%d.png', i, 4-i)
+	imageName = sprintf ('pics/pic-%d-%d.pdf', i, 4-i)
 	data = dlmread (inputName)
 
 	handle = figure('visible', 'off');
