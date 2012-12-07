@@ -1,0 +1,4 @@
+mkdir build
+cd build
+cp -R data build
+cmake -DCGAL_DIR=~/dev/cgal/CGAL-4.1/build/ ..
