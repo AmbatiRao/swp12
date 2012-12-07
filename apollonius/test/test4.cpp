@@ -26,10 +26,17 @@ typedef CGAL::Apollonius_graph_traits_2<Kernel>   Traits;
 
 typedef CGAL::Simple_cartesian<double> Rep;
 
-
 #include <CGAL/Triangulation_data_structure_2.h>
 #include <CGAL/Apollonius_graph_vertex_base_2.h>
 #include <CGAL/Triangulation_face_base_2.h>
+
+// Qt stuff
+
+#include <CGAL/Qt/GraphicsViewNavigation.h>
+#include <QtGui/QApplication>
+#include <QtGui/QTextEdit>
+#include <QtGui/QGraphicsView>
+#include <QLineF>
 
 typedef CGAL::Apollonius_graph_vertex_base_2<Traits,false>   Vb;
 typedef CGAL::Triangulation_face_base_2<Traits>              Fb;
@@ -41,7 +48,7 @@ typedef Agds::Face Face;
 typedef Agds::Vertex_handle      Vertex_handle;
 typedef Agds::Vertex      Vertex;
 
-int main()
+int main(int argc , char* argv[])
 {
   std::ifstream ifs("../data/sites.cin");
   assert( ifs );
@@ -76,5 +83,37 @@ int main()
     std::cout << "vertex: " << v << std::endl;
   }
 
-  return 0;
+  /*
+   * visualize with Qt
+   */
+
+  QApplication app(argc, argv);
+  // Prepare scene
+  QGraphicsScene scene;
+  scene.setSceneRect(-400, -400, 800, 800); //Has the format: (x,y,width,height)
+
+  scene.addLine(
+    QLineF(100, 100, 200, 300),
+    QPen(Qt::green, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin)
+  );
+
+  // Prepare view, add scene, show
+  QGraphicsView* view = new QGraphicsView(&scene);
+  //view->show();
+
+  // Add CGAL's navigation filter
+  CGAL::Qt::GraphicsViewNavigation navigation;
+  view->installEventFilter(&navigation);
+  view->viewport()->installEventFilter(&navigation);
+  view->setRenderHint(QPainter::Antialiasing);
+
+  // create an image
+  QImage image(scene.sceneRect().size().toSize(), QImage::Format_ARGB32);
+  image.fill(Qt::transparent);
+  QPainter painter(&image);
+  painter.setRenderHint(QPainter::Antialiasing);
+  scene.render(&painter);
+  image.save("image.png");
+ 
+  //return app.exec();  
 }

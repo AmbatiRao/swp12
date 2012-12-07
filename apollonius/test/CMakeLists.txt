@@ -1,35 +1,42 @@
-# Created by the script cgal_create_cmake_script
 # This is the CMake script for compiling a CGAL application.
 
-
-project( Apollonius_test )
+project (test)
 
 cmake_minimum_required(VERSION 2.6.2)
-if("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}" VERSION_GREATER 2.6)
-  if("${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION}.${CMAKE_PATCH_VERSION}" VERSION_GREATER 2.8.3)
-    cmake_policy(VERSION 2.8.4)
-  else()
-    cmake_policy(VERSION 2.6)
-  endif()
-endif()
 
-find_package(CGAL QUIET COMPONENTS Core )
+find_package(CGAL COMPONENTS Qt4)
 
-if ( CGAL_FOUND )
+include(${CGAL_USE_FILE})
 
-  include( ${CGAL_USE_FILE} )
 
-  include( CGAL_CreateSingleSourceCGALProgram )
+set( QT_USE_QTXML    TRUE )
+set( QT_USE_QTMAIN   TRUE )
+set( QT_USE_QTSCRIPT  TRUE )
+set( QT_USE_QTOPENGL  TRUE )
 
-  include_directories (BEFORE "../../../CGAL-4.1/include")
+find_package(Qt4)
 
-  create_single_source_cgal_program( "test1.cpp" )
-  create_single_source_cgal_program( "test2.cpp" )
-  create_single_source_cgal_program( "test3.cpp" )
+if ( CGAL_FOUND AND CGAL_Qt4_FOUND AND QT4_FOUND )
+
+  include(${QT_USE_FILE})
+
+  # Make sure to correct this line and duplicate it according to the project.
+  add_executable  ( test1 test1.cpp )
+  add_executable  ( test2 test2.cpp )
+  add_executable  ( test3 test3.cpp )
+  add_executable  ( test4 test4.cpp )
+
+  target_link_libraries( test1 ${CGAL_LIBRARIES}  ${CGAL_3RD_PARTY_LIBRARIES})
+
+  target_link_libraries( test2 ${CGAL_LIBRARIES}  ${CGAL_3RD_PARTY_LIBRARIES})
+
+  target_link_libraries( test3 ${CGAL_LIBRARIES}  ${CGAL_3RD_PARTY_LIBRARIES})
+
+  target_link_libraries( test4 ${CGAL_LIBRARIES}  ${CGAL_3RD_PARTY_LIBRARIES})
+  target_link_libraries( test4 ${QT_LIBRARIES} )
 
 else()
-  
-    message(STATUS "This program requires the CGAL library, and will not be compiled.")
-  
-endif()
 
+  message(STATUS "NOTICE: This demo requires CGAL and Qt4, and will not be compiled.")
+
+endif()

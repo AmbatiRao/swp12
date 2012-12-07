@@ -50,7 +50,7 @@ typedef Traits::Site_2					Site_2;
 
 int main()
 {
-  std::ifstream ifs("data/sites.cin");
+  std::ifstream ifs("../data/sites.cin");
   assert( ifs );
 
   Apollonius_graph ag;

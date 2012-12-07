@@ -28,7 +28,7 @@ typedef Apollonius_graph::Face_iterator All_faces_iterator;
 
 int main()
 {
-  std::ifstream ifs("data/sites.cin");
+  std::ifstream ifs("../data/sites.cin");
   assert( ifs );
 
   Apollonius_graph ag;
