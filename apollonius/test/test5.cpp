@@ -18,6 +18,10 @@ typedef CGAL::Simple_cartesian<double> Rep;
 #include <CGAL/Triangulation_face_base_2.h>
 #include <CGAL/Apollonius_graph_filtered_traits_2.h>
 
+#include <CGAL/Voronoi_diagram_2.h>
+#include <CGAL/Apollonius_graph_adaptation_traits_2.h>
+#include <CGAL/Apollonius_graph_adaptation_policies_2.h>
+
 // Qt includes
 
 #include <CGAL/Qt/GraphicsViewNavigation.h>
@@ -58,6 +62,10 @@ typedef Traits::Site_2					Site_2;
 typedef Traits::Point_2					Point_2;
 typedef Traits::Line_2					Line_2;
 
+typedef CGAL::Apollonius_graph_adaptation_traits_2<Apollonius_graph>			AT;
+typedef CGAL::Apollonius_graph_degeneracy_removal_policy_2<Apollonius_graph>		AP;
+typedef CGAL::Voronoi_diagram_2<Apollonius_graph,AT,AP>				Voronoi_diagram;
+
 int main(int argc , char* argv[])
 {
   std::ifstream ifs("../data/sites.cin");
@@ -83,78 +91,9 @@ int main(int argc , char* argv[])
   size_t nof = ag.number_of_faces ();
   std::cout << "number of faces: " << nof << std::endl;
 
-  std::map<Vertex_handle,int> V;
-  Vertex_handle infinite_vertex;
-  int inum = 0;
-  V[infinite_vertex] = inum++;
-  for (Finite_vertices_iterator viter = ag.finite_vertices_begin();
-       viter != ag.finite_vertices_end(); ++viter) {
-       V[viter] = inum++;
-       std::cout << "vertex " << inum << ": " << viter->site() << std::endl;
-       // viter also has access to the hidden sites via hidden_sites_begin()...
-  }
-
-  inum = 0;
-  for (All_faces_iterator fiter = ag.all_faces_begin (); fiter != ag.all_faces_end(); ++fiter) { 
-    std::cout << "face " << inum++ << ": ";
-    for (int j = 0; j < 3; j++) {
-      std::cout << V[ fiter->vertex(j) ] << " ";
-      // fiter also has acces to the facet-neighbors via neighbor()...
-    }
-    std::cout << std::endl;
-  }
-  
-  inum = 0;
-  for (All_faces_iterator fiter = ag.all_faces_begin (); fiter != ag.all_faces_end(); ++fiter) { 
-    std::cout << "face " << inum++ << ": ";
-
-    Object_2 o = ag.dual(fiter);
-    Site_2 site;
-    Line_2 line;
-    if (assign(site, o)) {
-      std::cout << "site";
-    } else if (assign(line, o)) {
-      std::cout << "line";
-    }
-    std::cout << std::endl;
-  }
-
-  /*
-   * for each site in the apo graph: get the surrounding faces. for each of
-   * those faces, get the dual, i.e. site/line. connecting the sites should
-   * form the cell boundary.
-   */
-
-  inum = 0;
-  for (All_edges_iterator eiter = ag.all_edges_begin (); eiter != ag.all_edges_end(); ++eiter) { 
-    //std::cout << "edge " << inum++ << ": ";
-    // ag.dual(*eiter); // Die ist leider private
-    //std::cout << std::endl;
-  }
-
-//  for (All_faces_iterator fiter = ag.all_faces_begin (); fiter != ag.all_faces_end(); ++fiter) { 
-//    Face face = *fiter;
-//    Vertex_handle vertex0 = face.vertex(0);
-//    Vertex_handle vertex1 = face.vertex(1);
-//    Vertex_handle vertex2 = face.vertex(2);
-//    Vertex v0 = *vertex0;
-//    Vertex v1 = *vertex1;
-//    Vertex v2 = *vertex2;
-//    std::cout << "vertices: " << v0 << v1 << v2 << std::endl;
-//    //std::cout << (fiter->neighbor(0)) << std::endl;
-//    //v.point();
-//    //std::cout << "face: " << face << std::endl;
-//    //std::cout << "vertex: " << vertex.point() << std::endl;
-//    //std::cout << "vertex: " << v << std::endl;
-//  }
-//
-//  for (Finite_faces_iterator fiter = ag.finite_faces_begin (); fiter != ag.finite_faces_end(); ++fiter) { 
-//    Face face = *fiter;
-//    std::cout << "face: " << face << std::endl;
-//  }
-
-  std::cout << "file_output:" << std::endl;
-  ag.file_output(std::cout);
+  // create the voronoi diagram
+  Voronoi_diagram vd(ag);
+  // TODO: yeah, this seems to work. Get the cell from the VD
 
   /*
    * visualize with Qt
@@ -223,20 +162,6 @@ int main(int argc , char* argv[])
     } while(++fcirc != done);
   }
 
-//      typename Gt::Object_2 o = dual(eit);
-//      typename Geom_traits::Line_2     l;
-//      typename Geom_traits::Segment_2  s;
-//      typename Geom_traits::Ray_2      r;
-//      CGAL::Hyperbola_2<Gt>            h;
-//      CGAL::Hyperbola_segment_2<Gt>    hs;
-//      CGAL::Hyperbola_ray_2<Gt>        hr;
-//      if (assign(hs, o)) hs.draw(str);
-//      else if (assign(s, o))  str << s; 
-//      else if (assign(hr, o))  hr.draw(str);
-//      else if (assign(r, o))   str << r;
-//      else if (assign(h, o))  h.draw(str);
-//      else if (assign(l, o)) str << l;
-
   // Prepare view, add scene, show
   QGraphicsView* view = new QGraphicsView(&scene);
   //view->show();
@@ -253,7 +178,7 @@ int main(int argc , char* argv[])
   QPainter painter(&image);
   painter.setRenderHint(QPainter::Antialiasing);
   scene.render(&painter);
-  image.save("test4.png");
+  image.save("test5.png");
  
   //return app.exec();  
 }
