@@ -4,6 +4,7 @@ http://code.google.com/p/cgal-bindings/
 
 Building the bindings
 ----
+apt-get install libboost1.42-dev libboost-system1.42-dev libboost-thread1.42-dev swig
 
 git clone https://code.google.com/p/cgal-bindings/  
 cd cgal-bindings  
