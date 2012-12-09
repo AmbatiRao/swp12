@@ -64,7 +64,14 @@ typedef Traits::Line_2					Line_2;
 
 typedef CGAL::Apollonius_graph_adaptation_traits_2<Apollonius_graph>			AT;
 typedef CGAL::Apollonius_graph_degeneracy_removal_policy_2<Apollonius_graph>		AP;
+
 typedef CGAL::Voronoi_diagram_2<Apollonius_graph,AT,AP>				Voronoi_diagram;
+typedef Voronoi_diagram::Face_iterator						VoronoiFace_iterator;
+typedef Voronoi_diagram::Face							VoronoiFace;
+typedef Voronoi_diagram::Vertex							VoronoiVertex;
+typedef Voronoi_diagram::Vertex_handle						VoronoiVertex_handle;
+typedef Voronoi_diagram::Halfedge						VoronoiHalfedge;
+typedef Voronoi_diagram::Halfedge_handle					VoronoiHalfedge_handle;
 
 int main(int argc , char* argv[])
 {
@@ -93,7 +100,9 @@ int main(int argc , char* argv[])
 
   // create the voronoi diagram
   Voronoi_diagram vd(ag);
-  // TODO: yeah, this seems to work. Get the cell from the VD
+  for (VoronoiFace_iterator fiter = vd.faces_begin(); fiter != vd.faces_end(); ++fiter) {
+    std::cout << "vd face, bounded? " << !fiter->is_unbounded() << std::endl;
+  }
 
   /*
    * visualize with Qt
@@ -103,11 +112,6 @@ int main(int argc , char* argv[])
   // Prepare scene
   QGraphicsScene scene;
   scene.setSceneRect(-400, -400, 800, 800); //Has the format: (x,y,width,height)
-
-  scene.addLine(
-    QLineF(100, 100, 200, 300),
-    QPen(Qt::green, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin)
-  );
 
   // add a circle for each site
   for (Finite_vertices_iterator viter = ag.finite_vertices_begin();
@@ -160,6 +164,22 @@ int main(int argc , char* argv[])
     do {
       Object_2 o = ag.dual(fcirc);
     } while(++fcirc != done);
+  }
+
+  // Draw cells from the Voronoi diagram
+  for (VoronoiFace_iterator fiter = vd.faces_begin(); fiter != vd.faces_end(); ++fiter) {
+    if(!fiter->is_unbounded()) {
+      VoronoiHalfedge_handle he = fiter->halfedge();
+      for (VoronoiHalfedge_handle iter = he; iter != he -> previous(); iter = iter->next()){
+        VoronoiVertex_handle vs = he->source();
+        VoronoiVertex_handle vt = he->target();
+        Point_2 s = vs->point();
+        Point_2 t = vt->point();
+        scene.addLine(
+          QLineF(s.x(), s.y(), t.x(), t.y()),
+          QPen(Qt::green, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+        }
+      }
   }
 
   // Prepare view, add scene, show
