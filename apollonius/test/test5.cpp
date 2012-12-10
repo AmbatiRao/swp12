@@ -125,6 +125,10 @@ int main(int argc , char* argv[])
       p.x() - weight, p.y() - weight, size, size,
       QPen(Qt::red, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin)
     );
+    scene.addEllipse(
+      p.x() - 1, p.y() - 1, 2, 2,
+      QPen(Qt::red, 1,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin)
+    );
   }
 
   // add dual image stubs
@@ -170,16 +174,33 @@ int main(int argc , char* argv[])
   for (VoronoiFace_iterator fiter = vd.faces_begin(); fiter != vd.faces_end(); ++fiter) {
     if(!fiter->is_unbounded()) {
       VoronoiHalfedge_handle he = fiter->halfedge();
-      for (VoronoiHalfedge_handle iter = he; iter != he -> previous(); iter = iter->next()){
-        VoronoiVertex_handle vs = he->source();
-        VoronoiVertex_handle vt = he->target();
+      VoronoiHalfedge_handle iter = he;
+      do {
+        VoronoiVertex_handle vs = iter->source();
+        VoronoiVertex_handle vt = iter->target();
         Point_2 s = vs->point();
         Point_2 t = vt->point();
         scene.addLine(
           QLineF(s.x(), s.y(), t.x(), t.y()),
           QPen(Qt::green, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-        }
-      }
+        iter = iter->next();
+      } while(iter != he);
+    } else {
+      VoronoiHalfedge_handle he = fiter->halfedge();
+      VoronoiHalfedge_handle iter = he;
+      do {
+        if (iter->has_source() && iter->has_target()){
+          VoronoiVertex_handle vs = iter->source();
+          VoronoiVertex_handle vt = iter->target();
+          Point_2 s = vs->point();
+          Point_2 t = vt->point();
+          scene.addLine(
+            QLineF(s.x(), s.y(), t.x(), t.y()),
+            QPen(Qt::green, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+	      }
+        iter = iter->next();
+      } while(iter != he);
+    }
   }
 
   // Prepare view, add scene, show
