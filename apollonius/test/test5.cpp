@@ -1,3 +1,4 @@
+// vim: si:ts=2:sw=2:expandtab:smartindent
 // standard includes
 #include <iostream>
 #include <fstream>
@@ -110,6 +111,7 @@ int main(int argc , char* argv[])
   for (VoronoiFace_iterator fiter = vd.faces_begin(); fiter != vd.faces_end(); ++fiter) {
     std::cout << "vd face, bounded? " << !fiter->is_unbounded() << std::endl;
   }
+  std::cout << "done iterating faces" << std::endl;
 
   /*
    * visualize with Qt
@@ -122,6 +124,7 @@ int main(int argc , char* argv[])
   scene.setSceneRect(rect); //Has the format: (x,y,width,height)
 
   // add a circle for each site
+  std::cout << "creating circles for sites" << std::endl;
   for (Finite_vertices_iterator viter = ag.finite_vertices_begin();
     viter != ag.finite_vertices_end(); ++viter) {
     Site_2 site = viter->site();
@@ -140,6 +143,7 @@ int main(int argc , char* argv[])
   }
 
   // add dual image stubs
+  std::cout << "dual stubs 1" << std::endl;
   for (All_faces_iterator fiter = ag.all_faces_begin (); fiter != ag.all_faces_end(); ++fiter) { 
     Object_2 o = ag.dual(fiter);
     Site_2 site;
@@ -156,6 +160,7 @@ int main(int argc , char* argv[])
   }
 
   // add dual image stubs
+  std::cout << "dual stubs 2" << std::endl;
   for (All_faces_iterator fiter = ag.all_faces_begin (); fiter != ag.all_faces_end(); ++fiter) { 
     Object_2 o = ag.dual(fiter);
     Site_2 site;
@@ -170,8 +175,13 @@ int main(int argc , char* argv[])
     } else if (assign(line, o)) {
     }
   }
+  std::cout << "number of vertices: " << ag.number_of_vertices() << std::endl;
+  std::cout << "vertices iteration 1" << std::endl;
   for (All_vertices_iterator viter = ag.all_vertices_begin (); viter != ag.all_vertices_end(); ++viter) { 
     Face_circulator fcirc = ag.incident_faces(viter), done(fcirc);
+    if (fcirc == NULL) {
+      break;
+    }
     do {
       Object_2 o = ag.dual(fcirc);
     } while(++fcirc != done);
@@ -185,6 +195,11 @@ int main(int argc , char* argv[])
     do {
       // NOTE: for this to work, we had to make public the dual function in ApolloniusGraph
       // change line 542 in "Apollonius_graph_2.h" from "private:" to "public:"
+      if (ag.is_infinite(*ecirc)) {
+        // the program may fail in certain situations without this test.
+        // acutally !is_infinite(edge) is a precondition in dual(edge).
+        continue;
+      }
       Object_2 o = ag.dual(*ecirc);
       Line_2 l;
       Segment_2 s;
@@ -242,9 +257,38 @@ int main(int argc , char* argv[])
       }
       else if (assign(h, o)) {
         std::cout << "hyperbola" << std::endl; // h.draw(str);
+        std::vector<Point_2> p, q;
+        h.generate_points(p, q);
+        for (unsigned int i = 0; i < p.size() - 1; i++) {
+          Segment_2 seg(p[i], p[i+1]);
+          scene.addLine(
+            QLineF(p[i].x(), p[i].y(), p[i+1].x(), p[i+1].y()),
+            QPen(Qt::green, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+        }
+        for (unsigned int i = 0; i < q.size() - 1; i++) {
+          Segment_2 seg(q[i], q[i+1]);
+          scene.addLine(
+            QLineF(q[i].x(), q[i].y(), q[i+1].x(), q[i+1].y()),
+            QPen(Qt::green, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+        }
       }
       else if (assign(l, o)) {
         std::cout << "line" << std::endl; //str << l;
+        Object_2 o = CGAL::intersection(l, crect);
+
+        Segment_2 seg;
+        Point_2 pnt;
+        if (assign(seg, o)) {
+          std::cout << "line -> segment" << std::endl;
+          Point_2 ss = seg.source();
+          Point_2 st = seg.target();
+          scene.addLine(
+            QLineF(ss.x(), ss.y(), st.x(), st.y()),
+            QPen(Qt::green, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+        } else if (assign(pnt, o)){
+          std::cout << "line -> point" << std::endl;
+          // no use for points
+        }
       }
     } while(++ecirc != done);
   }
