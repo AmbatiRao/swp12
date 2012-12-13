@@ -83,7 +83,15 @@ typedef Voronoi_diagram::Halfedge_handle					VoronoiHalfedge_handle;
 
 int main(int argc , char* argv[])
 {
-  std::ifstream ifs("../data/sites.cin");
+  if (argc != 3) {
+    std::cout << "usage: test <input file> <output image>" << std::endl;
+    exit(1);
+  }
+
+  char* input = argv[1];
+  char* output = argv[2];
+
+  std::ifstream ifs(input);
   assert( ifs );
 
   Apollonius_graph ag;
@@ -338,12 +346,15 @@ int main(int argc , char* argv[])
   view->setRenderHint(QPainter::Antialiasing);
 
   // create an image
-  QImage image(scene.sceneRect().size().toSize(), QImage::Format_ARGB32);
+  // this line creates an image with a size definied by the size of the scene
+  //QImage image(scene.sceneRect().size().toSize(), QImage::Format_ARGB32);
+  // Cool! Qt does the scaling to arbitrary size automatically. Rocks
+  QImage image(QSize(4000, 4000), QImage::Format_ARGB32);
   image.fill(Qt::transparent);
   QPainter painter(&image);
   painter.setRenderHint(QPainter::Antialiasing);
   scene.render(&painter);
-  image.save("test5.png");
+  image.save(output);
  
   //return app.exec();  
 }
