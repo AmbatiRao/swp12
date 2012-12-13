@@ -24,11 +24,14 @@ typedef CGAL::Simple_cartesian<double> Rep;
 
 // Qt includes
 
+#include <CGAL/Qt/Converter.h>
 #include <CGAL/Qt/GraphicsViewNavigation.h>
+#include <CGAL/Qt/utility.h>
 #include <QtGui/QApplication>
 #include <QtGui/QTextEdit>
 #include <QtGui/QGraphicsView>
 #include <QLineF>
+#include <QRectF>
 
 // typedef for the traits; the filtered traits class is used
 typedef CGAL::Apollonius_graph_filtered_traits_2<Rep> Traits;
@@ -63,7 +66,8 @@ typedef Traits::Site_2					Site_2;
 typedef Traits::Point_2					Point_2;
 typedef Traits::Line_2					Line_2;
 typedef Traits::Segment_2				Segment_2;
-typedef Traits::Ray_2      				Ray_2;
+typedef Traits::Ray_2      			Ray_2;
+typedef Rep::Iso_rectangle_2    Iso_rectangle_2;
 
 typedef CGAL::Apollonius_graph_adaptation_traits_2<Apollonius_graph>			AT;
 typedef CGAL::Apollonius_graph_degeneracy_removal_policy_2<Apollonius_graph>		AP;
@@ -114,7 +118,8 @@ int main(int argc , char* argv[])
   QApplication app(argc, argv);
   // Prepare scene
   QGraphicsScene scene;
-  scene.setSceneRect(-400, -400, 800, 800); //Has the format: (x,y,width,height)
+  QRectF rect(-400, -400, 800, 800);
+  scene.setSceneRect(rect); //Has the format: (x,y,width,height)
 
   // add a circle for each site
   for (Finite_vertices_iterator viter = ag.finite_vertices_begin();
@@ -171,6 +176,10 @@ int main(int argc , char* argv[])
       Object_2 o = ag.dual(fcirc);
     } while(++fcirc != done);
   }
+
+  CGAL::Qt::Converter<Rep> convert(rect);
+  Iso_rectangle_2 crect = convert(rect);
+  std::cout << "rect: " << crect << std::endl;
   for (All_vertices_iterator viter = ag.all_vertices_begin (); viter != ag.all_vertices_end(); ++viter) { 
     Edge_circulator ecirc = ag.incident_edges(viter), done(ecirc);
     do {
@@ -194,7 +203,14 @@ int main(int argc , char* argv[])
             QPen(Qt::green, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
         }
       }
-      else if (assign(s, o)) std::cout << "segment" << std::endl; // str << s; 
+      else if (assign(s, o)) {
+        std::cout << "segment" << std::endl; // str << s; 
+        Point_2 ss = s.source();
+        Point_2 st = s.target();
+        scene.addLine(
+          QLineF(ss.x(), ss.y(), st.x(), st.y()),
+          QPen(Qt::green, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+      }
       else if (assign(hr, o)) {
         std::cout << "hyperbola ray" << std::endl; // hr.draw(str);
         std::vector<Point_2> p;
@@ -206,9 +222,30 @@ int main(int argc , char* argv[])
             QPen(Qt::green, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
         }
       }
-      else if (assign(r, o)) std::cout << "ray" << std::endl;  // str << r;
-      else if (assign(h, o)) std::cout << "hyperbola" << std::endl; // h.draw(str);
-      else if (assign(l, o)) std::cout << "line" << std::endl; //str << l;
+      else if (assign(r, o)) {
+        std::cout << "ray" << std::endl;  // str << r;
+        Object_2 o = CGAL::intersection(r, crect);
+
+        Segment_2 seg;
+        Point_2 pnt;
+        if (assign(seg, o)) {
+          std::cout << "ray -> segment" << std::endl;
+          Point_2 ss = seg.source();
+          Point_2 st = seg.target();
+          scene.addLine(
+            QLineF(ss.x(), ss.y(), st.x(), st.y()),
+            QPen(Qt::green, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+        } else if (assign(pnt, o)){
+          std::cout << "ray -> point" << std::endl;
+          // no use for points
+        }
+      }
+      else if (assign(h, o)) {
+        std::cout << "hyperbola" << std::endl; // h.draw(str);
+      }
+      else if (assign(l, o)) {
+        std::cout << "line" << std::endl; //str << l;
+      }
     } while(++ecirc != done);
   }
 
