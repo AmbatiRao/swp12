@@ -56,11 +56,13 @@ typedef Apollonius_graph::Finite_faces_iterator		Finite_faces_iterator;
 typedef Apollonius_graph::Finite_edges_iterator		Finite_edges_iterator;
 typedef Apollonius_graph::Finite_vertices_iterator	Finite_vertices_iterator;
 typedef Agds::Face_circulator 				Face_circulator;
+typedef Agds::Edge_circulator 				Edge_circulator;
 
 typedef Traits::Object_2				Object_2;
 typedef Traits::Site_2					Site_2;
 typedef Traits::Point_2					Point_2;
 typedef Traits::Line_2					Line_2;
+typedef Traits::Segment_2				Segment_2;
 
 typedef CGAL::Apollonius_graph_adaptation_traits_2<Apollonius_graph>			AT;
 typedef CGAL::Apollonius_graph_degeneracy_removal_policy_2<Apollonius_graph>		AP;
@@ -163,14 +165,44 @@ int main(int argc , char* argv[])
     }
   }
   for (All_vertices_iterator viter = ag.all_vertices_begin (); viter != ag.all_vertices_end(); ++viter) { 
-    //Face_circulator fcirc = ag.incident_faces(viter);
     Face_circulator fcirc = ag.incident_faces(viter), done(fcirc);
     do {
       Object_2 o = ag.dual(fcirc);
     } while(++fcirc != done);
   }
+  for (All_vertices_iterator viter = ag.all_vertices_begin (); viter != ag.all_vertices_end(); ++viter) { 
+    Edge_circulator ecirc = ag.incident_edges(viter), done(ecirc);
+    do {
+      // NOTE: for this to work, we had to make public the dual function in ApolloniusGraph
+      // change line 542 in "Apollonius_graph_2.h" from "private:" to "public:"
+      Object_2 o = ag.dual(*ecirc);
+      typename Traits::Line_2     l;
+      typename Traits::Segment_2  s;
+      typename Traits::Ray_2      r;
+      CGAL::Hyperbola_2<Traits>            h;
+      CGAL::Hyperbola_segment_2<Traits>    hs;
+      CGAL::Hyperbola_ray_2<Traits>        hr;
+      if (assign(hs, o)) {
+        std::cout << "hyperbola segment" << std::endl; //hs.draw(str);
+        std::vector<Point_2> p;
+        hs.generate_points(p);
+        for (unsigned int i = 0; i < p.size() - 1; i++) {
+          Segment_2 seg(p[i], p[i+1]);
+          scene.addLine(
+            QLineF(p[i].x(), p[i].y(), p[i+1].x(), p[i+1].y()),
+            QPen(Qt::green, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+        }
+      }
+      else if (assign(s, o)) std::cout << "segment" << std::endl; // str << s; 
+      else if (assign(hr, o)) std::cout << "hyperbola ray" << std::endl; // hr.draw(str);
+      else if (assign(r, o)) std::cout << "ray" << std::endl;  // str << r;
+      else if (assign(h, o)) std::cout << "hyperbola" << std::endl; // h.draw(str);
+      else if (assign(l, o)) std::cout << "line" << std::endl; //str << l;
+    } while(++ecirc != done);
+  }
 
   // Draw cells from the Voronoi diagram
+  // This draws straight lines in the current implementation
   for (VoronoiFace_iterator fiter = vd.faces_begin(); fiter != vd.faces_end(); ++fiter) {
     if(!fiter->is_unbounded()) {
       VoronoiHalfedge_handle he = fiter->halfedge();
@@ -180,9 +212,9 @@ int main(int argc , char* argv[])
         VoronoiVertex_handle vt = iter->target();
         Point_2 s = vs->point();
         Point_2 t = vt->point();
-        scene.addLine(
+        /*scene.addLine(
           QLineF(s.x(), s.y(), t.x(), t.y()),
-          QPen(Qt::green, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+          QPen(Qt::green, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));*/
         iter = iter->next();
       } while(iter != he);
     } else {
@@ -194,9 +226,9 @@ int main(int argc , char* argv[])
           VoronoiVertex_handle vt = iter->target();
           Point_2 s = vs->point();
           Point_2 t = vt->point();
-          scene.addLine(
+          /* scene.addLine(
             QLineF(s.x(), s.y(), t.x(), t.y()),
-            QPen(Qt::green, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+            QPen(Qt::green, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));*/
 	      }
         iter = iter->next();
       } while(iter != he);
