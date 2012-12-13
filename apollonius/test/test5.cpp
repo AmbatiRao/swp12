@@ -63,6 +63,7 @@ typedef Traits::Site_2					Site_2;
 typedef Traits::Point_2					Point_2;
 typedef Traits::Line_2					Line_2;
 typedef Traits::Segment_2				Segment_2;
+typedef Traits::Ray_2      				Ray_2;
 
 typedef CGAL::Apollonius_graph_adaptation_traits_2<Apollonius_graph>			AT;
 typedef CGAL::Apollonius_graph_degeneracy_removal_policy_2<Apollonius_graph>		AP;
@@ -176,12 +177,12 @@ int main(int argc , char* argv[])
       // NOTE: for this to work, we had to make public the dual function in ApolloniusGraph
       // change line 542 in "Apollonius_graph_2.h" from "private:" to "public:"
       Object_2 o = ag.dual(*ecirc);
-      typename Traits::Line_2     l;
-      typename Traits::Segment_2  s;
-      typename Traits::Ray_2      r;
-      CGAL::Hyperbola_2<Traits>            h;
-      CGAL::Hyperbola_segment_2<Traits>    hs;
-      CGAL::Hyperbola_ray_2<Traits>        hr;
+      Line_2 l;
+      Segment_2 s;
+      Ray_2 r;
+      CGAL::Hyperbola_2<Traits> h;
+      CGAL::Hyperbola_segment_2<Traits> hs;
+      CGAL::Hyperbola_ray_2<Traits> hr;
       if (assign(hs, o)) {
         std::cout << "hyperbola segment" << std::endl; //hs.draw(str);
         std::vector<Point_2> p;
@@ -194,7 +195,17 @@ int main(int argc , char* argv[])
         }
       }
       else if (assign(s, o)) std::cout << "segment" << std::endl; // str << s; 
-      else if (assign(hr, o)) std::cout << "hyperbola ray" << std::endl; // hr.draw(str);
+      else if (assign(hr, o)) {
+        std::cout << "hyperbola ray" << std::endl; // hr.draw(str);
+        std::vector<Point_2> p;
+        hr.generate_points(p);
+        for (unsigned int i = 0; i < p.size() - 1; i++) {
+          Segment_2 seg(p[i], p[i+1]);
+          scene.addLine(
+            QLineF(p[i].x(), p[i].y(), p[i+1].x(), p[i+1].y()),
+            QPen(Qt::green, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+        }
+      }
       else if (assign(r, o)) std::cout << "ray" << std::endl;  // str << r;
       else if (assign(h, o)) std::cout << "hyperbola" << std::endl; // h.draw(str);
       else if (assign(l, o)) std::cout << "line" << std::endl; //str << l;
