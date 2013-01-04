@@ -83,13 +83,14 @@ typedef Voronoi_diagram::Halfedge_handle					VoronoiHalfedge_handle;
 
 int main(int argc , char* argv[])
 {
-  if (argc != 3) {
-    std::cout << "usage: test <input file> <output image>" << std::endl;
+  if (argc != 4) {
+    std::cout << "usage: test <input file> <output image> <output folder>" << std::endl;
     exit(1);
   }
 
   char* input = argv[1];
   char* output = argv[2];
+  char* outdir = argv[3];
 
   std::ifstream ifs(input);
   assert( ifs );
@@ -212,8 +213,14 @@ int main(int argc , char* argv[])
   CGAL::Qt::Converter<Rep> convert(rect);
   Iso_rectangle_2 crect = convert(rect);
   std::cout << "rect: " << crect << std::endl;
+
+  int vertexIndex = 0;
+
   for (All_vertices_iterator viter = ag.all_vertices_begin (); viter != ag.all_vertices_end(); ++viter) { 
     Edge_circulator ecirc = ag.incident_edges(viter), done(ecirc);
+
+    std::vector<Point_2> points;
+
     do {
       // NOTE: for this to work, we had to make public the dual function in ApolloniusGraph
       // change line 542 in "Apollonius_graph_2.h" from "private:" to "public:"
@@ -233,6 +240,7 @@ int main(int argc , char* argv[])
         std::cout << "hyperbola segment" << std::endl; //hs.draw(str);
         std::vector<Point_2> p;
         hs.generate_points(p);
+        points.insert(points.end(), p.begin(), p.end());
         for (unsigned int i = 0; i < p.size() - 1; i++) {
           Segment_2 seg(p[i], p[i+1]);
           scene.addLine(
@@ -244,6 +252,8 @@ int main(int argc , char* argv[])
         std::cout << "segment" << std::endl; // str << s; 
         Point_2 ss = s.source();
         Point_2 st = s.target();
+        points.push_back(ss);
+        points.push_back(st);
         scene.addLine(
           QLineF(ss.x(), ss.y(), st.x(), st.y()),
           QPen(Qt::green, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
@@ -252,6 +262,7 @@ int main(int argc , char* argv[])
         std::cout << "hyperbola ray" << std::endl; // hr.draw(str);
         std::vector<Point_2> p;
         hr.generate_points(p);
+        points.insert(points.end(), p.begin(), p.end());
         for (unsigned int i = 0; i < p.size() - 1; i++) {
           Segment_2 seg(p[i], p[i+1]);
           scene.addLine(
@@ -269,6 +280,8 @@ int main(int argc , char* argv[])
           std::cout << "ray -> segment" << std::endl;
           Point_2 ss = seg.source();
           Point_2 st = seg.target();
+          points.push_back(ss);
+          points.push_back(st);
           scene.addLine(
             QLineF(ss.x(), ss.y(), st.x(), st.y()),
             QPen(Qt::green, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
@@ -281,6 +294,7 @@ int main(int argc , char* argv[])
         std::cout << "hyperbola" << std::endl; // h.draw(str);
         std::vector<Point_2> p, q;
         h.generate_points(p, q);
+        // TODO: we are not adding anything to points here
         for (unsigned int i = 0; i < p.size() - 1; i++) {
           Segment_2 seg(p[i], p[i+1]);
           scene.addLine(
@@ -304,6 +318,8 @@ int main(int argc , char* argv[])
           std::cout << "line -> segment" << std::endl;
           Point_2 ss = seg.source();
           Point_2 st = seg.target();
+          points.push_back(ss);
+          points.push_back(st);
           scene.addLine(
             QLineF(ss.x(), ss.y(), st.x(), st.y()),
             QPen(Qt::green, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
@@ -313,6 +329,43 @@ int main(int argc , char* argv[])
         }
       }
     } while(++ecirc != done);
+
+    std::vector<Point_2> usedPoints;
+    for (int i = 0; i < points.size(); i++) {
+      Point_2 p = points.at(i);
+      if (i == 0 || i == 1 || (i % 2) == 1) {
+        usedPoints.push_back(p);
+      }
+    }
+
+    // open an output file for storing the WKT
+    vertexIndex++;
+    std::stringstream s;
+    s << outdir << "/" << vertexIndex << ".wkt";
+    std::string polygonFileName = s.str();
+    std::ofstream wktFile;
+    wktFile.open(polygonFileName.c_str());
+
+    if (usedPoints.size() > 0){
+      // close polygon if necessary
+      Point_2 start = *usedPoints.begin();
+      Point_2 end = *usedPoints.end();
+      if (start != end) {
+        usedPoints.push_back(start);
+      }
+    }
+
+    // write WKT file
+    wktFile << "POLYGON ((";
+    for (int i = 0; i < usedPoints.size(); i++) {
+      Point_2 p = usedPoints.at(i);
+      wktFile << p.x() << " " << p.y();
+      if (i < usedPoints.size() - 1) {
+        wktFile << ", ";
+      }
+    }
+    wktFile << "))";
+    wktFile.close();
   }
   std::cout << "foo" << std::endl;
   // Prepare view, add scene, show
