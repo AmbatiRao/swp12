@@ -202,6 +202,8 @@ int main(int argc , char* argv[])
     } while(++fcirc != done);
   }
 
+  double lw = 0.001;
+
   CGAL::Qt::Converter<Rep> convert(rect);
   Iso_rectangle_2 crect = convert(rect);
   std::cout << "rect: " << crect << std::endl;
@@ -230,7 +232,7 @@ int main(int argc , char* argv[])
           Segment_2 seg(p[i], p[i+1]);
           scene.addLine(
             QLineF(p[i].x(), p[i].y(), p[i+1].x(), p[i+1].y()),
-            QPen(Qt::green, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+            QPen(Qt::green, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
         }
       }
       else if (assign(s, o)) {
@@ -239,7 +241,7 @@ int main(int argc , char* argv[])
         Point_2 st = s.target();
         scene.addLine(
           QLineF(ss.x(), ss.y(), st.x(), st.y()),
-          QPen(Qt::green, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+          QPen(Qt::green, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
       }
       else if (assign(hr, o)) {
         std::cout << "hyperbola ray" << std::endl; // hr.draw(str);
@@ -249,7 +251,7 @@ int main(int argc , char* argv[])
           Segment_2 seg(p[i], p[i+1]);
           scene.addLine(
             QLineF(p[i].x(), p[i].y(), p[i+1].x(), p[i+1].y()),
-            QPen(Qt::green, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+            QPen(Qt::green, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
         }
       }
       else if (assign(r, o)) {
@@ -264,7 +266,7 @@ int main(int argc , char* argv[])
           Point_2 st = seg.target();
           scene.addLine(
             QLineF(ss.x(), ss.y(), st.x(), st.y()),
-            QPen(Qt::green, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+            QPen(Qt::green, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
         } else if (assign(pnt, o)){
           std::cout << "ray -> point" << std::endl;
           // no use for points
@@ -278,13 +280,13 @@ int main(int argc , char* argv[])
           Segment_2 seg(p[i], p[i+1]);
           scene.addLine(
             QLineF(p[i].x(), p[i].y(), p[i+1].x(), p[i+1].y()),
-            QPen(Qt::green, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+            QPen(Qt::green, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
         }
         for (unsigned int i = 0; i < q.size() - 1; i++) {
           Segment_2 seg(q[i], q[i+1]);
           scene.addLine(
             QLineF(q[i].x(), q[i].y(), q[i+1].x(), q[i+1].y()),
-            QPen(Qt::green, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+            QPen(Qt::green, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
         }
       }
       else if (assign(l, o)) {
@@ -299,7 +301,7 @@ int main(int argc , char* argv[])
           Point_2 st = seg.target();
           scene.addLine(
             QLineF(ss.x(), ss.y(), st.x(), st.y()),
-            QPen(Qt::green, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+            QPen(Qt::green, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
         } else if (assign(pnt, o)){
           std::cout << "line -> point" << std::endl;
           // no use for points
