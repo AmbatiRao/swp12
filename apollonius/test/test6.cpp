@@ -107,9 +107,16 @@ int main(int argc , char* argv[])
     iss >> lat;
     iss >> type;
     Point_2 p(lon, lat);
-    Site_2 site(Point_2(lon, lat), 0.01);
+    double weight = 0;
+    if (type == "city") {
+      weight = 0.1;
+    } else if (type == "town") {
+      weight = 0.04;
+    } else if (type == "village") {
+      weight = 0.01;
+    }
+    Site_2 site(Point_2(lon, lat), weight);
     ag.insert(site);
-
   }
 
   // validate the Apollonius graph
@@ -138,6 +145,10 @@ int main(int argc , char* argv[])
   QRectF rect(11, 51, 5, 3);
   scene.setSceneRect(rect); //Has the format: (x,y,width,height)
 
+  double pw = 0.01;
+  double ew = 0.01;
+  double lw = 0.005;
+
   // add a circle for each site
   std::cout << "creating circles for sites" << std::endl;
   for (Finite_vertices_iterator viter = ag.finite_vertices_begin();
@@ -149,11 +160,7 @@ int main(int argc , char* argv[])
 
     scene.addEllipse(
       p.x() - weight, p.y() - weight, size, size,
-      QPen(Qt::red, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin)
-    );
-    scene.addEllipse(
-      p.x() - 1, p.y() - 1, 2, 2,
-      QPen(Qt::red, 1,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin)
+      QPen(Qt::red, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin)
     );
   }
 
@@ -165,10 +172,10 @@ int main(int argc , char* argv[])
     Line_2 line;
     if (assign(site, o)) {
       Point_2 p = site.point();
-      double size = 6;
+      double size = ew;
       scene.addEllipse(
          p.x() - size/2, p.y() - size/2, size, size,
-         QPen(Qt::blue, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin)
+         QPen(Qt::blue, pw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin)
        );
     } else if (assign(line, o)) {
     }
@@ -182,10 +189,10 @@ int main(int argc , char* argv[])
     Line_2 line;
     if (assign(site, o)) {
       Point_2 p = site.point();
-      double size = 6;
+      double size = ew;
       scene.addEllipse(
          p.x() - size/2, p.y() - size/2, size, size,
-         QPen(Qt::blue, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin)
+         QPen(Qt::blue, pw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin)
        );
     } else if (assign(line, o)) {
     }
@@ -201,8 +208,6 @@ int main(int argc , char* argv[])
       Object_2 o = ag.dual(fcirc);
     } while(++fcirc != done);
   }
-
-  double lw = 0.001;
 
   CGAL::Qt::Converter<Rep> convert(rect);
   Iso_rectangle_2 crect = convert(rect);
