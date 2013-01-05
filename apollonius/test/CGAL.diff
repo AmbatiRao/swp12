@@ -1,0 +1,13 @@
+--- a/Apollonius_graph_2.h
++++ b/Apollonius_graph_2.h
+@@ -539,8 +539,8 @@ public:
+     return s;
+   }
+ 
+-
+-private:
++//NOTE: changed from private to public
++public:
+   typename Gt::Object_2 dual(const Edge e) const;
+ 
+   typename Gt::Object_2 dual(const Edge_circulator& ec) const {

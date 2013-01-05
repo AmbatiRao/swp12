@@ -1,3 +1,10 @@
+# CGAL patchen, damit man unseren Code dagegen compilieren kann:
+cp CGAL.diff ~/dev/cgal/CGAL-4.1/
+cd ~/dev/cgal/CGAL-4.1/
+patch -p1 <CGAL.diff
+
+# unseren Code compilieren:
 mkdir build
 cd build
 cmake -DCGAL_DIR=~/dev/cgal/CGAL-4.1/build/ ..
+make
