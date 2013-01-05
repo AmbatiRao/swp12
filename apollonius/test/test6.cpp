@@ -214,12 +214,27 @@ int main(int argc , char* argv[])
   Iso_rectangle_2 crect = convert(rect);
   std::cout << "rect: " << crect << std::endl;
 
+  // draw the bounding box on the scene
+  scene.addLine(
+    QLineF(crect.xmin(), crect.ymin(), crect.xmax(), crect.ymin()),
+    QPen(Qt::black, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+  scene.addLine(
+    QLineF(crect.xmax(), crect.ymin(), crect.xmax(), crect.ymax()),
+    QPen(Qt::black, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+  scene.addLine(
+    QLineF(crect.xmax(), crect.ymax(), crect.xmin(), crect.ymax()),
+    QPen(Qt::black, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+  scene.addLine(
+    QLineF(crect.xmin(), crect.ymax(), crect.xmin(), crect.ymin()),
+    QPen(Qt::black, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+
   // we want an identifier for each vertex within the iteration.
   int vertexIndex = 0;
 
   // for each vertex in the apollonius graph (this are the sites)
   for (All_vertices_iterator viter = ag.all_vertices_begin (); 
       viter != ag.all_vertices_end(); ++viter) { 
+    std::cout << "vertex " << vertexIndex << std::endl;
     // we than circulate all incident edges. By obtaining the respective
     // dual of each edge, we get access to the objects forming the boundary
     // of each voronoi cell in a proper order.
@@ -258,9 +273,9 @@ int main(int argc , char* argv[])
         }
       }
       else if (assign(s, o)) {
-        std::cout << "segment" << std::endl; // str << s; 
         Point_2 ss = s.source();
         Point_2 st = s.target();
+        std::cout << "segment " << ss << " " << st << std::endl; // str << s; 
         std::vector<Point_2> points;
         points.push_back(ss);
         points.push_back(st);
@@ -305,6 +320,7 @@ int main(int argc , char* argv[])
           // no use for points
         } else {
           std::cout << "ray -> ?" << std::endl;
+          std::cout << r.source() << " " << r.point(1) << std::endl;
         }
       }
       else if (assign(h, o)) {
@@ -412,6 +428,11 @@ int main(int argc , char* argv[])
       }
     }
 
+    if (points.size() > 0 && points.size() < 4) {
+      std::cout << "invalid polygon: >0 but <4 points" << std::endl;
+      points.clear();
+    }
+
     // open an output file for storing the WKT
     vertexIndex++;
     std::stringstream s;
@@ -432,6 +453,14 @@ int main(int argc , char* argv[])
     }
     wktFile << "))";
     wktFile.close();
+
+    // check each point
+    for (int i = 0; i < points.size(); i++) {
+      Point_2 p = points.at(i);
+      if (p.x() > crect.xmax() || p.x() < crect.xmin() || p.y() > crect.ymax() || p.y() < crect.ymin()) {
+        std::cout << "out of bounds" << std::endl;
+      }
+    }
   }
 
   // Prepare view, add scene, show
