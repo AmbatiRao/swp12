@@ -80,6 +80,16 @@ bool containsPoint(Iso_rectangle_2 rect, Point_2 point);
 Iso_rectangle_2 boundingBox(std::vector<Site_2> sites);
 Iso_rectangle_2 extend(Iso_rectangle_2 rect, double amount);
 
+// TODO: use a custom type that extends Site_2. We need this to store the ids
+// in the sites so we can later access them. 
+// At the moment we don't know how to do that. Can something similar to this
+// http://www.cgal.org/Manual/latest/doc_html/cgal_manual/Triangulation_2/Chapter_main.html#Section_37.11
+// be done with our Site_2 type?
+
+// An alternative may be to store 
+// extra data in a separate data type T and store instances of that in a map
+// that maps sites to instances of T.
+
 int main(int argc , char* argv[])
 {
   if (argc != 4) {
@@ -118,7 +128,7 @@ int main(int argc , char* argv[])
     std::string type;
     int id;
     double  lat, lon;
-    iss >> id;
+    iss >> id; // TODO: store id in a custom Site-type
     iss >> lon;
     iss >> lat;
     iss >> type;
