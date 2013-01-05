@@ -214,21 +214,27 @@ int main(int argc , char* argv[])
   Iso_rectangle_2 crect = convert(rect);
   std::cout << "rect: " << crect << std::endl;
 
+  // we want an identifier for each vertex within the iteration.
   int vertexIndex = 0;
 
-  for (All_vertices_iterator viter = ag.all_vertices_begin (); viter != ag.all_vertices_end(); ++viter) { 
+  // for each vertex in the apollonius graph (this are the sites)
+  for (All_vertices_iterator viter = ag.all_vertices_begin (); 
+      viter != ag.all_vertices_end(); ++viter) { 
+    // we than circulate all incident edges. By obtaining the respective
+    // dual of each edge, we get access to the objects forming the boundary
+    // of each voronoi cell in a proper order.
     Edge_circulator ecirc = ag.incident_edges(viter), done(ecirc);
-
-    std::vector<Point_2> points;
-
+    // this is where we store the polylines
+    std::vector<std::vector<Point_2> > polylines;
+    // for each incident edge
     do {
-      // NOTE: for this to work, we had to make public the dual function in ApolloniusGraph
-      // change line 542 in "Apollonius_graph_2.h" from "private:" to "public:"
+      // the program may fail in certain situations without this test.
+      // acutally !is_infinite(edge) is a precondition in ag.dual(edge).
       if (ag.is_infinite(*ecirc)) {
-        // the program may fail in certain situations without this test.
-        // acutally !is_infinite(edge) is a precondition in dual(edge).
         continue;
       }
+      // NOTE: for this to work, we had to make public the dual function in ApolloniusGraph
+      // change line 542 in "Apollonius_graph_2.h" from "private:" to "public:"
       Object_2 o = ag.dual(*ecirc);
       Line_2 l;
       Segment_2 s;
@@ -240,7 +246,10 @@ int main(int argc , char* argv[])
         std::cout << "hyperbola segment" << std::endl; //hs.draw(str);
         std::vector<Point_2> p;
         hs.generate_points(p);
+        std::cout << "# hyperbola points: " << p.size() << std::endl;
+        std::vector<Point_2> points;
         points.insert(points.end(), p.begin(), p.end());
+        polylines.push_back(points);
         for (unsigned int i = 0; i < p.size() - 1; i++) {
           Segment_2 seg(p[i], p[i+1]);
           scene.addLine(
@@ -252,8 +261,10 @@ int main(int argc , char* argv[])
         std::cout << "segment" << std::endl; // str << s; 
         Point_2 ss = s.source();
         Point_2 st = s.target();
+        std::vector<Point_2> points;
         points.push_back(ss);
         points.push_back(st);
+        polylines.push_back(points);
         scene.addLine(
           QLineF(ss.x(), ss.y(), st.x(), st.y()),
           QPen(Qt::green, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
@@ -262,7 +273,9 @@ int main(int argc , char* argv[])
         std::cout << "hyperbola ray" << std::endl; // hr.draw(str);
         std::vector<Point_2> p;
         hr.generate_points(p);
+        std::vector<Point_2> points;
         points.insert(points.end(), p.begin(), p.end());
+        polylines.push_back(points);
         for (unsigned int i = 0; i < p.size() - 1; i++) {
           Segment_2 seg(p[i], p[i+1]);
           scene.addLine(
@@ -272,7 +285,7 @@ int main(int argc , char* argv[])
       }
       else if (assign(r, o)) {
         std::cout << "ray" << std::endl;  // str << r;
-        Object_2 o = CGAL::intersection(r, crect);
+        Object_2 o = CGAL::intersection(crect, r);
 
         Segment_2 seg;
         Point_2 pnt;
@@ -280,14 +293,18 @@ int main(int argc , char* argv[])
           std::cout << "ray -> segment" << std::endl;
           Point_2 ss = seg.source();
           Point_2 st = seg.target();
+          std::vector<Point_2> points;
           points.push_back(ss);
           points.push_back(st);
+          polylines.push_back(points);
           scene.addLine(
             QLineF(ss.x(), ss.y(), st.x(), st.y()),
             QPen(Qt::green, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
         } else if (assign(pnt, o)){
           std::cout << "ray -> point" << std::endl;
           // no use for points
+        } else {
+          std::cout << "ray -> ?" << std::endl;
         }
       }
       else if (assign(h, o)) {
@@ -318,8 +335,10 @@ int main(int argc , char* argv[])
           std::cout << "line -> segment" << std::endl;
           Point_2 ss = seg.source();
           Point_2 st = seg.target();
+          std::vector<Point_2> points;
           points.push_back(ss);
           points.push_back(st);
+          polylines.push_back(points);
           scene.addLine(
             QLineF(ss.x(), ss.y(), st.x(), st.y()),
             QPen(Qt::green, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
@@ -330,11 +349,66 @@ int main(int argc , char* argv[])
       }
     } while(++ecirc != done);
 
-    std::vector<Point_2> usedPoints;
-    for (int i = 0; i < points.size(); i++) {
-      Point_2 p = points.at(i);
-      if (i == 0 || i == 1 || (i % 2) == 1) {
-        usedPoints.push_back(p);
+    // A list for the resulting points.
+    std::vector<Point_2> points;
+    // We build this list from the polylines collected before.
+    // One of the problems solved here is that we actually don't know 
+    // whether the polylines we get are in order or reversed because of the
+    // way we obtained them via Hyperbola_2.generate_points which makes no
+    // guarantees about the order of produces points. So we check at each
+    // step whether a consecutive polyline has to be added in-order or
+    // reversed by inspecting the first and last points respectively. A
+    // special case is the first polyline, where we don't have a previous
+    // polyline to perform this check for, which is why we make a more 
+    // extensive checking when adding the second polyline which also takes
+    // care about the first.
+    std::cout << "# polylines: " << polylines.size() << std::endl;
+    // the first polyline will just be added as it is
+    if (polylines.size() > 0) {
+      std::vector<Point_2> seg = polylines.front();
+      points.insert(points.end(), seg.begin(), seg.end());
+    }
+    // handle consecutive polylines
+    if (polylines.size() > 1) {
+      // check wheter we can use the second segment this way or whether we
+      // have to reverse the first polyline. Use distance comparism to pick
+      // the best fit (so that we don't need exact equivalence of endpoints)
+      std::vector<Point_2> seg = polylines.at(1);
+      double d1 = CGAL::squared_distance(points.front(), seg.front());
+      double d2 = CGAL::squared_distance(points.front(), seg.back());
+      double d3 = CGAL::squared_distance(points.back(), seg.front());
+      double d4 = CGAL::squared_distance(points.back(), seg.back());
+      // if the first point of the first polyline fits both endpoints of the
+      // second polyline better thant the last point of the first polyline,
+      // then we reverse the order of the first polyline.
+      if ((d1 < d3 && d1 < d4) || (d2 < d3 && d2 < d4)) {
+        std::reverse(points.begin(), points.end());
+      }
+      // for each consecutive polyline
+      for (int i = 1; i < polylines.size(); i++) {
+        // check which endpoint of this polyline is nearest to the last
+        // point in our list of points.
+        Point_2 lastPoint = points.back();
+        std::vector<Point_2> seg = polylines.at(i);
+        double d1 = CGAL::squared_distance(lastPoint, seg.front());
+        double d2 = CGAL::squared_distance(lastPoint, seg.back());
+        if (d1 <= d2) {
+          // first point fits better, take polyline in default order
+          points.insert(points.end(), ++seg.begin(), seg.end());
+        } else {
+          // last point fits better, take polyline in reverse order
+          points.insert(points.end(), ++seg.rbegin(), seg.rend());
+        }
+      }
+    }
+    std::cout << "# points: " << points.size() << std::endl;
+
+    // close polygon if necessary
+    if (points.size() > 0){
+      Point_2 start = points.front();
+      Point_2 end = points.back();
+      if (start != end) {
+        points.push_back(start);
       }
     }
 
@@ -343,31 +417,23 @@ int main(int argc , char* argv[])
     std::stringstream s;
     s << outdir << "/" << vertexIndex << ".wkt";
     std::string polygonFileName = s.str();
+    std::cout << "filename: " << polygonFileName << std::endl;
     std::ofstream wktFile;
     wktFile.open(polygonFileName.c_str());
 
-    if (usedPoints.size() > 0){
-      // close polygon if necessary
-      Point_2 start = *usedPoints.begin();
-      Point_2 end = *usedPoints.end();
-      if (start != end) {
-        usedPoints.push_back(start);
-      }
-    }
-
     // write WKT file
     wktFile << "POLYGON ((";
-    for (int i = 0; i < usedPoints.size(); i++) {
-      Point_2 p = usedPoints.at(i);
+    for (int i = 0; i < points.size(); i++) {
+      Point_2 p = points.at(i);
       wktFile << p.x() << " " << p.y();
-      if (i < usedPoints.size() - 1) {
+      if (i < points.size() - 1) {
         wktFile << ", ";
       }
     }
     wktFile << "))";
     wktFile.close();
   }
-  std::cout << "foo" << std::endl;
+
   // Prepare view, add scene, show
   QGraphicsView* view = new QGraphicsView(&scene);
   //view->show();
@@ -382,7 +448,7 @@ int main(int argc , char* argv[])
   // this line creates an image with a size definied by the size of the scene
   //QImage image(scene.sceneRect().size().toSize(), QImage::Format_ARGB32);
   // Cool! Qt does the scaling to arbitrary size automatically. Rocks
-  QImage image(QSize(800, 800), QImage::Format_ARGB32);
+  QImage image(QSize(2000, 2000), QImage::Format_ARGB32);
   image.fill(Qt::transparent);
   QPainter painter(&image);
   painter.setRenderHint(QPainter::Antialiasing);
