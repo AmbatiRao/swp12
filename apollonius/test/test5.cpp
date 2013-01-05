@@ -209,6 +209,7 @@ int main(int argc , char* argv[])
         continue;
       }
       Object_2 o = ag.dual(*ecirc);
+      VoronoiHalfedge_handle handle = vd.dual(*ecirc);
       Line_2 l;
       Segment_2 s;
       Ray_2 r;
@@ -314,7 +315,7 @@ int main(int argc , char* argv[])
         Point_2 t = vt->point();
         /*scene.addLine(
           QLineF(s.x(), s.y(), t.x(), t.y()),
-          QPen(Qt::green, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));*/
+          QPen(Qt::blue, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));*/
         iter = iter->next();
       } while(iter != he);
     } else {
@@ -328,7 +329,7 @@ int main(int argc , char* argv[])
           Point_2 t = vt->point();
           /* scene.addLine(
             QLineF(s.x(), s.y(), t.x(), t.y()),
-            QPen(Qt::green, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));*/
+            QPen(Qt::blue, 3,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));*/
 	      }
         iter = iter->next();
       } while(iter != he);
