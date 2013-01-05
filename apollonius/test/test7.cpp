@@ -93,8 +93,9 @@ bool containsPoint(Iso_rectangle_2 rect, Point_2 point) {
  * calculate the bounding box of all specified sites
  */
 Iso_rectangle_2 boundingBox(std::vector<Site_2> sites) {
-  double xmin, xmax = sites.front().point().x();
-  double ymin, ymax = sites.front().point().y();
+  double xmin, xmax, ymin, ymax;
+  xmin = xmax = sites.front().point().x();
+  ymin = ymax = sites.front().point().y();
   std::vector<Site_2>::iterator itr;
   for (itr = sites.begin(); itr != sites.end(); ++itr) {
     Site_2 site = *itr;
@@ -141,6 +142,14 @@ int main(int argc , char* argv[])
 
   Apollonius_graph ag;
 
+  // we use a ScalingFactor(SF) here to stretch input values at the 
+  // beginning, and divide by SF in the end. This is used because the 
+  // point-generation of the hyperbola class is using some arbitrary
+  // internal decision thresholds to decide how many points to generate for
+  // a certain part of the curve. Rule of thumb is: the higher SF the more
+  // detail is used in approximation of the hyperbolas.
+  double SF = 4000;
+
   // collect the sites here
   std::vector<Site_2> sites;
   // a number of artificial sites
@@ -159,7 +168,6 @@ int main(int argc , char* argv[])
     iss >> lon;
     iss >> lat;
     iss >> type;
-    Point_2 p(lon, lat);
     double weight = 0;
     if (type == "city") {
       weight = 0.1;
@@ -168,8 +176,15 @@ int main(int argc , char* argv[])
     } else if (type == "village") {
       weight = 0.01;
     }
-    Site_2 site(Point_2(lon, lat), weight);
+    Site_2 site(Point_2(lon*SF, lat*SF), weight*SF);
     sites.push_back(site);
+  }
+
+  // print sites
+  for (itr = sites.begin(); itr != sites.end(); ++itr) {
+    Site_2 site = *itr;
+    Point_2 point = site.point();
+    std::cout << "site: " << point << std::endl;
   }
 
   // calculate bounding box of all input sites (and extend it a little).
@@ -177,7 +192,7 @@ int main(int argc , char* argv[])
   // actually mirrored on the bounds of this rectangle. If we did not extend
   // some points would lie on the boundary of the bounding box and so would
   // their artificial clones. This would complicate the whole stuff a lot :)
-  Iso_rectangle_2 crect = extend(boundingBox(sites), 0.1);
+  Iso_rectangle_2 crect = extend(boundingBox(sites), 0.1*SF);
   std::cout << "rect: " << crect << std::endl;
 
   // add artificial sites
@@ -540,7 +555,7 @@ int main(int argc , char* argv[])
     wktFile << "POLYGON ((";
     for (int i = 0; i < points.size(); i++) {
       Point_2 p = points.at(i);
-      wktFile << p.x() << " " << p.y();
+      wktFile << p.x()/SF << " " << p.y()/SF;
       if (i < points.size() - 1) {
         wktFile << ", ";
       }
