@@ -75,50 +75,10 @@ typedef Voronoi_diagram::Vertex_handle                VoronoiVertex_handle;
 typedef Voronoi_diagram::Halfedge                     VoronoiHalfedge;
 typedef Voronoi_diagram::Halfedge_handle              VoronoiHalfedge_handle;
 
-/*
- * Test whether the point lies within the specified rectangle
- */
-bool containsPoint(Iso_rectangle_2 rect, Point_2 point) {
-  return point.x() >= rect.xmin() && point.x() <= rect.xmax()
-      && point.y() >= rect.ymin() && point.y() <= rect.ymax();
-}
-
-/*
- * calculate the bounding box of all specified sites
- */
-Iso_rectangle_2 boundingBox(std::vector<Site_2> sites) {
-  double xmin, xmax, ymin, ymax;
-  xmin = xmax = sites.front().point().x();
-  ymin = ymax = sites.front().point().y();
-  std::vector<Site_2>::iterator itr;
-  for (itr = sites.begin(); itr != sites.end(); ++itr) {
-    Site_2 site = *itr;
-    Point_2 point = site.point();
-    if (point.x() < xmin) {
-      xmin = point.x();
-    }
-    if (point.x() > xmax) {
-      xmax = point.x();
-    }
-    if (point.y() < ymin) {
-      ymin = point.y();
-    }
-    if (point.y() > ymax) {
-      ymax = point.y();
-    }
-  }
-  Iso_rectangle_2 rect(xmin, ymin, xmax, ymax);
-  return rect;
-}
-
-/*
- * create a rectangle based on the specifed one, but enlarge it by amount
- */
-Iso_rectangle_2 extend(Iso_rectangle_2 rect, double amount) {
-  Iso_rectangle_2 r(rect.xmin()-amount, rect.ymin()-amount, 
-      rect.xmax()+amount, rect.ymax()+amount);
-  return r;
-}
+// forward declarations
+bool containsPoint(Iso_rectangle_2 rect, Point_2 point);
+Iso_rectangle_2 boundingBox(std::vector<Site_2> sites);
+Iso_rectangle_2 extend(Iso_rectangle_2 rect, double amount);
 
 int main(int argc , char* argv[])
 {
@@ -430,7 +390,9 @@ int main(int argc , char* argv[])
         std::cout << "hyperbola" << std::endl; // h.draw(str);
         std::vector<Point_2> p, q;
         h.generate_points(p, q);
-        // TODO: we are not adding anything to points here
+        // TODO: we are not adding anything to points here. This is kind of
+        // obsolete since this cannot happen anymore (because of the 
+        // artificial sites added in the beginning)
         for (unsigned int i = 0; i < p.size() - 1; i++) {
           Segment_2 seg(p[i], p[i+1]);
           scene.addLine(
@@ -589,3 +551,49 @@ int main(int argc , char* argv[])
  
   //return app.exec();  
 }
+
+/*
+ * Test whether the point lies within the specified rectangle
+ */
+bool containsPoint(Iso_rectangle_2 rect, Point_2 point) {
+  return point.x() >= rect.xmin() && point.x() <= rect.xmax()
+      && point.y() >= rect.ymin() && point.y() <= rect.ymax();
+}
+
+/*
+ * calculate the bounding box of all specified sites
+ */
+Iso_rectangle_2 boundingBox(std::vector<Site_2> sites) {
+  double xmin, xmax, ymin, ymax;
+  xmin = xmax = sites.front().point().x();
+  ymin = ymax = sites.front().point().y();
+  std::vector<Site_2>::iterator itr;
+  for (itr = sites.begin(); itr != sites.end(); ++itr) {
+    Site_2 site = *itr;
+    Point_2 point = site.point();
+    if (point.x() < xmin) {
+      xmin = point.x();
+    }
+    if (point.x() > xmax) {
+      xmax = point.x();
+    }
+    if (point.y() < ymin) {
+      ymin = point.y();
+    }
+    if (point.y() > ymax) {
+      ymax = point.y();
+    }
+  }
+  Iso_rectangle_2 rect(xmin, ymin, xmax, ymax);
+  return rect;
+}
+
+/*
+ * create a rectangle based on the specifed one, but enlarge it by amount
+ */
+Iso_rectangle_2 extend(Iso_rectangle_2 rect, double amount) {
+  Iso_rectangle_2 r(rect.xmin()-amount, rect.ymin()-amount, 
+      rect.xmax()+amount, rect.ymax()+amount);
+  return r;
+}
+
