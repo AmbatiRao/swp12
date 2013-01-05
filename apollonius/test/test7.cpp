@@ -205,9 +205,9 @@ int main(int argc , char* argv[])
       crect.xmax() - crect.xmin(), crect.ymax() - crect.ymin());
   scene.setSceneRect(rect);
 
-  double pw = 0.01;
-  double ew = 0.01;
-  double lw = 0.005;
+  double pw = 0.01 * SF;
+  double ew = 0.01 * SF;
+  double lw = 0.005 * SF;
 
   // add a circle for each site
   std::cout << "creating circles for sites" << std::endl;
