@@ -6,12 +6,7 @@
 
 //#include <map>
 
-// example that uses the filtered traits
-
-// choose the representation
 #include <CGAL/Simple_cartesian.h>
-
-typedef CGAL::Simple_cartesian<double> Rep;
 
 #include <CGAL/Apollonius_graph_2.h>
 #include <CGAL/Triangulation_data_structure_2.h>
@@ -34,52 +29,51 @@ typedef CGAL::Simple_cartesian<double> Rep;
 #include <QLineF>
 #include <QRectF>
 
-// typedef for the traits; the filtered traits class is used
+typedef CGAL::Simple_cartesian<double>                Rep;
+
 typedef CGAL::Apollonius_graph_filtered_traits_2<Rep> Traits;
+// the second template argument is whether to store the hidden sites.
+typedef CGAL::Apollonius_graph_vertex_base_2<Traits,false>  
+                                                      Vb;
+typedef CGAL::Triangulation_face_base_2<Traits>       Fb;
+typedef CGAL::Triangulation_data_structure_2<Vb,Fb>   Agds;
+typedef CGAL::Apollonius_graph_2<Traits,Agds>         Apollonius_graph;
 
-// typedefs for the algorithm
+typedef Agds::Face                                    Face;
+typedef Agds::Face_handle                             Face_handle;
+typedef Agds::Vertex                                  Vertex;
+typedef Agds::Vertex_handle                           Vertex_handle;
 
-// With the second template argument in the vertex base class being
-// false, we indicate that there is no need to store the hidden sites.
-// One case where this is indeed not needed is when we only do
-// insertions, like in the main program below.
-typedef CGAL::Apollonius_graph_vertex_base_2<Traits,false>	Vb;
-typedef CGAL::Triangulation_face_base_2<Traits>         	Fb;
-typedef CGAL::Triangulation_data_structure_2<Vb,Fb>		Agds;
-typedef CGAL::Apollonius_graph_2<Traits,Agds>    		Apollonius_graph;
+typedef Agds::Face_iterator                           All_faces_iterator;
+typedef Agds::Edge_iterator                           All_edges_iterator;
+typedef Agds::Vertex_iterator                         All_vertices_iterator;
+typedef Apollonius_graph::Finite_faces_iterator       Finite_faces_iterator;
+typedef Apollonius_graph::Finite_edges_iterator       Finite_edges_iterator;
+typedef Apollonius_graph::Finite_vertices_iterator    Finite_vertices_iterator;
+typedef Agds::Face_circulator                         Face_circulator;
+typedef Agds::Edge_circulator                         Edge_circulator;
 
-typedef Agds::Face 					Face;
-typedef Agds::Face_handle				Face_handle;
-typedef Agds::Vertex      				Vertex;
-typedef Agds::Vertex_handle     			Vertex_handle;
+typedef Traits::Object_2                              Object_2;
+typedef Traits::Site_2                                Site_2;
+typedef Traits::Point_2                               Point_2;
+typedef Traits::Line_2                                Line_2;
+typedef Traits::Segment_2                             Segment_2;
+typedef Traits::Ray_2                                 Ray_2;
+typedef Rep::Iso_rectangle_2                          Iso_rectangle_2;
 
-typedef Agds::Face_iterator 				All_faces_iterator;
-typedef Agds::Edge_iterator 				All_edges_iterator;
-typedef Agds::Vertex_iterator 				All_vertices_iterator;
-typedef Apollonius_graph::Finite_faces_iterator		Finite_faces_iterator;
-typedef Apollonius_graph::Finite_edges_iterator		Finite_edges_iterator;
-typedef Apollonius_graph::Finite_vertices_iterator	Finite_vertices_iterator;
-typedef Agds::Face_circulator 				Face_circulator;
-typedef Agds::Edge_circulator 				Edge_circulator;
+typedef CGAL::Apollonius_graph_adaptation_traits_2<Apollonius_graph>
+                                                      AT;
+typedef CGAL::Apollonius_graph_degeneracy_removal_policy_2<Apollonius_graph>
+                                                      AP;
 
-typedef Traits::Object_2				Object_2;
-typedef Traits::Site_2					Site_2;
-typedef Traits::Point_2					Point_2;
-typedef Traits::Line_2					Line_2;
-typedef Traits::Segment_2				Segment_2;
-typedef Traits::Ray_2      			Ray_2;
-typedef Rep::Iso_rectangle_2    Iso_rectangle_2;
-
-typedef CGAL::Apollonius_graph_adaptation_traits_2<Apollonius_graph>			AT;
-typedef CGAL::Apollonius_graph_degeneracy_removal_policy_2<Apollonius_graph>		AP;
-
-typedef CGAL::Voronoi_diagram_2<Apollonius_graph,AT,AP>				Voronoi_diagram;
-typedef Voronoi_diagram::Face_iterator						VoronoiFace_iterator;
-typedef Voronoi_diagram::Face							VoronoiFace;
-typedef Voronoi_diagram::Vertex							VoronoiVertex;
-typedef Voronoi_diagram::Vertex_handle						VoronoiVertex_handle;
-typedef Voronoi_diagram::Halfedge						VoronoiHalfedge;
-typedef Voronoi_diagram::Halfedge_handle					VoronoiHalfedge_handle;
+typedef CGAL::Voronoi_diagram_2<Apollonius_graph,AT,AP>
+                                                      Voronoi_diagram;
+typedef Voronoi_diagram::Face_iterator                VoronoiFace_iterator;
+typedef Voronoi_diagram::Face                         VoronoiFace;
+typedef Voronoi_diagram::Vertex                       VoronoiVertex;
+typedef Voronoi_diagram::Vertex_handle                VoronoiVertex_handle;
+typedef Voronoi_diagram::Halfedge                     VoronoiHalfedge;
+typedef Voronoi_diagram::Halfedge_handle              VoronoiHalfedge_handle;
 
 /*
  * Test whether the point lies within the specified rectangle
