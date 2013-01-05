@@ -81,6 +81,50 @@ typedef Voronoi_diagram::Vertex_handle						VoronoiVertex_handle;
 typedef Voronoi_diagram::Halfedge						VoronoiHalfedge;
 typedef Voronoi_diagram::Halfedge_handle					VoronoiHalfedge_handle;
 
+/*
+ * Test whether the point lies within the specified rectangle
+ */
+bool containsPoint(Iso_rectangle_2 rect, Point_2 point) {
+  return point.x() >= rect.xmin() && point.x() <= rect.xmax()
+      && point.y() >= rect.ymin() && point.y() <= rect.ymax();
+}
+
+/*
+ * calculate the bounding box of all specified sites
+ */
+Iso_rectangle_2 boundingBox(std::vector<Site_2> sites) {
+  double xmin, xmax = sites.front().point().x();
+  double ymin, ymax = sites.front().point().y();
+  std::vector<Site_2>::iterator itr;
+  for (itr = sites.begin(); itr != sites.end(); ++itr) {
+    Site_2 site = *itr;
+    Point_2 point = site.point();
+    if (point.x() < xmin) {
+      xmin = point.x();
+    }
+    if (point.x() > xmax) {
+      xmax = point.x();
+    }
+    if (point.y() < ymin) {
+      ymin = point.y();
+    }
+    if (point.y() > ymax) {
+      ymax = point.y();
+    }
+  }
+  Iso_rectangle_2 rect(xmin, ymin, xmax, ymax);
+  return rect;
+}
+
+/*
+ * create a rectangle based on the specifed one, but enlarge it by amount
+ */
+Iso_rectangle_2 extend(Iso_rectangle_2 rect, double amount) {
+  Iso_rectangle_2 r(rect.xmin()-amount, rect.ymin()-amount, 
+      rect.xmax()+amount, rect.ymax()+amount);
+  return r;
+}
+
 int main(int argc , char* argv[])
 {
   if (argc != 4) {
@@ -97,6 +141,14 @@ int main(int argc , char* argv[])
 
   Apollonius_graph ag;
 
+  // collect the sites here
+  std::vector<Site_2> sites;
+  // a number of artificial sites
+  std::vector<Site_2> artificialSites;
+  // a site vector iterator
+  std::vector<Site_2>::iterator itr;
+
+  // read in sites from input file
   std::string line;
   while (std::getline(ifs, line)) {
     std::istringstream iss(line);
@@ -117,6 +169,44 @@ int main(int argc , char* argv[])
       weight = 0.01;
     }
     Site_2 site(Point_2(lon, lat), weight);
+    sites.push_back(site);
+  }
+
+  // calculate bounding box of all input sites (and extend it a little).
+  // Extension is important, because we later add artificial sites which are
+  // actually mirrored on the bounds of this rectangle. If we did not extend
+  // some points would lie on the boundary of the bounding box and so would
+  // their artificial clones. This would complicate the whole stuff a lot :)
+  Iso_rectangle_2 crect = extend(boundingBox(sites), 0.1);
+  std::cout << "rect: " << crect << std::endl;
+
+  // add artificial sites
+  for (itr = sites.begin(); itr != sites.end(); ++itr) {
+    Site_2 site = *itr;
+    Point_2 point = site.point();
+    double weight = site.weight();
+    Point_2 apoint1(2 * crect.xmin() - point.x(), point.y());
+    Site_2 asite1(apoint1, weight);
+    Point_2 apoint2(2 * crect.xmax() - point.x(), point.y());
+    Site_2 asite2(apoint2, weight);
+    Point_2 apoint3(point.x(), 2 * crect.ymin() - point.y());
+    Site_2 asite3(apoint3, weight);
+    Point_2 apoint4(point.x(), 2 * crect.ymax() - point.y());
+    Site_2 asite4(apoint4, weight);
+    artificialSites.push_back(asite1);
+    artificialSites.push_back(asite2);
+    artificialSites.push_back(asite3);
+    artificialSites.push_back(asite4);
+  }
+
+  // add all original sites to the apollonius graph
+  for (itr = sites.begin(); itr != sites.end(); ++itr) {
+    Site_2 site = *itr;
+    ag.insert(site);
+  }
+  // add all artificial sites to the apollonius graph
+  for (itr = artificialSites.begin(); itr != artificialSites.end(); ++itr) {
+    Site_2 site = *itr;
     ag.insert(site);
   }
 
@@ -124,6 +214,7 @@ int main(int argc , char* argv[])
   assert( ag.is_valid(true, 1) );
   std::cout << std::endl;
 
+  // print the number of faces created
   size_t nof = ag.number_of_faces ();
   std::cout << "number of faces: " << nof << std::endl;
 
@@ -141,10 +232,9 @@ int main(int argc , char* argv[])
   QApplication app(argc, argv);
   // Prepare scene
   QGraphicsScene scene;
-  //brandenburg von lon 11-15
-  //lat von 51-54
-  QRectF rect(11, 51, 5, 3);
-  scene.setSceneRect(rect); //Has the format: (x,y,width,height)
+  QRectF rect(crect.xmin(), crect.ymin(), 
+      crect.xmax() - crect.xmin(), crect.ymax() - crect.ymin());
+  scene.setSceneRect(rect);
 
   double pw = 0.01;
   double ew = 0.01;
@@ -210,10 +300,6 @@ int main(int argc , char* argv[])
     } while(++fcirc != done);
   }
 
-  CGAL::Qt::Converter<Rep> convert(rect);
-  Iso_rectangle_2 crect = convert(rect);
-  std::cout << "rect: " << crect << std::endl;
-
   // draw the bounding box on the scene
   scene.addLine(
     QLineF(crect.xmin(), crect.ymin(), crect.xmax(), crect.ymin()),
@@ -234,7 +320,15 @@ int main(int argc , char* argv[])
   // for each vertex in the apollonius graph (this are the sites)
   for (All_vertices_iterator viter = ag.all_vertices_begin (); 
       viter != ag.all_vertices_end(); ++viter) { 
+    // get the corresponding site
+    Site_2 site = viter->site();
+    Point_2 point = site.point();
+    // ignore artifical sites, detect them by their position
+    if (!containsPoint(crect, point)) {
+      continue;
+    }
     std::cout << "vertex " << vertexIndex << std::endl;
+
     // we than circulate all incident edges. By obtaining the respective
     // dual of each edge, we get access to the objects forming the boundary
     // of each voronoi cell in a proper order.
@@ -273,23 +367,16 @@ int main(int argc , char* argv[])
         }
       }
       else if (assign(s, o)) {
-        // also intersecting segments with the rectangle
-        Object_2 o = CGAL::intersection(crect, s);
-        Point_2 pnt;
-        if (assign(s, o)) {
-          Point_2 ss = s.source();
-          Point_2 st = s.target();
-          std::cout << "segment " << ss << " " << st << std::endl; // str << s; 
-          std::vector<Point_2> points;
-          points.push_back(ss);
-          points.push_back(st);
-          polylines.push_back(points);
-          scene.addLine(
-            QLineF(ss.x(), ss.y(), st.x(), st.y()),
-            QPen(Qt::green, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-        } else if (assign(pnt, o)){
-          // ignore points
-        }
+        Point_2 ss = s.source();
+        Point_2 st = s.target();
+        std::cout << "segment " << ss << " " << st << std::endl; // str << s; 
+        std::vector<Point_2> points;
+        points.push_back(ss);
+        points.push_back(st);
+        polylines.push_back(points);
+        scene.addLine(
+          QLineF(ss.x(), ss.y(), st.x(), st.y()),
+          QPen(Qt::green, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
       }
       else if (assign(hr, o)) {
         std::cout << "hyperbola ray" << std::endl; // hr.draw(str);
