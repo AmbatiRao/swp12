@@ -11,3 +11,15 @@
    typename Gt::Object_2 dual(const Edge e) const;
  
    typename Gt::Object_2 dual(const Edge_circulator& ec) const {
+
+--- a/Hyperbola_2.h
++++ b/Hyperbola_2.h
+@@ -26,7 +26,7 @@
+ #include <CGAL/enum.h>
+ #include <CGAL/determinant.h>
+ 
+-#include <CGAL/Apollonius_site_2.h>
++//#include <CGAL/Apollonius_site_2.h>
+ #include <CGAL/Kernel_traits.h>
+ 
+ namespace CGAL {

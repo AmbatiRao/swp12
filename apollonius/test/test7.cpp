@@ -12,7 +12,9 @@
 #include <CGAL/Triangulation_data_structure_2.h>
 #include <CGAL/Apollonius_graph_vertex_base_2.h>
 #include <CGAL/Triangulation_face_base_2.h>
-#include <CGAL/Apollonius_graph_filtered_traits_2.h>
+#include "Apollonius_graph_traits_2.h"
+//#include <CGAL/Apollonius_graph_traits_2.h>
+//#include <CGAL/Apollonius_graph_filtered_traits_2.h>
 
 #include <CGAL/Voronoi_diagram_2.h>
 #include <CGAL/Apollonius_graph_adaptation_traits_2.h>
@@ -31,7 +33,8 @@
 
 typedef CGAL::Simple_cartesian<double>                Rep;
 
-typedef CGAL::Apollonius_graph_filtered_traits_2<Rep> Traits;
+//typedef CGAL::Apollonius_graph_filtered_traits_2<Rep> Traits;
+typedef CGAL::Apollonius_graph_traits_2<Rep> Traits;
 // the second template argument is whether to store the hidden sites.
 typedef CGAL::Apollonius_graph_vertex_base_2<Traits,false>  
                                                       Vb;
@@ -126,9 +129,9 @@ int main(int argc , char* argv[])
   while (std::getline(ifs, line)) {
     std::istringstream iss(line);
     std::string type;
-    int id;
+    long id;
     double  lat, lon;
-    iss >> id; // TODO: store id in a custom Site-type
+    iss >> id;
     iss >> lon;
     iss >> lat;
     iss >> type;
@@ -140,7 +143,7 @@ int main(int argc , char* argv[])
     } else if (type == "village") {
       weight = 0.01;
     }
-    Site_2 site(Point_2(lon*SF, lat*SF), weight*SF);
+    Site_2 site(Point_2(lon*SF, lat*SF), weight*SF, id);
     sites.push_back(site);
   }
 
@@ -148,7 +151,7 @@ int main(int argc , char* argv[])
   for (itr = sites.begin(); itr != sites.end(); ++itr) {
     Site_2 site = *itr;
     Point_2 point = site.point();
-    std::cout << "site: " << point << std::endl;
+    std::cout << "site: " << site << std::endl;
   }
 
   // calculate bounding box of all input sites (and extend it a little).
@@ -306,7 +309,7 @@ int main(int argc , char* argv[])
     if (!containsPoint(crect, point)) {
       continue;
     }
-    std::cout << "vertex " << vertexIndex << std::endl;
+    std::cout << "vertex " << ++vertexIndex << std::endl;
 
     // we than circulate all incident edges. By obtaining the respective
     // dual of each edge, we get access to the objects forming the boundary
@@ -509,9 +512,8 @@ int main(int argc , char* argv[])
     }
 
     // open an output file for storing the WKT
-    vertexIndex++;
     std::stringstream s;
-    s << outdir << "/" << vertexIndex << ".wkt";
+    s << outdir << "/" << site.id() << ".wkt";
     std::string polygonFileName = s.str();
     std::cout << "filename: " << polygonFileName << std::endl;
     std::ofstream wktFile;
@@ -556,6 +558,8 @@ int main(int argc , char* argv[])
   image.fill(Qt::transparent);
   QPainter painter(&image);
   painter.setRenderHint(QPainter::Antialiasing);
+  painter.translate(0, 2000);
+  painter.scale(1,-1);
   scene.render(&painter);
   image.save(output);
  
