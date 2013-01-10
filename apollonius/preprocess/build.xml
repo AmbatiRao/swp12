@@ -1,0 +1,51 @@
+<project name="Apollonius Preprocessing" default="compile" basedir=".">
+
+	<description>
+		Build file for Apollonius Preprocessing
+	</description>
+
+	<property name="src" location="src" />
+	<property name="build" location="bin" />
+	<property name="dist" location="dist" />
+	<property name="lib" location="lib" />
+	<property name="doc" location="javadoc" />
+
+	<target name="init">
+		<tstamp />
+		<mkdir dir="${build}" />
+		<mkdir dir="${dist}" />
+	</target>
+
+	<target name="doc">
+		<mkdir dir="${doc}" />
+		<javadoc sourcepath="${src}" destdir="${doc}">
+			<classpath>
+				<fileset dir="${lib}">
+					<include name="*.jar" />
+				</fileset>
+			</classpath>
+		</javadoc>
+	</target>
+
+	<target name="compile" depends="init" description="compile the source ">
+		<javac srcdir="${src}" destdir="${build}" debug="on" debuglevel="lines,vars,source" includeantruntime="false">
+			<classpath>
+				<fileset dir="${lib}">
+					<include name="*.jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+	<path id="build-classpath">
+		<fileset dir="${lib}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<target name="dist" depends="compile" description="generate the distribution">
+		<jar jarfile="${dist}/apollonius-preprocessing.jar" basedir="${build}">
+		</jar>
+	</target>
+	
+</project>

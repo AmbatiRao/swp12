@@ -1,0 +1,2 @@
+TboFromPbf input.osm.pbf input.osm.tbo
+./scripts/InputConverter input.osm.tbo
