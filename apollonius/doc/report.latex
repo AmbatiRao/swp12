@@ -1,0 +1,71 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[a4paper,vmargin={20mm,20mm},hmargin={30mm,25mm}]{geometry}
+
+\usepackage{graphicx}
+\usepackage[utf8x]{inputenc}
+\usepackage[ngerman]{babel}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{verbatim}
+%\usepackage{color}
+
+\PrerenderUnicode{ü}
+
+\usepackage[pdftex,
+            pdfauthor={Sebastian Kürten},
+            pdftitle={Apollonius-Diagramme in der Geokodierung},
+            pdfsubject={Erstellung von Apollonius-Diagrammen auf Basis von Openstreetmap mit CGAL},
+            pdfkeywords={CGAL, Apollonius, Voronoi, Openstreetmap, Geocoding, Geokodierung},
+            pdfproducer={Latex with hyperref},
+            pdfcreator={pdflatex}]{hyperref}
+
+\begin{document}
+
+\lstset{
+basicstyle=\footnotesize
+}
+
+\parindent 0em%
+\parskip 0.5em%
+\noindent\rule{\textwidth}{1pt}%
+\begin{center}%
+\textbf{Softwareprojekt CGAL} \\
+\textbf{WiSe 2012/13}
+\end{center}%
+{Philipp Borgers, Sebastian Kürten, Lukas Maischak}\\%
+\noindent\rule{\textwidth}{1pt}%
+
+\definecolor{light-gray}{gray}{0.9}
+\lstset {numbers = left, language = octave}
+\lstset {basicstyle = \footnotesize, numberstyle = \small\color{gray}}
+\lstset {literate = {Ö}{{\"O}}1 {Ä}{{\"A}}1 {Ü}{{\"U}}1 {ß}{{\ss}}2 {ü}{{\"u}}1 {ä}{{\"a}}1 {ö}{{\"o}}1 }
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Thema
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Thema}
+
+\begin{itemize}
+\item Approximation von Gemeindegrenzen mit Hilfe von Apollonius-Diagrammen
+(Additiv gewichtete Voronoi-Diagramme)
+\item Datenbasis: sogenannte Ortsknoten aus der Openstreetmap Datenbank
+\item Eingabe: Menge von Knoten mit Metadaten (Einwohnerzahl)
+\item Ausgabe: Zu jedem Knoten konstruiere ein Polygon, welches die der Gemeinde
+zugeordnete Fläche bestimmt.
+\item Dabei sollen die Polygone eine Zerlegung der Ebene bilden.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Vorverarbeitung
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Vorberarbeitung}
+
+\end{document}
+
+%\begin{figure}[htp]
+%\begin{center}
+%\includegraphics[width=\textwidth]{..path/to/image}
+%\caption{Caption}
+%\label{label}
+%\end{center}
+%\end{figure}
