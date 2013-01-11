@@ -46,6 +46,8 @@ basicstyle=\footnotesize
 \lstset {basicstyle = \footnotesize, numberstyle = \small\color{gray}}
 \lstset {literate = {Ö}{{\"O}}1 {Ä}{{\"A}}1 {Ü}{{\"U}}1 {ß}{{\ss}}2 {ü}{{\"u}}1 {ä}{{\"a}}1 {ö}{{\"o}}1 }
 
+\newcommand*{\DOT}{.}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Thema
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -163,5 +165,78 @@ TboFromPbf data/brandenburg.osm.pbf data/brandenburg.osm.tbo
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
 \section{Implementierung}
+
+\begin{figure}[htp]
+\begin{center}$
+\begin{array}{cc}
+\includegraphics[width=0.45\textwidth]{apollonius_graph}
+\includegraphics[width=0.45\textwidth]{apollonius_diagram}
+\end{array}$
+\caption{Apollonius Graph und Apollonius Diagramm}
+\label{apo1}
+\end{center}
+\end{figure}
+
+\subsection{Genereller Ablauf}
+\begin{itemize}
+\item Apollonius Graph und Apollonius Diagramm sind dual
+\item wir konstruieren den Apollonius Graph (mit \textit{Apollonius\_graph\_2})
+\item hinzufügen von Sites mit \textit{ag.insert(Site\_2 site)}
+\item erhalten das Diagramm mit \textit{Voronoi\_diagram\_2}
+\item dieses bietet \textit{vd.locate (Point\_2 p)}
+\item \textit{ag.all\_vertices\_begin} liefert einen Iterator über die Knoten (Sites)
+\item \textit{ag.incident\_edges(vertex)} liefert einen Iterator über adjazente Kanten
+\item \textit{Object\_2 o = ag.dual(edge)} liefert eine Kante im Apollonius \textbf{Diagramm}
+\item Line\_2, Segment\_2, Ray\_2, Hyperbola\_2, Hyperbola\_segment\_2, Hyperbola\_ray\_2
+\item Darstellung möglich mit \textit{ag.draw\_primal\_*} bzw. \textit{ag.draw\_dual\_*}
+\item konstruieren damit Linienzüge
+\item Line\_2, Segment\_2, Ray\_2 sind einfach
+\item Hyperbola\_* bietet \textit{generate\_points(points)}
+\item setzen diese zu Polygonen zusammen
+\end{itemize}
+
+\subsection{Details}
+\begin{itemize}
+\item Umgang mit unbeschränkten Zellen unangenehm in der Verarbeitung
+\item in der Darstellung als Polygon müssen diese zu endlichen Polygonen begrenzt werden
+\item Zurechtschneiden mit Reckteck bzw. Begrenzungspolygon
+\item per se kompliziert
+\item wir wollen zunächst mit einem Rechteck begrenzen
+\item einfacher Trick: einfügen von künstlichen, zusätzlichen Knoten, gespiegelt an den Seiten des Rechtecks
+\item erhalten nur noch endliche Zellen
+\item reduziert die zu betrachtenden Fälle (Ray, Line, Hyperbola\_ray, Hyperbola fallen weg)
+\item Konstruktion von geschlossenen Zellen ist auch einfacher als die von offenen
+\item erhöht jedoch die Laufzeit $n \rightarrow 4 \cdot n$ Eingabeknoten
+\end{itemize}
+
+\begin{figure}[htp]
+\begin{center}
+\fbox{
+\includegraphics[width=\textwidth]{sites}
+}
+\caption{Apollonius Diagramm}
+\label{apo2}
+\end{center}
+\end{figure}
+
+\begin{figure}[htp]
+\begin{center}
+\fbox{
+\includegraphics[width=\textwidth]{sites\DOT 2\DOT diffsize}
+}
+\caption{Apollonius Diagramm}
+\label{apo2}
+\end{center}
+\end{figure}
+
+\begin{figure}[htp]
+\begin{center}
+\fbox{
+\includegraphics[width=\textwidth]{sites\DOT 2\DOT equalsize}
+}
+\caption{Apollonius Diagramm}
+\label{apo2}
+\end{center}
+\end{figure}
 
 \end{document}
