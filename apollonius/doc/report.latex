@@ -1,3 +1,6 @@
+% mid term presentation: 11.1.13
+% final presentation:    22.2.13
+
 \documentclass[a4paper,11pt]{article}
 \usepackage[a4paper,vmargin={20mm,20mm},hmargin={30mm,25mm}]{geometry}
 
@@ -8,6 +11,9 @@
 \usepackage{xcolor}
 \usepackage{verbatim}
 %\usepackage{color}
+
+% this makes < > work
+\usepackage[T1]{fontenc}
 
 \PrerenderUnicode{ü}
 
@@ -60,12 +66,102 @@ zugeordnete Fläche bestimmt.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Vorverarbeitung}
 
-\end{document}
+\begin{itemize}
+\item Daten herunterladen
+\begin{lstlisting}
+wget http://download.geofabrik.de/openstreetmap/europe/germany/
+	brandenburg.osm.pbf 
+\end{lstlisting}
 
-%\begin{figure}[htp]
-%\begin{center}
-%\includegraphics[width=\textwidth]{..path/to/image}
-%\caption{Caption}
-%\label{label}
-%\end{center}
-%\end{figure}
+\item Daten konvertieren
+\begin{lstlisting}
+TboFromPbf data/brandenburg.osm.pbf data/brandenburg.osm.tbo
+
+./preprocessing/scripts/InputConverter 
+	data/brandenburg.osm.tbo > data/brandenburg.txt
+\end{lstlisting}
+
+\item Format: <Openstreetmap Node Id> <Longitude> <Latitude> <type>
+\lstinputlisting[firstline=1037,lastline=1052]{../data/brandenburg.withvillages.txt}
+
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Apollonius Graph erstellen und die Zellen generieren
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Apollonius Diagramm}
+
+\begin{lstlisting}
+./test/build/test7 data/brandenburg.txt output/brandenburg.png
+	output/wkts
+\end{lstlisting}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Ergebnisse}
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=\textwidth]{brandenburg}
+\caption{Apollonius-Diagram für Groß- und Mittelstädte}
+\label{apo1}
+\end{center}
+\end{figure}
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=\textwidth]{image3}
+\caption{Darstellung auf einer Karte 1}
+\label{apo-map1}
+\end{center}
+\end{figure}
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=\textwidth]{image1}
+\caption{Darstellung auf einer Karte 2}
+\label{apo-map2}
+\end{center}
+\end{figure}
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=\textwidth]{image1}
+\caption{Darstellung auf einer Karte 3}
+\label{apo-map3}
+\end{center}
+\end{figure}
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=\textwidth]{image5}
+\caption{Begrenzungspolygon}
+\label{apo-map4}
+\end{center}
+\end{figure}
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=\textwidth]{image6}
+\caption{Voronoi-Zellen mit em Begrenzungspolygon überlagert}
+\label{apo-map5}
+\end{center}
+\end{figure}
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=\textwidth]{image4}
+\caption{Voronoi-Zellen mit em Begrenzungspolygon gescchnitten}
+\label{apo-map6}
+\end{center}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Implementierung
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\clearpage
+\section{Implementierung}
+
+\end{document}
