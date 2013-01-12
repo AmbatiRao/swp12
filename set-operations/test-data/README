@@ -19,6 +19,11 @@ intersection34.wkt	intersection of polygon4 and polygon4
 intersection25.wkt	intersection of polygon2 and polygon5
 intersection26.wkt	intersection of polygon2 and polygon6
 
+berlinbrandenburg.wkt	the boundary of brandenburg and berlin
+bb1.wkt .. bb5.wkt	some polygons that may be intersected with
+			berlinbrandenburg.wkt and should produce interesting
+			results
+
 ********************************************************************************
 * showing files
 ********************************************************************************
@@ -33,3 +38,4 @@ ant compile
 ********************************************************************************
 ./scripts/GeometryPreview path/to/polygon1.wkt
 ./scripts/GeometryPreview path/to/polygon1.wkt path/to/polygon3.wkt 
+./scripts/GeometryPreview path/to/berlinbrandenburg.wkt path/to/bb*
