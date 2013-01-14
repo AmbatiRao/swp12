@@ -61,6 +61,7 @@ typedef std::vector<Point_2>                          PointList;
 // forward declarations
 SiteList readSites(std::ifstream& ifs, double SF);
 SiteList createArtificialSites(SiteList& sites, Iso_rectangle_2 crect);
+void printSites(SiteList& sites);
 
 bool containsPoint(Iso_rectangle_2 rect, Point_2 point);
 Iso_rectangle_2 boundingBox(SiteList sites);
@@ -90,7 +91,9 @@ int main(int argc , char* argv[])
   std::ifstream ifs(input);
   assert( ifs );
 
-  Apollonius_graph ag;
+  /*
+   * prepare data
+   */
 
   // we use a ScalingFactor(SF) here to stretch input values at the 
   // beginning, and divide by SF in the end. This is used because the 
@@ -103,15 +106,7 @@ int main(int argc , char* argv[])
   // read in sites from input file
   SiteList sites = readSites(ifs, SF);
 
-  // a site vector iterator
-  SiteList::iterator itr;
-
-  // print sites
-  for (itr = sites.begin(); itr != sites.end(); ++itr) {
-    Site_2 site = *itr;
-    Point_2 point = site.point();
-    std::cout << "site: " << site << std::endl;
-  }
+  printSites(sites);
 
   // calculate bounding box of all input sites (and extend it a little).
   // Extension is important, because we later add artificial sites which are
@@ -124,6 +119,13 @@ int main(int argc , char* argv[])
   // a number of artificial sites
   SiteList artificialSites = createArtificialSites(sites, crect);
 
+  /*
+   * create Apollonius graph
+   */
+
+  Apollonius_graph ag;
+
+  SiteList::iterator itr;
   // add all original sites to the apollonius graph
   for (itr = sites.begin(); itr != sites.end(); ++itr) {
     Site_2 site = *itr;
@@ -138,6 +140,10 @@ int main(int argc , char* argv[])
   // validate the Apollonius graph
   assert( ag.is_valid(true, 1) );
   std::cout << std::endl;
+
+  /*
+   * create polygons from cells
+   */
 
   // we want an identifier for each vertex within the iteration.
   // this is a loop iteration counter
@@ -241,6 +247,16 @@ SiteList createArtificialSites(SiteList& sites, Iso_rectangle_2 crect)
     artificialSites.push_back(asite4);
   }
   return artificialSites;
+}
+
+void printSites(SiteList& sites)
+{
+  SiteList::iterator itr;
+  for (itr = sites.begin(); itr != sites.end(); ++itr) {
+    Site_2 site = *itr;
+    Point_2 point = site.point();
+    std::cout << "site: " << site << std::endl;
+  }
 }
 
 void handleDual(Object_2 o, Iso_rectangle_2 crect, std::vector<PointList>& polylines)
