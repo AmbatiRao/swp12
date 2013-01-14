@@ -1,10 +1,9 @@
 // vim: si:ts=2:sw=2:expandtab:smartindent
+
 // standard includes
 #include <iostream>
 #include <fstream>
 #include <cassert>
-
-//#include <map>
 
 #include <CGAL/Simple_cartesian.h>
 
@@ -19,17 +18,6 @@
 #include <CGAL/Voronoi_diagram_2.h>
 #include <CGAL/Apollonius_graph_adaptation_traits_2.h>
 #include <CGAL/Apollonius_graph_adaptation_policies_2.h>
-
-// Qt includes
-
-#include <CGAL/Qt/Converter.h>
-#include <CGAL/Qt/GraphicsViewNavigation.h>
-#include <CGAL/Qt/utility.h>
-#include <QtGui/QApplication>
-#include <QtGui/QTextEdit>
-#include <QtGui/QGraphicsView>
-#include <QLineF>
-#include <QRectF>
 
 typedef CGAL::Simple_cartesian<double>                Rep;
 
@@ -207,69 +195,6 @@ int main(int argc , char* argv[])
   }
   std::cout << "done iterating faces" << std::endl;
 
-  /*
-   * visualize with Qt
-   */
-
-  QApplication app(argc, argv);
-  // Prepare scene
-  QGraphicsScene scene;
-  QRectF rect(crect.xmin(), crect.ymin(), 
-      crect.xmax() - crect.xmin(), crect.ymax() - crect.ymin());
-  scene.setSceneRect(rect);
-
-  double pw = 0.01 * SF;
-  double ew = 0.01 * SF;
-  double lw = 0.005 * SF;
-
-  // add a circle for each site
-  std::cout << "creating circles for sites" << std::endl;
-  for (Finite_vertices_iterator viter = ag.finite_vertices_begin();
-    viter != ag.finite_vertices_end(); ++viter) {
-    Site_2 site = viter->site();
-    Point_2 p = site.point();
-    double weight = site.weight();
-    double size = weight * 2;
-
-    scene.addEllipse(
-      p.x() - weight, p.y() - weight, size, size,
-      QPen(Qt::red, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin)
-    );
-  }
-
-  // add dual image stubs
-  std::cout << "dual stubs 1" << std::endl;
-  for (All_faces_iterator fiter = ag.all_faces_begin (); fiter != ag.all_faces_end(); ++fiter) { 
-    Object_2 o = ag.dual(fiter);
-    Site_2 site;
-    Line_2 line;
-    if (assign(site, o)) {
-      Point_2 p = site.point();
-      double size = ew;
-      scene.addEllipse(
-         p.x() - size/2, p.y() - size/2, size, size,
-         QPen(Qt::blue, pw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin)
-       );
-    } else if (assign(line, o)) {
-    }
-  }
-
-  // add dual image stubs
-  std::cout << "dual stubs 2" << std::endl;
-  for (All_faces_iterator fiter = ag.all_faces_begin (); fiter != ag.all_faces_end(); ++fiter) { 
-    Object_2 o = ag.dual(fiter);
-    Site_2 site;
-    Line_2 line;
-    if (assign(site, o)) {
-      Point_2 p = site.point();
-      double size = ew;
-      scene.addEllipse(
-         p.x() - size/2, p.y() - size/2, size, size,
-         QPen(Qt::blue, pw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin)
-       );
-    } else if (assign(line, o)) {
-    }
-  }
   std::cout << "number of vertices: " << ag.number_of_vertices() << std::endl;
   std::cout << "vertices iteration 1" << std::endl;
   for (All_vertices_iterator viter = ag.all_vertices_begin (); viter != ag.all_vertices_end(); ++viter) { 
@@ -281,20 +206,6 @@ int main(int argc , char* argv[])
       Object_2 o = ag.dual(fcirc);
     } while(++fcirc != done);
   }
-
-  // draw the bounding box on the scene
-  scene.addLine(
-    QLineF(crect.xmin(), crect.ymin(), crect.xmax(), crect.ymin()),
-    QPen(Qt::black, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-  scene.addLine(
-    QLineF(crect.xmax(), crect.ymin(), crect.xmax(), crect.ymax()),
-    QPen(Qt::black, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-  scene.addLine(
-    QLineF(crect.xmax(), crect.ymax(), crect.xmin(), crect.ymax()),
-    QPen(Qt::black, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-  scene.addLine(
-    QLineF(crect.xmin(), crect.ymax(), crect.xmin(), crect.ymin()),
-    QPen(Qt::black, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
 
   // we want an identifier for each vertex within the iteration.
   int vertexIndex = 0;
@@ -343,9 +254,7 @@ int main(int argc , char* argv[])
         polylines.push_back(points);
         for (unsigned int i = 0; i < p.size() - 1; i++) {
           Segment_2 seg(p[i], p[i+1]);
-          scene.addLine(
-            QLineF(p[i].x(), p[i].y(), p[i+1].x(), p[i+1].y()),
-            QPen(Qt::green, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+          // doing nothing here
         }
       }
       else if (assign(s, o)) {
@@ -356,9 +265,6 @@ int main(int argc , char* argv[])
         points.push_back(ss);
         points.push_back(st);
         polylines.push_back(points);
-        scene.addLine(
-          QLineF(ss.x(), ss.y(), st.x(), st.y()),
-          QPen(Qt::green, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
       }
       else if (assign(hr, o)) {
         std::cout << "hyperbola ray" << std::endl; // hr.draw(str);
@@ -369,9 +275,7 @@ int main(int argc , char* argv[])
         polylines.push_back(points);
         for (unsigned int i = 0; i < p.size() - 1; i++) {
           Segment_2 seg(p[i], p[i+1]);
-          scene.addLine(
-            QLineF(p[i].x(), p[i].y(), p[i+1].x(), p[i+1].y()),
-            QPen(Qt::green, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+          // doing nothing here
         }
       }
       else if (assign(r, o)) {
@@ -388,9 +292,6 @@ int main(int argc , char* argv[])
           points.push_back(ss);
           points.push_back(st);
           polylines.push_back(points);
-          scene.addLine(
-            QLineF(ss.x(), ss.y(), st.x(), st.y()),
-            QPen(Qt::green, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
         } else if (assign(pnt, o)){
           std::cout << "ray -> point" << std::endl;
           // no use for points
@@ -408,15 +309,11 @@ int main(int argc , char* argv[])
         // artificial sites added in the beginning)
         for (unsigned int i = 0; i < p.size() - 1; i++) {
           Segment_2 seg(p[i], p[i+1]);
-          scene.addLine(
-            QLineF(p[i].x(), p[i].y(), p[i+1].x(), p[i+1].y()),
-            QPen(Qt::green, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+          // doing nothing here
         }
         for (unsigned int i = 0; i < q.size() - 1; i++) {
           Segment_2 seg(q[i], q[i+1]);
-          scene.addLine(
-            QLineF(q[i].x(), q[i].y(), q[i+1].x(), q[i+1].y()),
-            QPen(Qt::green, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+          // doing nothing here
         }
       }
       else if (assign(l, o)) {
@@ -433,9 +330,6 @@ int main(int argc , char* argv[])
           points.push_back(ss);
           points.push_back(st);
           polylines.push_back(points);
-          scene.addLine(
-            QLineF(ss.x(), ss.y(), st.x(), st.y()),
-            QPen(Qt::green, lw,  Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
         } else if (assign(pnt, o)){
           std::cout << "line -> point" << std::endl;
           // no use for points
@@ -540,30 +434,6 @@ int main(int argc , char* argv[])
     }
   }
 
-  // Prepare view, add scene, show
-  QGraphicsView* view = new QGraphicsView(&scene);
-  //view->show();
-
-  // Add CGAL's navigation filter
-  CGAL::Qt::GraphicsViewNavigation navigation;
-  view->installEventFilter(&navigation);
-  view->viewport()->installEventFilter(&navigation);
-  view->setRenderHint(QPainter::Antialiasing);
-
-  // create an image
-  // this line creates an image with a size definied by the size of the scene
-  //QImage image(scene.sceneRect().size().toSize(), QImage::Format_ARGB32);
-  // Cool! Qt does the scaling to arbitrary size automatically. Rocks
-  QImage image(QSize(2000, 2000), QImage::Format_ARGB32);
-  image.fill(Qt::transparent);
-  QPainter painter(&image);
-  painter.setRenderHint(QPainter::Antialiasing);
-  painter.translate(0, 2000);
-  painter.scale(1,-1);
-  scene.render(&painter);
-  image.save(output);
- 
-  //return app.exec();  
 }
 
 /*
