@@ -1,6 +1,6 @@
 # CGAL patchen, damit man unseren Code dagegen compilieren kann:
-cp CGAL.diff ~/dev/cgal/CGAL-4.1/
-cd ~/dev/cgal/CGAL-4.1/
+cp CGAL.diff ~/dev/cgal/CGAL-4.1/include/CGAL/
+cd ~/dev/cgal/CGAL-4.1/include/CGAL/
 patch -p1 <CGAL.diff
 
 # unseren Code compilieren:
