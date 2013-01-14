@@ -44,42 +44,34 @@ typedef Apollonius_graph::Finite_vertices_iterator    Finite_vertices_iterator;
 typedef Agds::Face_circulator                         Face_circulator;
 typedef Agds::Edge_circulator                         Edge_circulator;
 
+typedef Rep::Iso_rectangle_2                          Iso_rectangle_2;
 typedef Traits::Object_2                              Object_2;
 typedef Traits::Site_2                                Site_2;
 typedef Traits::Point_2                               Point_2;
 typedef Traits::Line_2                                Line_2;
 typedef Traits::Segment_2                             Segment_2;
 typedef Traits::Ray_2                                 Ray_2;
-typedef Rep::Iso_rectangle_2                          Iso_rectangle_2;
+typedef CGAL::Hyperbola_2<Traits>                     Hyperbola_2;
+typedef CGAL::Hyperbola_segment_2<Traits>             Hyperbola_segment_2;
+typedef CGAL::Hyperbola_ray_2<Traits>                 Hyperbola_ray_2;
 
-typedef CGAL::Apollonius_graph_adaptation_traits_2<Apollonius_graph>
-                                                      AT;
-typedef CGAL::Apollonius_graph_degeneracy_removal_policy_2<Apollonius_graph>
-                                                      AP;
-
-typedef CGAL::Voronoi_diagram_2<Apollonius_graph,AT,AP>
-                                                      Voronoi_diagram;
-typedef Voronoi_diagram::Face_iterator                VoronoiFace_iterator;
-typedef Voronoi_diagram::Face                         VoronoiFace;
-typedef Voronoi_diagram::Vertex                       VoronoiVertex;
-typedef Voronoi_diagram::Vertex_handle                VoronoiVertex_handle;
-typedef Voronoi_diagram::Halfedge                     VoronoiHalfedge;
-typedef Voronoi_diagram::Halfedge_handle              VoronoiHalfedge_handle;
+typedef std::vector<Point_2>                          PointList;
 
 // forward declarations
 bool containsPoint(Iso_rectangle_2 rect, Point_2 point);
 Iso_rectangle_2 boundingBox(std::vector<Site_2> sites);
 Iso_rectangle_2 extend(Iso_rectangle_2 rect, double amount);
 
-// TODO: use a custom type that extends Site_2. We need this to store the ids
-// in the sites so we can later access them. 
-// At the moment we don't know how to do that. Can something similar to this
-// http://www.cgal.org/Manual/latest/doc_html/cgal_manual/Triangulation_2/Chapter_main.html#Section_37.11
-// be done with our Site_2 type?
+void handleDual(Object_2 o, Iso_rectangle_2 crect, std::vector<PointList>& polylines);
+void handleDual(Line_2 l, Iso_rectangle_2 crect, std::vector<PointList>& polylines);
+void handleDual(Segment_2 s, std::vector<PointList>& polylines);
+void handleDual(Ray_2 r, Iso_rectangle_2 crect, std::vector<PointList>& polylines);
+void handleDual(Hyperbola_segment_2 hs, std::vector<PointList>& polylines);
+void handleDual(Hyperbola_ray_2 hr, Iso_rectangle_2 crect, std::vector<PointList>& polylines);
+void handleDual(Hyperbola_2 h, Iso_rectangle_2 crect, std::vector<PointList>& polylines);
 
-// An alternative may be to store 
-// extra data in a separate data type T and store instances of that in a map
-// that maps sites to instances of T.
+PointList buildPolygon(Site_2 site, std::vector<PointList>& polylines);
+void writeWKT(Site_2 site, PointList polygon, char* outdir);
 
 int main(int argc , char* argv[])
 {
@@ -184,30 +176,8 @@ int main(int argc , char* argv[])
   assert( ag.is_valid(true, 1) );
   std::cout << std::endl;
 
-  // print the number of faces created
-  size_t nof = ag.number_of_faces ();
-  std::cout << "number of faces: " << nof << std::endl;
-
-  // create the voronoi diagram
-  Voronoi_diagram vd(ag);
-  for (VoronoiFace_iterator fiter = vd.faces_begin(); fiter != vd.faces_end(); ++fiter) {
-    std::cout << "vd face, bounded? " << !fiter->is_unbounded() << std::endl;
-  }
-  std::cout << "done iterating faces" << std::endl;
-
-  std::cout << "number of vertices: " << ag.number_of_vertices() << std::endl;
-  std::cout << "vertices iteration 1" << std::endl;
-  for (All_vertices_iterator viter = ag.all_vertices_begin (); viter != ag.all_vertices_end(); ++viter) { 
-    Face_circulator fcirc = ag.incident_faces(viter), done(fcirc);
-    if (fcirc == NULL) {
-      break;
-    }
-    do {
-      Object_2 o = ag.dual(fcirc);
-    } while(++fcirc != done);
-  }
-
   // we want an identifier for each vertex within the iteration.
+  // this is a loop iteration counter
   int vertexIndex = 0;
 
   // for each vertex in the apollonius graph (this are the sites)
@@ -227,7 +197,7 @@ int main(int argc , char* argv[])
     // of each voronoi cell in a proper order.
     Edge_circulator ecirc = ag.incident_edges(viter), done(ecirc);
     // this is where we store the polylines
-    std::vector<std::vector<Point_2> > polylines;
+    std::vector<PointList> polylines;
     // for each incident edge
     do {
       // the program may fail in certain situations without this test.
@@ -238,47 +208,90 @@ int main(int argc , char* argv[])
       // NOTE: for this to work, we had to make public the dual function in ApolloniusGraph
       // change line 542 in "Apollonius_graph_2.h" from "private:" to "public:"
       Object_2 o = ag.dual(*ecirc);
-      Line_2 l;
-      Segment_2 s;
-      Ray_2 r;
-      CGAL::Hyperbola_2<Traits> h;
-      CGAL::Hyperbola_segment_2<Traits> hs;
-      CGAL::Hyperbola_ray_2<Traits> hr;
-      if (assign(hs, o)) {
-        std::cout << "hyperbola segment" << std::endl; //hs.draw(str);
-        std::vector<Point_2> p;
-        hs.generate_points(p);
-        std::cout << "# hyperbola points: " << p.size() << std::endl;
-        std::vector<Point_2> points;
-        points.insert(points.end(), p.begin(), p.end());
-        polylines.push_back(points);
-        for (unsigned int i = 0; i < p.size() - 1; i++) {
-          Segment_2 seg(p[i], p[i+1]);
-          // doing nothing here
-        }
+      handleDual(o, crect, polylines);
+    } while(++ecirc != done);
+
+    PointList polygon = buildPolygon(site, polylines);
+    for (int i = 0; i < polygon.size(); i++) {
+      Point_2& p = polygon.at(i);
+      p = Point_2(p.x()/SF, p.y()/SF);
+    }
+    writeWKT(site, polygon, outdir);
+
+    // check each point
+    for (int i = 0; i < polygon.size(); i++) {
+      Point_2 p = polygon.at(i);
+      if (p.x() > crect.xmax()/SF || p.x() < crect.xmin()/SF || p.y() > crect.ymax()/SF || p.y() < crect.ymin()/SF) {
+        std::cout << "out of bounds" << std::endl;
       }
-      else if (assign(s, o)) {
+    }
+  }
+}
+
+void handleDual(Object_2 o, Iso_rectangle_2 crect, std::vector<PointList>& polylines)
+{
+  // disambiguation depending on type of o
+  Line_2 l;
+  Segment_2 s;
+  Ray_2 r;
+  Hyperbola_2 h;
+  Hyperbola_segment_2 hs;
+  Hyperbola_ray_2 hr;
+  // Hyperbola segment
+  if (assign(hs, o)) {
+    handleDual(hs, polylines);
+  // segment
+  } else if (assign(s, o)) {
+    handleDual(s, polylines);
+  // Hyperbola ray
+  } else if (assign(hr, o)) {
+    handleDual(hr, crect, polylines);
+  // ray
+  } else if (assign(r, o)) {
+    handleDual(r, crect, polylines);
+  // Hyperbola
+  } else if (assign(h, o)) {
+    handleDual(h, crect, polylines);
+  // Line
+  } else if (assign(l, o)) {
+    handleDual(l, crect, polylines);
+  }
+}
+
+void handleDual(Line_2 l, Iso_rectangle_2 crect, std::vector<PointList>& polylines)
+{
+        std::cout << "line" << std::endl; //str << l;
+        Object_2 o = CGAL::intersection(l, crect);
+
+        Segment_2 seg;
+        Point_2 pnt;
+        if (assign(seg, o)) {
+          std::cout << "line -> segment" << std::endl;
+          Point_2 ss = seg.source();
+          Point_2 st = seg.target();
+          PointList points;
+          points.push_back(ss);
+          points.push_back(st);
+          polylines.push_back(points);
+        } else if (assign(pnt, o)){
+          std::cout << "line -> point" << std::endl;
+          // no use for points
+        }
+}
+
+void handleDual(Segment_2 s, std::vector<PointList>& polylines)
+{
         Point_2 ss = s.source();
         Point_2 st = s.target();
         std::cout << "segment " << ss << " " << st << std::endl; // str << s; 
-        std::vector<Point_2> points;
+        PointList points;
         points.push_back(ss);
         points.push_back(st);
         polylines.push_back(points);
-      }
-      else if (assign(hr, o)) {
-        std::cout << "hyperbola ray" << std::endl; // hr.draw(str);
-        std::vector<Point_2> p;
-        hr.generate_points(p);
-        std::vector<Point_2> points;
-        points.insert(points.end(), p.begin(), p.end());
-        polylines.push_back(points);
-        for (unsigned int i = 0; i < p.size() - 1; i++) {
-          Segment_2 seg(p[i], p[i+1]);
-          // doing nothing here
-        }
-      }
-      else if (assign(r, o)) {
+}
+
+void handleDual(Ray_2 r, Iso_rectangle_2 crect, std::vector<PointList>& polylines)
+{
         std::cout << "ray" << std::endl;  // str << r;
         Object_2 o = CGAL::intersection(crect, r);
 
@@ -288,7 +301,7 @@ int main(int argc , char* argv[])
           std::cout << "ray -> segment" << std::endl;
           Point_2 ss = seg.source();
           Point_2 st = seg.target();
-          std::vector<Point_2> points;
+          PointList points;
           points.push_back(ss);
           points.push_back(st);
           polylines.push_back(points);
@@ -299,10 +312,41 @@ int main(int argc , char* argv[])
           std::cout << "ray -> ?" << std::endl;
           std::cout << r.source() << " " << r.point(1) << std::endl;
         }
-      }
-      else if (assign(h, o)) {
+}
+
+void handleDual(Hyperbola_segment_2 hs, std::vector<PointList>& polylines)
+{
+        std::cout << "hyperbola segment" << std::endl; //hs.draw(str);
+        PointList p;
+        hs.generate_points(p);
+        std::cout << "# hyperbola points: " << p.size() << std::endl;
+        PointList points;
+        points.insert(points.end(), p.begin(), p.end());
+        polylines.push_back(points);
+        for (unsigned int i = 0; i < p.size() - 1; i++) {
+          Segment_2 seg(p[i], p[i+1]);
+          // doing nothing here
+        }
+}
+
+void handleDual(Hyperbola_ray_2 hr, Iso_rectangle_2 crect, std::vector<PointList>& polylines)
+{
+        std::cout << "hyperbola ray" << std::endl; // hr.draw(str);
+        PointList p;
+        hr.generate_points(p);
+        PointList points;
+        points.insert(points.end(), p.begin(), p.end());
+        polylines.push_back(points);
+        for (unsigned int i = 0; i < p.size() - 1; i++) {
+          Segment_2 seg(p[i], p[i+1]);
+          // doing nothing here
+        }
+}
+
+void handleDual(Hyperbola_2 h, Iso_rectangle_2 crect, std::vector<PointList>& polylines)
+{
         std::cout << "hyperbola" << std::endl; // h.draw(str);
-        std::vector<Point_2> p, q;
+        PointList p, q;
         h.generate_points(p, q);
         // TODO: we are not adding anything to points here. This is kind of
         // obsolete since this cannot happen anymore (because of the 
@@ -315,30 +359,12 @@ int main(int argc , char* argv[])
           Segment_2 seg(q[i], q[i+1]);
           // doing nothing here
         }
-      }
-      else if (assign(l, o)) {
-        std::cout << "line" << std::endl; //str << l;
-        Object_2 o = CGAL::intersection(l, crect);
+}
 
-        Segment_2 seg;
-        Point_2 pnt;
-        if (assign(seg, o)) {
-          std::cout << "line -> segment" << std::endl;
-          Point_2 ss = seg.source();
-          Point_2 st = seg.target();
-          std::vector<Point_2> points;
-          points.push_back(ss);
-          points.push_back(st);
-          polylines.push_back(points);
-        } else if (assign(pnt, o)){
-          std::cout << "line -> point" << std::endl;
-          // no use for points
-        }
-      }
-    } while(++ecirc != done);
-
+PointList buildPolygon(Site_2 site, std::vector<PointList>& polylines)
+{
     // A list for the resulting points.
-    std::vector<Point_2> points;
+    PointList points;
     // We build this list from the polylines collected before.
     // One of the problems solved here is that we actually don't know 
     // whether the polylines we get are in order or reversed because of the
@@ -353,7 +379,7 @@ int main(int argc , char* argv[])
     std::cout << "# polylines: " << polylines.size() << std::endl;
     // the first polyline will just be added as it is
     if (polylines.size() > 0) {
-      std::vector<Point_2> seg = polylines.front();
+      PointList seg = polylines.front();
       points.insert(points.end(), seg.begin(), seg.end());
     }
     // handle consecutive polylines
@@ -361,7 +387,7 @@ int main(int argc , char* argv[])
       // check wheter we can use the second segment this way or whether we
       // have to reverse the first polyline. Use distance comparism to pick
       // the best fit (so that we don't need exact equivalence of endpoints)
-      std::vector<Point_2> seg = polylines.at(1);
+      PointList seg = polylines.at(1);
       double d1 = CGAL::squared_distance(points.front(), seg.front());
       double d2 = CGAL::squared_distance(points.front(), seg.back());
       double d3 = CGAL::squared_distance(points.back(), seg.front());
@@ -377,7 +403,7 @@ int main(int argc , char* argv[])
         // check which endpoint of this polyline is nearest to the last
         // point in our list of points.
         Point_2 lastPoint = points.back();
-        std::vector<Point_2> seg = polylines.at(i);
+        PointList seg = polylines.at(i);
         double d1 = CGAL::squared_distance(lastPoint, seg.front());
         double d2 = CGAL::squared_distance(lastPoint, seg.back());
         if (d1 <= d2) {
@@ -405,35 +431,30 @@ int main(int argc , char* argv[])
       points.clear();
     }
 
-    // open an output file for storing the WKT
-    std::stringstream s;
-    s << outdir << "/" << site.id() << ".wkt";
-    std::string polygonFileName = s.str();
-    std::cout << "filename: " << polygonFileName << std::endl;
-    std::ofstream wktFile;
-    wktFile.open(polygonFileName.c_str());
+    return points;
+}
 
-    // write WKT file
-    wktFile << "POLYGON ((";
-    for (int i = 0; i < points.size(); i++) {
-      Point_2 p = points.at(i);
-      wktFile << p.x()/SF << " " << p.y()/SF;
-      if (i < points.size() - 1) {
-        wktFile << ", ";
-      }
-    }
-    wktFile << "))";
-    wktFile.close();
+void writeWKT(Site_2 site, PointList polygon, char* outdir)
+{
+  // open an output file for storing the WKT
+  std::stringstream s;
+  s << outdir << "/" << site.id() << ".wkt";
+  std::string polygonFileName = s.str();
+  std::cout << "filename: " << polygonFileName << std::endl;
+  std::ofstream wktFile;
+  wktFile.open(polygonFileName.c_str());
 
-    // check each point
-    for (int i = 0; i < points.size(); i++) {
-      Point_2 p = points.at(i);
-      if (p.x() > crect.xmax() || p.x() < crect.xmin() || p.y() > crect.ymax() || p.y() < crect.ymin()) {
-        std::cout << "out of bounds" << std::endl;
-      }
+  // write WKT file
+  wktFile << "POLYGON ((";
+  for (int i = 0; i < polygon.size(); i++) {
+    Point_2 p = polygon.at(i);
+    wktFile << p.x() << " " << p.y();
+    if (i < polygon.size() - 1) {
+      wktFile << ", ";
     }
   }
-
+  wktFile << "))";
+  wktFile.close();
 }
 
 /*
