@@ -55,11 +55,15 @@ typedef CGAL::Hyperbola_2<Traits>                     Hyperbola_2;
 typedef CGAL::Hyperbola_segment_2<Traits>             Hyperbola_segment_2;
 typedef CGAL::Hyperbola_ray_2<Traits>                 Hyperbola_ray_2;
 
+typedef std::vector<Site_2>                           SiteList;
 typedef std::vector<Point_2>                          PointList;
 
 // forward declarations
+SiteList readSites(std::ifstream& ifs, double SF);
+SiteList createArtificialSites(SiteList& sites, Iso_rectangle_2 crect);
+
 bool containsPoint(Iso_rectangle_2 rect, Point_2 point);
-Iso_rectangle_2 boundingBox(std::vector<Site_2> sites);
+Iso_rectangle_2 boundingBox(SiteList sites);
 Iso_rectangle_2 extend(Iso_rectangle_2 rect, double amount);
 
 void handleDual(Object_2 o, Iso_rectangle_2 crect, std::vector<PointList>& polylines);
@@ -97,35 +101,11 @@ int main(int argc , char* argv[])
   // detail is used in approximation of the hyperbolas.
   double SF = 4000;
 
-  // collect the sites here
-  std::vector<Site_2> sites;
-  // a number of artificial sites
-  std::vector<Site_2> artificialSites;
-  // a site vector iterator
-  std::vector<Site_2>::iterator itr;
-
   // read in sites from input file
-  std::string line;
-  while (std::getline(ifs, line)) {
-    std::istringstream iss(line);
-    std::string type;
-    long id;
-    double  lat, lon;
-    iss >> id;
-    iss >> lon;
-    iss >> lat;
-    iss >> type;
-    double weight = 0;
-    if (type == "city") {
-      weight = 0.1;
-    } else if (type == "town") {
-      weight = 0.04;
-    } else if (type == "village") {
-      weight = 0.01;
-    }
-    Site_2 site(Point_2(lon*SF, lat*SF), weight*SF, id);
-    sites.push_back(site);
-  }
+  SiteList sites = readSites(ifs, SF);
+
+  // a site vector iterator
+  SiteList::iterator itr;
 
   // print sites
   for (itr = sites.begin(); itr != sites.end(); ++itr) {
@@ -142,24 +122,8 @@ int main(int argc , char* argv[])
   Iso_rectangle_2 crect = extend(boundingBox(sites), 0.1*SF);
   std::cout << "rect: " << crect << std::endl;
 
-  // add artificial sites
-  for (itr = sites.begin(); itr != sites.end(); ++itr) {
-    Site_2 site = *itr;
-    Point_2 point = site.point();
-    double weight = site.weight();
-    Point_2 apoint1(2 * crect.xmin() - point.x(), point.y());
-    Site_2 asite1(apoint1, weight);
-    Point_2 apoint2(2 * crect.xmax() - point.x(), point.y());
-    Site_2 asite2(apoint2, weight);
-    Point_2 apoint3(point.x(), 2 * crect.ymin() - point.y());
-    Site_2 asite3(apoint3, weight);
-    Point_2 apoint4(point.x(), 2 * crect.ymax() - point.y());
-    Site_2 asite4(apoint4, weight);
-    artificialSites.push_back(asite1);
-    artificialSites.push_back(asite2);
-    artificialSites.push_back(asite3);
-    artificialSites.push_back(asite4);
-  }
+  // a number of artificial sites
+  SiteList artificialSites = createArtificialSites(sites, crect);
 
   // add all original sites to the apollonius graph
   for (itr = sites.begin(); itr != sites.end(); ++itr) {
@@ -226,6 +190,58 @@ int main(int argc , char* argv[])
       }
     }
   }
+}
+
+SiteList readSites(std::ifstream& ifs, double SF)
+{
+  SiteList sites;
+  std::string line;
+  while (std::getline(ifs, line)) {
+    std::istringstream iss(line);
+    std::string type;
+    long id;
+    double  lat, lon;
+    iss >> id;
+    iss >> lon;
+    iss >> lat;
+    iss >> type;
+    double weight = 0;
+    if (type == "city") {
+      weight = 0.1;
+    } else if (type == "town") {
+      weight = 0.04;
+    } else if (type == "village") {
+      weight = 0.01;
+    }
+    Site_2 site(Point_2(lon*SF, lat*SF), weight*SF, id);
+    sites.push_back(site);
+  }
+  return sites;
+}
+
+SiteList createArtificialSites(SiteList& sites, Iso_rectangle_2 crect)
+{
+  SiteList artificialSites;
+  // add artificial sites
+  SiteList::iterator itr;
+  for (itr = sites.begin(); itr != sites.end(); ++itr) {
+    Site_2 site = *itr;
+    Point_2 point = site.point();
+    double weight = site.weight();
+    Point_2 apoint1(2 * crect.xmin() - point.x(), point.y());
+    Site_2 asite1(apoint1, weight);
+    Point_2 apoint2(2 * crect.xmax() - point.x(), point.y());
+    Site_2 asite2(apoint2, weight);
+    Point_2 apoint3(point.x(), 2 * crect.ymin() - point.y());
+    Site_2 asite3(apoint3, weight);
+    Point_2 apoint4(point.x(), 2 * crect.ymax() - point.y());
+    Site_2 asite4(apoint4, weight);
+    artificialSites.push_back(asite1);
+    artificialSites.push_back(asite2);
+    artificialSites.push_back(asite3);
+    artificialSites.push_back(asite4);
+  }
+  return artificialSites;
 }
 
 void handleDual(Object_2 o, Iso_rectangle_2 crect, std::vector<PointList>& polylines)
@@ -468,11 +484,11 @@ bool containsPoint(Iso_rectangle_2 rect, Point_2 point) {
 /*
  * calculate the bounding box of all specified sites
  */
-Iso_rectangle_2 boundingBox(std::vector<Site_2> sites) {
+Iso_rectangle_2 boundingBox(SiteList sites) {
   double xmin, xmax, ymin, ymax;
   xmin = xmax = sites.front().point().x();
   ymin = ymax = sites.front().point().y();
-  std::vector<Site_2>::iterator itr;
+  SiteList::iterator itr;
   for (itr = sites.begin(); itr != sites.end(); ++itr) {
     Site_2 site = *itr;
     Point_2 point = site.point();
