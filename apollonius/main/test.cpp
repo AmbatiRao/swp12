@@ -79,14 +79,13 @@ void writeWKT(Site_2 site, PointList polygon, char* outdir);
 
 int main(int argc , char* argv[])
 {
-  if (argc != 4) {
-    std::cout << "usage: test <input file> <output image> <output folder>" << std::endl;
+  if (argc != 3) {
+    std::cout << "usage: test <input file> <output folder>" << std::endl;
     exit(1);
   }
 
   char* input = argv[1];
-  char* output = argv[2];
-  char* outdir = argv[3];
+  char* outdir = argv[2];
 
   std::ifstream ifs(input);
   assert( ifs );
