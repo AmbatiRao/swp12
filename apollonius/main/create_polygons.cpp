@@ -1,6 +1,6 @@
 // vim: si:ts=2:sw=2:expandtab:smartindent
 
-#include "test.h"
+#include "create_polygons.h"
 
 int main(int argc , char* argv[])
 {

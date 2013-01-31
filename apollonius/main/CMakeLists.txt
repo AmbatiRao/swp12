@@ -1,6 +1,6 @@
 # This is the CMake script for compiling a CGAL application.
 
-project (test)
+project (create_polygons)
 
 cmake_minimum_required(VERSION 2.6.2)
 
@@ -21,10 +21,10 @@ if ( CGAL_FOUND AND CGAL_Qt4_FOUND AND QT4_FOUND )
   include(${QT_USE_FILE})
 
   # Make sure to correct this line and duplicate it according to the project.
-  add_executable  ( test test.cpp )
+  add_executable  ( create_polygons create_polygons.cpp )
 
-  target_link_libraries( test ${CGAL_LIBRARIES}  ${CGAL_3RD_PARTY_LIBRARIES})
-  #target_link_libraries( test ${QT_LIBRARIES} )
+  target_link_libraries( create_polygons ${CGAL_LIBRARIES}  ${CGAL_3RD_PARTY_LIBRARIES})
+  #target_link_libraries( create_polygons ${QT_LIBRARIES} )
 
 else()
 
