@@ -1,0 +1,104 @@
+############# everything ##################
+
+> time ./project/scripts/Evaluator source-polygons/ apollonius-polygons/ 100000
+Reading source geometries
+Reading apollonius geometries
+calculating areas
+total area: 45.4492569076625
+number of points generated: 105645
+number of correct points:   72603
+number of wrong points:     33042
+how any points are correct? 0.687
+how any points are wrong?   0.313
+
+real    1m35.570s
+user    2m14.244s
+sys     0m2.744s
+
+> time ./project/scripts/Evaluator source-polygons/ apollonius-polygons/ 500000
+Reading source geometries
+Reading apollonius geometries
+calculating areas
+total area: 45.4492569076625
+number of points generated: 505677
+number of correct points:   345451
+number of wrong points:     160226
+how any points are correct? 0.683
+how any points are wrong?   0.317
+
+real    5m1.370s
+user    5m12.480s
+sys     0m3.168s
+
+> ./project/scripts/Evaluator source-polygons/ voronoi-polygons/ 100000
+Reading source geometries
+Reading apollonius geometries
+calculating areas
+total area: 45.4492569076625
+number of points generated: 105645
+number of correct points:   71812
+number of wrong points:     33833
+how any points are correct? 0.680
+how any points are wrong?   0.320
+
+> time ./project/scripts/Evaluator source-polygons/ voronoi-polygons/ 500000
+Reading source geometries
+Reading apollonius geometries
+calculating areas
+total area: 45.4492569076625
+number of points generated: 505677
+number of correct points:   342442
+number of wrong points:     163235
+how any points are correct? 0.677
+how any points are wrong?   0.323
+
+real    4m52.604s
+user    5m10.275s
+sys     0m2.832s
+
+############# only cities #################
+
+> time ./project/scripts/Evaluator source-polygons/ voronoi-polygons/ 500000
+Reading source geometries
+Reading apollonius geometries
+calculating areas
+total area: 1.7798315420153692
+number of points generated: 500042
+number of correct points:   225748
+number of wrong points:     274294
+how any points are correct? 0.451
+how any points are wrong?   0.549
+
+real    18m2.387s
+user    18m0.672s
+sys     0m5.752s
+
+> time ./project/scripts/Evaluator source-polygons/ voronoi-polygons/ 50000                                                                                
+Reading source geometries
+Reading apollonius geometries
+calculating areas
+total area: 1.7798315420153692
+number of points generated: 50043
+number of correct points:   22615
+number of wrong points:     27428
+how any points are correct? 0.452
+how any points are wrong?   0.548
+
+real    2m12.359s
+user    2m29.817s
+sys     0m2.460s
+
+> time ./project/scripts/Evaluator source-polygons/ apollonius-polygons/ 50000                                                                             
+Reading source geometries
+Reading apollonius geometries
+calculating areas
+total area: 1.7798315420153692
+number of points generated: 50043
+number of correct points:   42067
+number of wrong points:     7976
+how any points are correct? 0.841
+how any points are wrong?   0.159
+
+real    2m16.306s
+user    2m32.346s
+sys     0m2.380s
