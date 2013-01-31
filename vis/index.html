@@ -1,0 +1,36 @@
+<html>
+<head>
+<link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4/leaflet.css" />
+ <!--[if lte IE 8]>
+     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet-0.4/leaflet.ie.css" />
+ <![endif]-->
+<script src="http://cdn.leafletjs.com/leaflet-0.4/leaflet.js"></script>
+<script src="./input.js"></script>
+<script type="text/javascript">
+
+
+var initMap = function initMap() {
+    var map = L.map('map').setView([53, 13], 10);
+    L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+        maxZoom: 18
+        }).addTo(map);
+
+    var layer = L.geoJson().addTo(map);
+    geoms.forEach(function(geom){
+        layer.addData(geom);
+    });
+};
+
+</script>
+<style>
+#map { height: 100%; }
+</style>
+</head>
+<body onload="initMap();">
+<div id="map"></div>
+</body>
+</html>
+
+
+

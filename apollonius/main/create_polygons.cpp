@@ -4,13 +4,14 @@
 
 int main(int argc , char* argv[])
 {
-  if (argc != 3) {
+  if (argc < 3) {
     std::cout << "usage: test <input file> <output folder>" << std::endl;
     exit(1);
   }
 
   char* input = argv[1];
   char* outdir = argv[2];
+  char* format = argv[3];
 
   std::ifstream ifs(input);
   assert( ifs );
@@ -109,7 +110,11 @@ int main(int argc , char* argv[])
       Point_2& p = polygon.at(i);
       p = Point_2(p.x()/SF, p.y()/SF);
     }
-    writeWKT(site, polygon, outdir);
+    if(std::string(format) == "geojson") {
+      writeGeoJSON(site, polygon, outdir);
+    } else {
+      writeWKT(site, polygon, outdir);
+    }
 
     // check each point
     for (int i = 0; i < polygon.size(); i++) {
@@ -387,6 +392,26 @@ PointList buildPolygon(Site_2 site, std::vector<PointList>& polylines)
     }
 
     return points;
+}
+
+void writeGeoJSON(Site_2 site, PointList polygon, char* outdir) {
+  std::stringstream s;
+  s << outdir << "/" << site.id() << ".geojson";
+  std::string polygonFileName = s.str();
+  std::cout << "filename: " << polygonFileName << std::endl;
+  std::ofstream wktFile;
+  wktFile.open(polygonFileName.c_str());
+
+  wktFile << "{\"type\":\"Polygon\",\"coordinates\":[[";
+  for (int i = 0; i < polygon.size(); i++) {
+    Point_2 p = polygon.at(i);
+    wktFile << "[" << p.x() << ", " << p.y() << "]";
+    if (i < polygon.size() - 1) {
+      wktFile << ", ";
+    }
+  }
+  wktFile << "]]}";
+  wktFile.close();
 }
 
 void writeWKT(Site_2 site, PointList polygon, char* outdir)

@@ -73,3 +73,4 @@ void handleDual(Hyperbola_2 h, Iso_rectangle_2 crect, std::vector<PointList>& po
 
 PointList buildPolygon(Site_2 site, std::vector<PointList>& polylines);
 void writeWKT(Site_2 site, PointList polygon, char* outdir);
+void writeGeoJSON(Site_2 site, PointList polygon, char* outdir);
