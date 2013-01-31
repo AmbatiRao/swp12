@@ -80,7 +80,7 @@ int main(int argc , char* argv[])
     Site_2 site = viter->site();
     Point_2 point = site.point();
     // ignore artifical sites, detect them by their position
-    if (!containsPoint(crect, point)) {
+    if (!CGAL::do_intersect(crect, point)) {
       continue;
     }
     std::cout << "vertex " << ++vertexIndex << std::endl;
@@ -410,14 +410,6 @@ void writeWKT(Site_2 site, PointList polygon, char* outdir)
   }
   wktFile << "))";
   wktFile.close();
-}
-
-/*
- * Test whether the point lies within the specified rectangle
- */
-bool containsPoint(Iso_rectangle_2 rect, Point_2 point) {
-  return point.x() >= rect.xmin() && point.x() <= rect.xmax()
-      && point.y() >= rect.ymin() && point.y() <= rect.ymax();
 }
 
 /*

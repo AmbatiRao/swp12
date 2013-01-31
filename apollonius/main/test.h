@@ -60,7 +60,6 @@ SiteList readSites(std::ifstream& ifs, double SF);
 SiteList createArtificialSites(SiteList& sites, Iso_rectangle_2 crect);
 void printSites(SiteList& sites);
 
-bool containsPoint(Iso_rectangle_2 rect, Point_2 point);
 Iso_rectangle_2 boundingBox(SiteList sites);
 Iso_rectangle_2 extend(Iso_rectangle_2 rect, double amount);
 
