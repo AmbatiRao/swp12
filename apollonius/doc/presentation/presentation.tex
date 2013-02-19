@@ -1,0 +1,105 @@
+\documentclass{beamer}
+
+\usepackage[ngerman]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage{listings}
+
+\lstset{
+    language=c++,
+    basicstyle=\tiny,
+    showspaces=false,
+    showstringspaces=false
+}
+\setbeamertemplate{footline}{\insertframenumber/\inserttotalframenumber}
+
+\title{Generierung von Apollonius-Diagrammen auf Basis von ortsbezogenen Daten}
+
+\author[Sebastian Kürten, Philipp Borgers, Lukas Maischak]{
+    Sebastian Kürten
+    \newline Lukas Maischak
+    \newline Philipp Borgers
+}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+\begin{frame}
+    \frametitle{Thema}
+    \begin{itemize}
+        \item Approximation von Gemeindegrenzen mit Hilfe von Apollonius-Diagrammen
+        (Additiv gewichtete Voronoi-Diagramme)
+        \item Datenbasis: sogenannte Ortsknoten aus der Openstreetmap Datenbank
+        \item Eingabe: Menge von Knoten mit Metadaten (Einwohnerzahl)
+        \item Ausgabe: Zu jedem Knoten konstruiere ein Polygon, welches die der Gemeinde
+        zugeordnete Fläche bestimmt.
+        \item Dabei sollen die Polygone eine Zerlegung der Ebene bilden.
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Voronoi-Diagramme}
+    \begin{itemize}
+        \item Was ist das überhaupt?
+        \item Definition?
+        \item Beispiel-Bild?
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Apollonius Diagramme (Gewichtete Voronoi-Diagrame)}
+    \begin{itemize}
+        \item Unterschied zum Voronoi-Diagramm
+        \item Definition
+        \item Beispiel
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{CGAL Implementierung}
+    \begin{itemize}
+        \item Code zur Generierung eines Graphen?
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{CGAL Implementierung - Dual Graph}
+    \begin{itemize}
+        \item Code zur Generierung eines Graphen?
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Vorverarbeitung}
+    \begin{itemize}
+        \item Aus den OpenStreetMap-Daten werden Place-Nodes (city, town, village) extrahiert
+        \item Zu jedem Place-Node halten wir die OSM-Id und den Koordinaten fest
+        \item Format: <Openstreetmap Node Id> <Longitude> <Latitude> <type>
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Ausgabe}
+    \begin{itemize}
+        \item foo
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Demo}
+    \begin{center}
+        Ludi incipiant
+    \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Fragen? Danke}
+    \begin{center}
+    Fragen?
+    \newline Vielen Dank für Ihre Geduld!
+    \end{center}
+\end{frame}
+
+\end{document}
