@@ -1,9 +1,9 @@
 # create valid input for the apollonius generator from source polygons
-./project/scripts/PointFileCreator source-polygons/ input-for-apollonious.txt
+./project/scripts/PointFileCreator source-polygons/ input-for-apollonius.txt
 
 # create apollonius polygons
 mkdir apollonius-polygons
-../main/build/create_polygons input-for-apollonious.txt apollonius-polygons
+../main/build/create_polygons input-for-apollonius.txt apollonius-polygons
 
 # start the evaluation
 ./project/scripts/Evaluator source-polygons/ apollonius-polygons/ 100000
