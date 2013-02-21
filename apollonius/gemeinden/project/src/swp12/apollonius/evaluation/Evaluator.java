@@ -173,19 +173,19 @@ public class Evaluator {
 			for (String id : ids) {
 				Geometry sourceGeometry = idToSourceGeometry.get(id);
 				Geometry apolloniusGeometry = idToApolloniusGeometry.get(id);
+				
+				double area = areas.get(id);
+				int nPoints = (int) Math.ceil((area / totalArea) * numPoints);
+				
+				if (apolloniusGeometry == null) {
+					nWrong += nPoints;
+					continue;
+				}
 
 				DiscretizingContainmentTester ctSource = new DiscretizingContainmentTester(
 						sourceGeometry, 10);
 				DiscretizingContainmentTester ctApollonius = new DiscretizingContainmentTester(
 						apolloniusGeometry, 10);
-
-				double area = areas.get(id);
-				int nPoints = (int) Math.ceil((area / totalArea) * numPoints);
-
-				if (apolloniusGeometry == null) {
-					nWrong += nPoints;
-					continue;
-				}
 
 				Envelope bbox = sourceGeometry.getEnvelopeInternal();
 				for (int i = 0; i < nPoints; i++) {
