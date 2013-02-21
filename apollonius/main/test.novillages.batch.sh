@@ -1,8 +1,5 @@
 #!/bin/bash
 DATA="../data/brandenburg.novillages.txt"
-WC="0.2"
-WT="0.04"
-WV="0.01"
 FORMAT="wkt"
 
 for WC in $(seq 0.1 0.05 0.5); do
