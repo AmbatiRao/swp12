@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -12,6 +13,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -25,23 +27,32 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
+import de.topobyte.carbon.geometry.speedup.containment.ContainmentTester;
+import de.topobyte.carbon.geometry.speedup.containment.DiscretizingContainmentTester;
+import de.topobyte.carbon.geometry.speedup.containment.DiscretizingContainmentTesterFactory;
+import de.topobyte.carbon.geometry.speedup.index.ContainmentGeometryTesselationMap;
 import de.topobyte.selenium.fileformat.EntityFile;
 import de.topobyte.selenium.fileformat.FileReader;
 
 public class Evaluator {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws FileNotFoundException {
 		if (args.length != 3) {
 			System.out
 					.println("usage: "
 							+ Evaluator.class.getSimpleName()
-							+ " <dir with original polygons> <dir with apollonius polygons> <number of points to generate>");
+							+ " <dir with original polygons> <dir with apollonius polygons> <number of points to generate / point file>");
 			System.exit(1);
 		}
+
+		boolean onlyCities = false;
 
 		String pathDirSource = args[0];
 		String pathDirApollonius = args[1];
 		String vNum = args[2];
+
+		boolean randInput = true;
+		File filePoints = null;
 
 		/*
 		 * parse number of points argument
@@ -52,6 +63,8 @@ public class Evaluator {
 		} catch (NumberFormatException e) {
 			System.out.println("unable to parse number of points: "
 					+ e.getMessage());
+			randInput = false;
+			filePoints = new File(vNum);
 		}
 
 		/*
@@ -84,9 +97,11 @@ public class Evaluator {
 				Geometry geometry = entity.getGeometry();
 				Map<String, String> tags = entity.getTags();
 				String vPopulation = tags.get("population");
-				int population = Integer.parseInt(vPopulation);
-				if (population < 100000) {
-					ids.remove(ids.size() - 1);
+				if (onlyCities) {
+					int population = Integer.parseInt(vPopulation);
+					if (population < 100000) {
+						ids.remove(ids.size() - 1);
+					}
 				}
 				idToSourceGeometry.put(id, geometry);
 			} catch (ParserConfigurationException e) {
@@ -149,31 +164,90 @@ public class Evaluator {
 		int nCorrect = 0;
 		int nWrong = 0;
 
-		/*
-		 * for each source geometry, calculate some test points
-		 */
-		Random random = new Random();
-		GeometryFactory geometryFactory = new GeometryFactory();
-		for (String id : ids) {
-			Geometry sourceGeometry = idToSourceGeometry.get(id);
-			Geometry apolloniusGeometry = idToApolloniusGeometry.get(id);
-			double area = areas.get(id);
-			int nPoints = (int) Math.ceil((area / totalArea) * numPoints);
+		if (randInput) {
+			/*
+			 * for each source geometry, calculate some test points
+			 */
+			Random random = new Random();
+			GeometryFactory geometryFactory = new GeometryFactory();
+			for (String id : ids) {
+				Geometry sourceGeometry = idToSourceGeometry.get(id);
+				Geometry apolloniusGeometry = idToApolloniusGeometry.get(id);
 
-			if (apolloniusGeometry == null) {
-				nWrong += nPoints;
-				continue;
+				DiscretizingContainmentTester ctSource = new DiscretizingContainmentTester(
+						sourceGeometry, 10);
+				DiscretizingContainmentTester ctApollonius = new DiscretizingContainmentTester(
+						apolloniusGeometry, 10);
+
+				double area = areas.get(id);
+				int nPoints = (int) Math.ceil((area / totalArea) * numPoints);
+
+				if (apolloniusGeometry == null) {
+					nWrong += nPoints;
+					continue;
+				}
+
+				Envelope bbox = sourceGeometry.getEnvelopeInternal();
+				for (int i = 0; i < nPoints; i++) {
+					Point point = generatePointWithin(ctSource, bbox, random,
+							geometryFactory);
+					boolean inApollonius = ctApollonius.covers(point);
+					if (inApollonius) {
+						nCorrect += 1;
+					} else {
+						nWrong += 1;
+					}
+				}
+			}
+		} else {
+			DiscretizingContainmentTesterFactory containmentTesterFactory = new DiscretizingContainmentTesterFactory(
+					10);
+			ContainmentGeometryTesselationMap<String> index = new ContainmentGeometryTesselationMap<String>(
+					containmentTesterFactory);
+			for (String id : ids) {
+				Geometry sourceGeometry = idToSourceGeometry.get(id);
+				index.add(sourceGeometry, id);
 			}
 
-			Envelope bbox = sourceGeometry.getEnvelopeInternal();
-			for (int i = 0; i < nPoints; i++) {
-				Point point = generatePointWithin(sourceGeometry, bbox, random,
-						geometryFactory);
-				boolean inApollonius = apolloniusGeometry.contains(point);
-				if (inApollonius) {
-					nCorrect += 1;
-				} else {
-					nWrong += 1;
+			GeometryFactory geometryFactory = new GeometryFactory();
+
+			FileInputStream fis = new FileInputStream(filePoints);
+			BufferedInputStream is = new BufferedInputStream(fis);
+
+			int i = 0;
+
+			while (true) {
+				if ((++i % 1000) == 0) {
+					System.out.println("processed: " + i);
+				}
+				try {
+					double lon = readDouble(is);
+					double lat = readDouble(is);
+
+					Point point = geometryFactory.createPoint(new Coordinate(
+							lon, lat));
+
+					Set<String> sourceIds = index.test(point);
+					if (sourceIds.size() == 0 || sourceIds.size() > 1) {
+						continue;
+					}
+					String id = sourceIds.iterator().next();
+					Geometry apolloniusGeometry = idToApolloniusGeometry
+							.get(id);
+					
+					if (apolloniusGeometry == null) {
+						nWrong += 1;
+						continue;
+					}
+
+					boolean inApollonius = apolloniusGeometry.covers(point);
+					if (inApollonius) {
+						nCorrect += 1;
+					} else {
+						nWrong += 1;
+					}
+				} catch (IOException e) {
+					break;
 				}
 			}
 		}
@@ -187,14 +261,35 @@ public class Evaluator {
 		System.out.println("number of wrong points:     " + nWrong);
 		double correct = nCorrect / (double) nTotal;
 		double wrong = nWrong / (double) nTotal;
-		System.out.println(String.format("how any points are correct? %.3f",
+		System.out.println(String.format("how many points are correct? %.3f",
 				correct));
-		System.out.println(String.format("how any points are wrong?   %.3f",
+		System.out.println(String.format("how many points are wrong?   %.3f",
 				wrong));
 	}
 
-	private static Point generatePointWithin(Geometry geometry, Envelope bbox,
-			Random random, GeometryFactory geometryFactory) {
+	private static double readDouble(BufferedInputStream is) throws IOException {
+		long bits = 0;
+		bits |= ((long) readByte(is)) << 56;
+		bits |= ((long) readByte(is)) << 48;
+		bits |= ((long) readByte(is)) << 40;
+		bits |= ((long) readByte(is)) << 32;
+		bits |= ((long) readByte(is)) << 24;
+		bits |= readByte(is) << 16;
+		bits |= readByte(is) << 8;
+		bits |= readByte(is);
+		return Double.longBitsToDouble(bits);
+	}
+
+	private static int readByte(InputStream is) throws IOException {
+		int read = is.read();
+		if (read < 0) {
+			throw new IOException("end of stream");
+		}
+		return read;
+	}
+
+	private static Point generatePointWithin(ContainmentTester tester,
+			Envelope bbox, Random random, GeometryFactory geometryFactory) {
 		while (true) {
 			double minX = bbox.getMinX();
 			double maxX = bbox.getMaxX();
@@ -203,7 +298,7 @@ public class Evaluator {
 			double x = minX + ((maxX - minX) * random.nextDouble());
 			double y = minY + ((maxY - minY) * random.nextDouble());
 			Point point = geometryFactory.createPoint(new Coordinate(x, y));
-			if (geometry.contains(point)) {
+			if (tester.covers(point)) {
 				return point;
 			}
 		}

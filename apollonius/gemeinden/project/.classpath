@@ -9,5 +9,6 @@
 	<classpathentry kind="lib" path="lib/misc-utils.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-log4j12-1.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/carbon.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

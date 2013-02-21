@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# find java claspath
+DIR=`dirname $0`
+CLASSPATH=.
+CLASSPATH+=:$DIR/../lib/*
+CLASSPATH+=:$DIR/../lib/osmosis/*
+CLASSPATH+=:$DIR/../bin/
+CLASSPATH+=:$DIR/../
+
+CMD="java -cp $CLASSPATH"
+exec $CMD swp12.apollonius.evaluation.ReadDoubles "$@"
