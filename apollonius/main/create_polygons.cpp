@@ -4,8 +4,9 @@
 
 int main(int argc , char* argv[])
 {
-  if (argc < 3) {
-    std::cout << "usage: test <input file> <output folder>" << std::endl;
+  if (argc < 7) {
+    std::cout << "usage: test <input file> <output folder> "
+      "<format (wkt | geojson)> <weight city> <weight town> <weight village>" << std::endl;
     exit(1);
   }
 
@@ -13,8 +14,23 @@ int main(int argc , char* argv[])
   char* outdir = argv[2];
   char* format = argv[3];
 
+  char* swc = argv[4];
+  char* swt = argv[5];
+  char* swv = argv[6];
+
   std::ifstream ifs(input);
   assert( ifs );
+
+  double wc, wt, wv;
+  std::istringstream stmc, stmt, stmv;
+  stmc.str(swc);
+  stmc >> wc;
+  stmt.str(swt);
+  stmt >> wt;
+  stmv.str(swv);
+  stmv >> wv;
+
+  std::cout << "using weights: city: " << wc << ", town: " << wt << ", village: " << wv << std::endl;
 
   /*
    * prepare data
@@ -29,7 +45,7 @@ int main(int argc , char* argv[])
   double SF = 4000;
 
   // read in sites from input file
-  SiteList sites = readSites(ifs, SF);
+  SiteList sites = readSites(ifs, SF, wc, wt, wv);
 
   printSites(sites);
 
@@ -126,7 +142,7 @@ int main(int argc , char* argv[])
   }
 }
 
-SiteList readSites(std::ifstream& ifs, double SF)
+SiteList readSites(std::ifstream& ifs, double SF, double wc, double wt, double wv)
 {
   SiteList sites;
   std::string line;
@@ -141,11 +157,11 @@ SiteList readSites(std::ifstream& ifs, double SF)
     iss >> type;
     double weight = 0;
     if (type == "city") {
-      weight = 0.1;
+      weight = wc;
     } else if (type == "town") {
-      weight = 0.04;
+      weight = wt;
     } else if (type == "village") {
-      weight = 0.01;
+      weight = wv;
     }
     Site_2 site(Point_2(lon*SF, lat*SF), weight*SF, id);
     sites.push_back(site);

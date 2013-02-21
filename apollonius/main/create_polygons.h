@@ -56,7 +56,7 @@ typedef std::vector<Site_2>                           SiteList;
 typedef std::vector<Point_2>                          PointList;
 
 // forward declarations
-SiteList readSites(std::ifstream& ifs, double SF);
+SiteList readSites(std::ifstream& ifs, double SF, double wc, double wt, double wv);
 SiteList createArtificialSites(SiteList& sites, Iso_rectangle_2 crect);
 void printSites(SiteList& sites);
 
