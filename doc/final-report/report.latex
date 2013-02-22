@@ -282,6 +282,33 @@ Lorem ipsum
 \subsection{Apollonius cell generation}
 \label{sec:impl-apo}
 
+This part of our implementation takes as input a file that contains a 
+list of input nodes as 
+described in section \ref{sec:impl-preprocessing}, constructs the 
+Apollonius graph, transforms each cell to a polygonal entity and exports
+each polygon to a file for further usage.
+
+The main program is called \texttt{create\_polygons} and accepts five
+input parameters:
+
+\begin{enumerate}
+\item \textbf{Input}. This is the name of a file that contains the node 
+definitions.
+\item \textbf{Output}. This is the name of directory where to program will
+put the generated polygon files.
+\item \textbf{File format}. This is either "wkt" or "geojson" and defines 
+which type of output file will be generated.
+\item \textbf{Weight for cities}. The weight used to \textit{city} nodes.
+\item \textbf{Weight for towns}. The weight used for \textit{town} nodes.
+\item \textbf{Weight for villages}. The weight used for \textit{village} nodes.
+\end{enumerate}
+
+For example the program may be called from the command line like this:
+
+\begin{lstlisting}[numbers=none]
+./create_polygons nodes.txt output/ wkt 1.0 0.5 0.1
+\end{lstlisting}
+
 \subsubsection{Program setup}
 \label{sec:impl-apo-setup}
 
