@@ -1,0 +1,99 @@
+\documentclass[a4paper,11pt]{article}
+\usepackage[a4paper,vmargin={20mm,20mm},hmargin={30mm,25mm}]{geometry}
+
+\usepackage{graphicx}
+\usepackage[utf8x]{inputenc}
+\usepackage[english,ngerman]{babel}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{verbatim}
+%\usepackage{color}
+\usepackage{amssymb,amsmath}
+
+% this makes < > work
+\usepackage[T1]{fontenc}
+
+\PrerenderUnicode{ü}
+
+\usepackage[pdftex,
+            pdfauthor={Sebastian Kürten},
+            pdftitle={Apollonius-Diagramme in der Geokodierung},
+            pdfsubject={Erstellung von Apollonius-Diagrammen auf Basis von Openstreetmap mit CGAL},
+            pdfkeywords={CGAL, Apollonius, Voronoi, Openstreetmap, Geocoding, Geokodierung},
+            pdfproducer={Latex with hyperref},
+            pdfcreator={pdflatex}]{hyperref}
+
+\begin{document}
+
+\selectlanguage{english}
+
+\lstset{
+basicstyle=\footnotesize
+}
+
+\parindent 0em%
+\parskip 0.5em%
+\noindent\rule{\textwidth}{1pt}%
+\begin{center}%
+\textbf{Softwareprojekt CGAL} \\
+\textbf{WiSe 2012/13}
+\end{center}%
+{Philipp Borgers, Sebastian Kürten, Lukas Maischak}\\%
+\noindent\rule{\textwidth}{1pt}%
+
+\definecolor{light-gray}{gray}{0.9}
+\lstset {numbers = left, language = octave}
+\lstset {basicstyle = \footnotesize, numberstyle = \small\color{gray}}
+\lstset {literate = {Ö}{{\"O}}1 {Ä}{{\"A}}1 {Ü}{{\"U}}1 {ß}{{\ss}}2 {ü}{{\"u}}1 {ä}{{\"a}}1 {ö}{{\"o}}1 }
+
+\newcommand*{\DOT}{.}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Introduction
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Introduction}
+
+\subsection{Topic / General Idea}
+\begin{itemize}
+\item Problem: approximate the actual polygonal representation of a municipality 
+given a puntal representation of such a geographic entity.
+\item TODO: cite some literature: naive approach is nearest neighbours
+\item Nearest neighbours = implicit usage of ordinary voronoi diagram
+\item Idea: use the \textbf{weighted Voronoi diagram} a.k.a. the
+\textbf{Apollonius diagram} to produce more accurate representations of municipalities.
+\end{itemize}
+
+\subsection{Project outline}
+
+\begin{itemize}
+\item CGAL implements the Apollonius diagram within the \textbf{2D Apollonius Graphs} package.
+\item Construct such a diagram for arbitrary input data
+\item For ease of further use extract the cells of the Apollonius diagram as polygons
+\item Utilize the \textbf{2D Regularized Boolean Set-Operations} package to make it possible
+to refine the results of diagram creation by computing the intersection with some additional
+bounding polygon.
+\item Visualize input and output data appopriately so that results may be inspected manually
+and to create a qualitative measure for usefulness of the results
+\item Evaluate results quantitatively with sophisticated input data for the municipalities of
+Germany. Develope methods for evaluating the accurateness of the diagrams created and compare them
+to the original data that is available.
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Preprocessing}
+\subsection{Extracting relevant data from Openstreetmap}
+
+\section{Core Implementation}
+
+\subsection{Creating the Apollonius diagram}
+\subsection{Accessing the cells and converting them to polygons}
+\subsection{Exporting geometries for further usage}
+\subsection{Insersecting geometries with polygonal boundary}
+
+\section{Evaluation}
+\subsection{Qualitative Results}
+\subsection{Quantitative Analysis}
+
+\end{document}
