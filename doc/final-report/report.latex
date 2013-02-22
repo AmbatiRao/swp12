@@ -85,6 +85,20 @@ Germany. Develope methods for evaluating the accurateness of the diagrams create
 to the original data that is available.
 \end{itemize}
 
+\subsection{Architecture}
+\label{sec:intro-architecture}
+
+Our implementation has four major components:
+\begin{itemize}
+\item Preprocessing (written in Java)
+\item Generation of Apollonius diagram cells (written in C using CGAL)
+\item Intersection of Apollonius cells with a bounding polygon (written in C
+using CGAL)
+\item Evaluation code (written in Java)
+\end{itemize}
+
+Section \ref{sec:impl} is structured accordingly.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % The Apollonius diagram
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -243,30 +257,41 @@ This will be discussed in more detail in section \ref{sec:impl-apo-polygon-creat
 Lorem ipsum
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Prepreocessing
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Preprocessing}
-
-Lorem ipsum
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Extracting relevant data from Openstreetmap}
-
-Lorem ipsum
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Core Implementation
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Core Implementation}
+\label{sec:impl}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Prepreocessing
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Preprocessing}
+\label{sec:impl-preprocessing}
+
+Lorem ipsum
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Extracting relevant data from Openstreetmap}
+\label{sec:impl-preprocessing-extraction}
+
+Lorem ipsum
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Apollonius cell generation
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Apollonius cell generation}
 \label{sec:impl-apo}
 
-\subsection{Creating the Apollonius diagram}
+\subsubsection{Program setup}
+\label{sec:impl-apo-setup}
+
+\subsubsection{Creating the Apollonius diagram}
 \label{sec:impl-apo-creation}
 
-\subsection{Accessing the cells and converting them to polygons}
+\subsubsection{Accessing the cells and converting them to polygons}
 \label{sec:impl-apo-polygon-creation}
 
-\subsection{Exporting geometries for further usage}
+\subsubsection{Exporting geometries for further usage}
 \label{sec:impl-apo-exporting}
 
 Simple algorithms have been implemented to output the created polygons to
@@ -277,16 +302,33 @@ the polygon.
 Two formats have been implemented because each of them makes further 
 processing with a specific tool quite easy.
 
-\subsubsection{Well-Known-Text (WKT)}
+\paragraph{Well-Known-Text (WKT)}
+
+The following code implements output in the Well-Known-Text format:
 
 \lstinputlisting{code/wkt.c}
 
-\subsubsection{GeoJSON}
+\paragraph{GeoJSON}
+
+The following code implements output in the GeoJSON format:
 
 \lstinputlisting{code/geojson.c}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Apollonius cell insersection
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Insersecting geometries with polygonal boundary}
-\label{sec:impl-apo-intersection}
+\label{sec:impl-cell-intersection}
+
+Lorem ipsum
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Evaluation
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Evaluation implementation}
+\label{sec:impl-evaluation}
+
+Lorem ipsum
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Evaluation
