@@ -459,7 +459,8 @@ void writeWKT(Site_2 site, PointList polygon, char* outdir)
 /*
  * calculate the bounding box of all specified sites
  */
-Iso_rectangle_2 boundingBox(SiteList sites) {
+Iso_rectangle_2 boundingBox(SiteList sites)
+{
   double xmin, xmax, ymin, ymax;
   xmin = xmax = sites.front().point().x();
   ymin = ymax = sites.front().point().y();
@@ -487,7 +488,8 @@ Iso_rectangle_2 boundingBox(SiteList sites) {
 /*
  * create a rectangle based on the specifed one, but enlarge it by amount
  */
-Iso_rectangle_2 extend(Iso_rectangle_2 rect, double amount) {
+Iso_rectangle_2 extend(Iso_rectangle_2 rect, double amount)
+{
   Iso_rectangle_2 r(rect.xmin()-amount, rect.ymin()-amount, 
       rect.xmax()+amount, rect.ymax()+amount);
   return r;
