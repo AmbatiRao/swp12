@@ -343,6 +343,39 @@ is created like this:
 \subsubsection{Accessing the cells and converting them to polygons}
 \label{sec:impl-apo-polygon-creation}
 
+For each site, we create the cell as a polygon by traversing the 
+incident edges to the vertex of the site in circular order.
+Each edge in the Apollonius graph has as dual an edge in the Apollonius
+diagram.
+We retrieve this dual edge, create a discretized version of it in form
+of a list of points that approximates the curve and add this list of points
+to the list of arcs that form the cell.
+
+\lstinputlisting{code/cell.c}
+
+In the above code, the method \texttt{handleDual} will inspect type of 
+the object passed as the first argument and add a polyline to the list
+of polylines which is given as the third argument and possibly clip
+inifinite arcs with the clipping rectangle. The implementation of
+handleDual is shown at the end of this section.
+
+By circulating the incident edges of the site above to collect, via their 
+dual, the arcs of the apollonius cells, we ensured that the arcs arrive
+in the list of arcs in their correct order in respect to the order of arcs
+forming the cell.
+Only we cannot know whether an arc is in the correct order with respect to 
+itself (i.e. whether its direction is correct), 
+because the method we use to create approximations for curves makes no 
+guarantees about the direction of the arc returned.
+To resolve this situtation, the following method has been written that
+reverses the direction of arcs if necessary.
+
+\lstinputlisting{code/build-polygon.c}
+
+Here should be some description for handleDual...
+
+%\lstinputlisting{code/handleDual.c}
+
 \subsubsection{Exporting geometries for further usage}
 \label{sec:impl-apo-exporting}
 
