@@ -89,20 +89,193 @@ to the original data that is available.
 \end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% 
+% The Apollonius diagram
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{The Apollonius Diagram}
+
+\subsection{Introduction}
+
+Lorem ipsum
+
+\subsection{Primal and Dual}
+\label{sec:apo-primal-dual}
+
+Lorem ipsum
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Relevant CGAL packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Relevant CGAL packages}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 2D Apollonius Graphs
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{2D Apollonius Graphs}
+
+In this section we describe briefly most basic operations available on the 
+2D Apollonius graph data structure. Some methods have been left out 
+because they are not relevant to our project.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Creation and basic operations}
+The \textbf{2D Apollonius Graphs} package provided by CGAL does not offer 
+any means to create the Apollonius diagram directly but rather offers 
+means for creating its dual, the \textbf{Apollonius graph}.
+An Apollonius graph instance may then be used to answer the typical queries 
+to the diagram itsself, most importantly the nearest neighbor query which,
+given a point, returns the site of the diagram that is closest to that point
+with respect to the metric defined for additiveley weighted voronoi diagrams.
+
+The data structures implemented in the package allow dynamic insertions and
+deletions to the Apollonius graph.
+Assuming you declared an instance of Apollonius graph like this:
+
+\begin{lstlisting}[numbers=none]
+Apollonius_graph ag;
+\end{lstlisting}
+
+Then inserting a site $s$ into the graph is as easy as calling: 
+
+\begin{lstlisting}[numbers=none]
+ag.insert (Site_2 s);
+\end{lstlisting}
+
+Similarly a site may be removed from the graph like this:
+
+\begin{lstlisting}[numbers=none]
+ag.remove (Vertex_handle v);
+\end{lstlisting}
+
+assuming that you have a valid vertex handle $v$ at hand.
+
+The site whose cell a point $p$ falls within may then be found by executing
+the nearest neighbor query as follows:
+
+\begin{lstlisting}[numbers=none]
+ag.nearest_neighbor (Point_2 p);
+\end{lstlisting}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Access to basic constituent elements of the graph}
+
+The Apollonius graph data structure offers various iterators and circulators
+in respect to the constituent parts of the graph. 
+
+The elements the graph has been constructed from are the sites that have
+been inserted into the graph. Access to these sites is provided via
+iterators over sites. One might iterate over all sites available or, by 
+choice of the appropriate method, either only over visible or only 
+over invisble sites:
+\begin{itemize}
+\item \texttt{ag.sites\_begin} and \texttt{ag.sites\_end},
+\item \texttt{ag.visible\_sites\_begin} and \texttt{ag.visible\_sites\_end},
+\item \texttt{ag.hidden\_sites\_begin} and \texttt{ag.hidden\_sites\_end}.
+\end{itemize}
+
+It is possible to iterate
+over all vertices, edges and faces of the graph. The class offers the 
+following methods to access these elements:
+\begin{itemize}
+\item \texttt{ag.all\_vertices\_begin} and \texttt{ag.all\_vertices\_end},
+\item \texttt{ag.all\_edges\_begin} and \texttt{ag.all\_edges\_end},
+\item \texttt{ag.all\_faces\_begin} and \texttt{ag.all\_faces\_end}.
+\end{itemize}
+
+Additionally, the class offers similar methods for the iteration over only
+the finite elements of the graph:
+\begin{itemize}
+\item \texttt{ag.finite\_vertices\_begin} and \texttt{ag.finite\_vertices\_end},
+\item \texttt{ag.finite\_edges\_begin} and \texttt{ag.finite\_edges\_end},
+\item \texttt{ag.finite\_faces\_begin} and \texttt{ag.finite\_faces\_end}
+\end{itemize}
+
+Once you have a vertex $v$ at hand, you may also circulate over incident
+elements within the graph:
+\begin{itemize}
+\item \texttt{ag.incident\_faces(Vertex\_handle v)},
+\item \texttt{ag.incident\_edges(Vertex\_handle v)},
+\item \texttt{ag.incident\_vertices(Vertex\_handle v)}
+\end{itemize}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Visualization}
+
+Basic visualization mechanisms are available so that the Apollonius graph
+and its dual diagram may be displayed via Qt for example.
+For this purpose the following methods are defined either to draw the
+complete graph or individual parts thereof:
+
+\begin{itemize}
+\item \texttt{ag.draw\_primal(Stream str)},
+\item \texttt{ag.draw\_dual(Stream str)},
+\item \texttt{ag.draw\_primal\_edge(Edge e, Stream str)},
+\item \texttt{ag.draw\_dual\_edge(Edge e, Stream str)}.
+\end{itemize}
+
+As argument to these methods an instance of \texttt{PainterOstream} 
+provided by the CGAL library may be used to draw the diagram to an instance
+of \texttt{QPainter} which is in turn provided by the Qt-Framework.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Access to the dual}
+
+As described in section \ref{sec:apo-primal-dual}, each basic component of
+the Apollonius graph has a dual with respect to the Apollonius diagram.
+
+% NOTE: wow. the documentation at 'Class_Apollonius_graph_2.html' is wrong
+% about this. The dual of a face of the graph is not a site but a vertex
+
+The Apollonius graph class publicly offers access to the dual of faces only.
+A handle or iterator to a face $f$ of the graph at hand, one might access the
+dual of that face, which is a vertex of a cell of the Apollonius diagram by
+using this method:
+
+\texttt{ag.dual (Face\_handle f)}
+
+Unfortunately, the access to the dual of the remaining basic parts of the 
+graph is not publicly exposed to the user of the library.
+Nevertheless, access to those elements has been needed for the construction 
+of polygons for the cells of the diagram.
+This will be discussed in more detail in section \ref{sec:impl-apo-polygon-creation}.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 2D Regularized Boolean Set-Operations
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{2D Regularized Boolean Set-Operations}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Prepreocessing
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Preprocessing}
 \subsection{Extracting relevant data from Openstreetmap}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Core Implementation
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Core Implementation}
+\label{sec:impl-apo}
 
 \subsection{Creating the Apollonius diagram}
+\label{sec:impl-apo-creation}
 \subsection{Accessing the cells and converting them to polygons}
+\label{sec:impl-apo-polygon-creation}
 \subsection{Exporting geometries for further usage}
+\label{sec:impl-apo-exporting}
 \subsection{Insersecting geometries with polygonal boundary}
+\label{sec:impl-apo-intersection}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Evaluation
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Evaluation}
 \subsection{Qualitative Results}
 \subsection{Quantitative Analysis}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Summary
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Conclusion}
+\subsection{Summary}
+\subsection{Look-out}
 
 \end{document}
