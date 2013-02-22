@@ -27,10 +27,6 @@
 
 \selectlanguage{english}
 
-\lstset{
-basicstyle=\footnotesize
-}
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Header
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -46,7 +42,8 @@ basicstyle=\footnotesize
 \noindent\rule{\textwidth}{1pt}%
 
 \definecolor{light-gray}{gray}{0.9}
-\lstset {numbers = left, language = octave}
+\lstset {language = c}
+\lstset {numbers = left, frame = single}
 \lstset {basicstyle = \footnotesize, numberstyle = \small\color{gray}}
 \lstset {literate = {Ö}{{\"O}}1 {Ä}{{\"A}}1 {Ü}{{\"U}}1 {ß}{{\ss}}2 {ü}{{\"u}}1 {ä}{{\"a}}1 {ö}{{\"o}}1 }
 
@@ -227,7 +224,7 @@ the Apollonius graph has a dual with respect to the Apollonius diagram.
 
 The Apollonius graph class publicly offers access to the dual of faces only.
 A handle or iterator to a face $f$ of the graph at hand, one might access the
-dual of that face, which is a vertex of a cell of the Apollonius diagram by
+dual of that face, which is a vertex of a cell of the Apollonius diagram, by
 using this method:
 
 \texttt{ag.dual (Face\_handle f)}
@@ -243,11 +240,19 @@ This will be discussed in more detail in section \ref{sec:impl-apo-polygon-creat
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{2D Regularized Boolean Set-Operations}
 
+Lorem ipsum
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Prepreocessing
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Preprocessing}
+
+Lorem ipsum
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Extracting relevant data from Openstreetmap}
+
+Lorem ipsum
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Core Implementation
@@ -257,10 +262,29 @@ This will be discussed in more detail in section \ref{sec:impl-apo-polygon-creat
 
 \subsection{Creating the Apollonius diagram}
 \label{sec:impl-apo-creation}
+
 \subsection{Accessing the cells and converting them to polygons}
 \label{sec:impl-apo-polygon-creation}
+
 \subsection{Exporting geometries for further usage}
 \label{sec:impl-apo-exporting}
+
+Simple algorithms have been implemented to output the created polygons to
+some important and easy to reuse file formats.
+The algorithms are this simple because they assume the polygon to be of its
+simplest possible form with only one outer ring forming the boundary of
+the polygon.
+Two formats have been implemented because each of them makes further 
+processing with a specific tool quite easy.
+
+\subsubsection{Well-Known-Text (WKT)}
+
+\lstinputlisting{code/wkt.c}
+
+\subsubsection{GeoJSON}
+
+\lstinputlisting{code/geojson.c}
+
 \subsection{Insersecting geometries with polygonal boundary}
 \label{sec:impl-apo-intersection}
 
