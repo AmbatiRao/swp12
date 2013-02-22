@@ -288,7 +288,7 @@ described in section \ref{sec:impl-preprocessing}, constructs the
 Apollonius graph, transforms each cell to a polygonal entity and exports
 each polygon to a file for further usage.
 
-The main program is called \texttt{create\_polygons} and accepts five
+The main program is called \texttt{create\_polygons} and accepts six 
 input parameters:
 
 \begin{enumerate}
