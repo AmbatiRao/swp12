@@ -44,6 +44,7 @@
 \definecolor{light-gray}{gray}{0.9}
 \lstset {language = c}
 \lstset {numbers = left, frame = single}
+\lstset {breaklines = true}
 \lstset {basicstyle = \footnotesize, numberstyle = \small\color{gray}}
 \lstset {literate = {Ö}{{\"O}}1 {Ä}{{\"A}}1 {Ü}{{\"U}}1 {ß}{{\ss}}2 {ü}{{\"u}}1 {ä}{{\"a}}1 {ö}{{\"o}}1 }
 
@@ -312,8 +313,32 @@ For example the program may be called from the command line like this:
 \subsubsection{Program setup}
 \label{sec:impl-apo-setup}
 
+After parsing the command line parameters, the program attempts to read
+in the list of sites supplied as a file.
+The method \texttt{readSites} returns a variable of type \texttt{SiteList}
+which is essentially a std vector of \texttt{Site\_2} instances.
+This \texttt{SiteList} will then be the input to further computations.
+
+\lstinputlisting{code/read-sites.c}
+
 \subsubsection{Creating the Apollonius diagram}
 \label{sec:impl-apo-creation}
+
+First the algorithm computes the bounding box of the input sites so that
+artificial may be created by mirroring along the axis' of the bounding box.
+The following method is used for calculation of the bounding box:
+
+\lstinputlisting{code/bbox.c}
+
+Next the list of artificial sites is created by mirroring each input site
+at each of the four axis' of the bounding box:
+
+\lstinputlisting{code/artificial.c}
+
+With input sites and artificial sites at hand, the apollonius graph
+is created like this:
+
+\lstinputlisting{code/init-apollonius-graph.c}
 
 \subsubsection{Accessing the cells and converting them to polygons}
 \label{sec:impl-apo-polygon-creation}
