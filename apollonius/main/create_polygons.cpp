@@ -410,24 +410,27 @@ PointList buildPolygon(Site_2 site, std::vector<PointList>& polylines)
     return points;
 }
 
-void writeGeoJSON(Site_2 site, PointList polygon, char* outdir) {
+void writeGeoJSON(Site_2 site, PointList polygon, char* outdir)
+{
+  // open an output file for storing the WKT
   std::stringstream s;
   s << outdir << "/" << site.id() << ".geojson";
   std::string polygonFileName = s.str();
   std::cout << "filename: " << polygonFileName << std::endl;
-  std::ofstream wktFile;
-  wktFile.open(polygonFileName.c_str());
+  std::ofstream file;
+  file.open(polygonFileName.c_str());
 
-  wktFile << "{\"type\":\"Polygon\",\"coordinates\":[[";
+  // write data
+  file << "{\"type\":\"Polygon\",\"coordinates\":[[";
   for (int i = 0; i < polygon.size(); i++) {
     Point_2 p = polygon.at(i);
-    wktFile << "[" << p.x() << ", " << p.y() << "]";
+    file << "[" << p.x() << ", " << p.y() << "]";
     if (i < polygon.size() - 1) {
-      wktFile << ", ";
+      file << ", ";
     }
   }
-  wktFile << "]]}";
-  wktFile.close();
+  file << "]]}";
+  file.close();
 }
 
 void writeWKT(Site_2 site, PointList polygon, char* outdir)
@@ -437,20 +440,20 @@ void writeWKT(Site_2 site, PointList polygon, char* outdir)
   s << outdir << "/" << site.id() << ".wkt";
   std::string polygonFileName = s.str();
   std::cout << "filename: " << polygonFileName << std::endl;
-  std::ofstream wktFile;
-  wktFile.open(polygonFileName.c_str());
+  std::ofstream file;
+  file.open(polygonFileName.c_str());
 
   // write WKT file
-  wktFile << "POLYGON ((";
+  file << "POLYGON ((";
   for (int i = 0; i < polygon.size(); i++) {
     Point_2 p = polygon.at(i);
-    wktFile << p.x() << " " << p.y();
+    file << p.x() << " " << p.y();
     if (i < polygon.size() - 1) {
-      wktFile << ", ";
+      file << ", ";
     }
   }
-  wktFile << "))";
-  wktFile.close();
+  file << "))";
+  file.close();
 }
 
 /*
