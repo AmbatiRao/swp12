@@ -1,12 +1,15 @@
 package swp12.apollonius.evaluation;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -37,11 +40,14 @@ import de.topobyte.selenium.fileformat.FileReader;
 public class Evaluator {
 
 	public static void main(String[] args) throws FileNotFoundException {
-		if (args.length != 3) {
+		if (args.length != 5) {
 			System.out
 					.println("usage: "
 							+ Evaluator.class.getSimpleName()
-							+ " <dir with original polygons> <dir with apollonius polygons> <number of points to generate / point file>");
+							+ " <dir with original polygons> <dir with apollonius polygons>"
+							+ " <number of points to generate / point file>"
+							+ " <detection rate output append file>"
+							+ " <name of this sample to append to output>");
 			System.exit(1);
 		}
 
@@ -50,6 +56,8 @@ public class Evaluator {
 		String pathDirSource = args[0];
 		String pathDirApollonius = args[1];
 		String vNum = args[2];
+		String pathOutput = args[3];
+		String nameSample = args[4];
 
 		boolean randInput = true;
 		File filePoints = null;
@@ -66,7 +74,7 @@ public class Evaluator {
 			randInput = false;
 			filePoints = new File(vNum);
 		}
-
+		
 		/*
 		 * paths
 		 */
@@ -173,18 +181,18 @@ public class Evaluator {
 			for (String id : ids) {
 				Geometry sourceGeometry = idToSourceGeometry.get(id);
 				Geometry apolloniusGeometry = idToApolloniusGeometry.get(id);
-				
+
 				double area = areas.get(id);
 				int nPoints = (int) Math.ceil((area / totalArea) * numPoints);
-				
+
 				if (apolloniusGeometry == null) {
 					nWrong += nPoints;
 					continue;
 				}
 
-				DiscretizingContainmentTester ctSource = new DiscretizingContainmentTester(
+				ContainmentTester ctSource = new DiscretizingContainmentTester(
 						sourceGeometry, 10);
-				DiscretizingContainmentTester ctApollonius = new DiscretizingContainmentTester(
+				ContainmentTester ctApollonius = new DiscretizingContainmentTester(
 						apolloniusGeometry, 10);
 
 				Envelope bbox = sourceGeometry.getEnvelopeInternal();
@@ -234,7 +242,7 @@ public class Evaluator {
 					String id = sourceIds.iterator().next();
 					Geometry apolloniusGeometry = idToApolloniusGeometry
 							.get(id);
-					
+
 					if (apolloniusGeometry == null) {
 						nWrong += 1;
 						continue;
@@ -265,6 +273,19 @@ public class Evaluator {
 				correct));
 		System.out.println(String.format("how many points are wrong?   %.3f",
 				wrong));
+
+		File fileOutput = new File(pathOutput);
+		FileOutputStream output = new FileOutputStream(fileOutput, true);
+		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(
+				output));
+		try {
+			writer.write(String.format("%s: %f", nameSample, correct));
+			writer.write(System.getProperty("line.separator"));
+			writer.close();
+		} catch (IOException e) {
+			System.out.println("error while appending to output: "
+					+ e.getMessage());
+		}
 	}
 
 	private static double readDouble(BufferedInputStream is) throws IOException {

@@ -7,3 +7,6 @@ mkdir apollonius-polygons
 
 # start the evaluation
 ./project/scripts/Evaluator source-polygons/ apollonius-polygons/ 100000
+
+# reorder columns of the output file and sort it by detection rate
+cat out | sed -e "s/\(.*\);\(.*\);\(.*\): \(.*\)/\4::\1::\2::\3/"
