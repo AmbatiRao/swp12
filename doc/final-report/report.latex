@@ -297,7 +297,7 @@ This tag does not only identify cities as such but at the same time
 categeories the size of a city in respect to its population.
 A value of \textit{city} means that a place has more than 100000 inhabitants,
 while a value of \textit{town} or \textit{village} stands for more than
-10000 or more than 1000 inhabitants respectfully.
+10000 or more than 1000 inhabitants respectively.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Extracting relevant data from Openstreetmap}
@@ -512,7 +512,7 @@ The evaluation program has been implemented in Java. Both algorithms
 work with a list of input identifiers $ids$ for iteration purposes,
 as well as mappings from 
 such ids to source and apollonius geometries specified with
-variables $idToSourceGeometry$ and $idToApolloniusGeometry$ respectfully.
+variables $idToSourceGeometry$ and $idToApolloniusGeometry$ respectively.
 
 This is the code for the first resemblance measuremente strategy:
 \lstinputlisting[language=java]{code/eval-strategy1.java}
@@ -536,20 +536,71 @@ quality of the results quantitatively. In this section we present the
 results of these quality measurements.
 
 \begin{figure}
+\centering
 \begin{tabular}{|l|l|l|l|}\hline
 resemblance factor & weight city & weight town & weight village \\\hline\hline
 \input{data/data-uniform.tex}
 \end{tabular}
 \caption{Uniform data: resemblance mesaure}
+\label{tab:data-uniform}
 \end{figure}
 
 \begin{figure}
+\centering
 \begin{tabular}{|l|l|l|l|}\hline
 resemblance factor & weight city & weight town & weight village \\\hline\hline
 \input{data/data-highways.tex}
 \end{tabular}
 \caption{Street data: resemblance mesaure}
+\label{tab:data-streets}
 \end{figure}
+
+Figure \ref{tab:data-uniform} shows the best 30 values computed for
+uniform test point distribution while
+figure \ref{tab:data-streets} show the best 30 values computed for 
+the street centroids as input points.
+In both cases we tried to maximize the resemblance factor by variating 
+the parameters and observing the resemblance difference resulting from 
+those variations.
+In a first step, combinations of parameters in certain ranges with a fixed
+stepping have been computed automatically to find coarse position of the
+optimal parameters.
+In a second step, this process has been refined and further test have 
+been conducted by hand now taking the difference observed into account.
+Using binary search between pairs of promising parameters configurations, 
+it has not taken too long to locate values that appear to be optimal for
+the dataset used.
+
+It can be observed that the resemblance rate observed for the street data
+is generally higher that the rate observed for the uniform data.
+This is in principle what has been expected what would happen with such
+kind of data and this expectancy has led to the selection of this data set.
+The best resemblance rate observed for uniform data is 69.59\% while
+for street data the best resemblance rate has been 79.23\%.
+
+For the street data based approach, the best parameters found are
+0.2425, 0.20, 0.184 as weights for cities, towns and villages respectively,
+resulting in a resemblance rate of 79.23\%.
+Using the same parameters for the uniformly distributed test data shows
+that these parameters come very close to the best parameters observed
+for uniformly distributed data in general.
+This shows that the parameters found for street data perform quite good
+for uniformly distributed data as well.
+The opposite is not true:
+the best parameters found for uniform data also perform not bad for street
+data, but by far not as good as the other way around.
+The best parameters for uniform data were 0.23, 0.20 and 0.18, which lead
+to a resemblance rate of 78.95\% for street data.
+
+Both tables also include results for the ordinary Voronoi diagram approach,
+which is a special case of the Apollonius diagram where all weights are
+equal. For uniform data the results for these parameters were around
+67.9\% while for street data the resemblance rate was at 74.45\%.
+This shows that for uniform data the Apollonius diagram approach has only 
+little advantage over the ordinary Voronoi diagram approach where the 
+resemblance could only be increased to from 67.9\% to 69.59\%.
+For street data this look a bit different: the resemblance rate
+has been increased from 74.45\% to 79.23\%.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Summary
