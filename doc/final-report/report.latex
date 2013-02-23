@@ -23,6 +23,14 @@
             pdfproducer={Latex with hyperref},
             pdfcreator={pdflatex}]{hyperref}
 
+\hypersetup{
+	linkcolor=[rgb]{0 0 0.5},
+        colorlinks=true,
+        %linktocpage=true,
+        linkbordercolor=blue,
+        menucolor=red
+}
+
 \begin{document}
 
 \selectlanguage{english}
