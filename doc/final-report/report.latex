@@ -448,7 +448,7 @@ The following code implements output in the GeoJSON format:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Apollonius cell insersection
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{Insersecting geometries with polygonal boundary}
+\subsection{Insersecting geometries with a polygonal boundary}
 \label{sec:impl-cell-intersection}
 
 Lorem ipsum
