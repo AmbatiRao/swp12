@@ -459,7 +459,56 @@ Lorem ipsum
 \subsection{Evaluation implementation}
 \label{sec:impl-evaluation}
 
-Lorem ipsum
+The purpose of this program is to measure the resemblance of the polygonal
+representation of a city as created by our Apollonius diagram program to
+the original, known, boundary of that city.
+
+The idea is, once we have a quantitative measure at hand, we are able to
+learn the parameters for our diagram creation algorithm by an appropriate
+machine learning algorithm.
+
+Accordingly the problem here presents as follows:
+\begin{itemize}
+\item Input: a set of input regions $\mathbb{P}$ and a set of 
+associated output regions $\mathbb{Q}$ produced by our Apollonius program.
+For each region $p \in \mathbb{P}$ there is either an associated region 
+$p' \in \mathbb{Q}$ that has been produced by our algorithm or no such
+associated $p'$ exists because the respective site has been a hidden site 
+in the Apollonius diagram.
+\item Output: compute an overall measure of the quality of the resemblance
+of the geometries.
+\end{itemize}
+
+The measure of resemblance has been implemented by working on a set of
+test points $\mathbb{T}$ that lie within the region covered by the input
+geometries.
+To determine the resemblance factor, the following has been done:
+\begin{itemize}
+\item Initialize a counter variable $correct$ with $0$.
+\item For each $t \in \mathbb{T}$, find the original region 
+$p \in \mathbb{P}$ that contains $t$, as well as the Apollonius region
+$p' \in \mathbb{Q}$ that contains $t$.
+\item If $p'$ is associated with $p$, increment $correct$.
+\item In the end, determine the resemblance factor
+as $$resemblance = \frac{correct}{|\mathbb{T}|}$$
+\end{itemize}
+
+Two different types of measurement strategies have been implemented.
+They differ in the way the set of input points $\mathbb{T}$ have been
+selected.
+\begin{itemize}
+\item The first strategy aims to select $\mathbb{T}$ uniformly distributed
+over the covered region. The resemblance measure should reflect the 
+real geometric resemblance of the shapes under consideration.
+\item The second strategy uses as test set $\mathbb{T}$ the centroids of
+all streets stored in Openstreetmap for the area covered by input regions.
+The idea is that the resemblance factor reflects a measure of how good
+certain real data may be georeferenced with the geometries produced by our 
+Apollonius diagrams.
+\end{itemize}
+
+
+The evaluation program has been implemented in Java.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Evaluation
