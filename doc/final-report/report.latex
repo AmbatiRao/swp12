@@ -508,7 +508,17 @@ Apollonius diagrams.
 \end{itemize}
 
 
-The evaluation program has been implemented in Java.
+The evaluation program has been implemented in Java. Both algorithms
+work with a list of input identifiers $ids$ for iteration purposes,
+as well as mappings from 
+such ids to source and apollonius geometries specified with
+variables $idToSourceGeometry$ and $idToApolloniusGeometry$ respectfully.
+
+This is the code for the first resemblance measuremente strategy:
+\lstinputlisting[language=java]{code/eval-strategy1.java}
+
+This is the code for the second resemblance measuremente strategy:
+\lstinputlisting[language=java]{code/eval-strategy2.java}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Evaluation
