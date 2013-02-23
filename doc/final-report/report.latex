@@ -524,8 +524,16 @@ This is the code for the second resemblance measuremente strategy:
 % Evaluation
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Evaluation}
+
 \subsection{Qualitative Results}
+
 \subsection{Quantitative Analysis}
+
+The algorithms described in section \ref{sec:impl-evaluation} have been used
+on the one hand to find good parameters needed as input for the algorithm
+that creates the Apollonius diagram and on the other hand to estimate the
+quality of the results quantitatively. In this section we present the 
+results of these quality measurements.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Summary
