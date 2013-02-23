@@ -9,6 +9,7 @@
 \usepackage{verbatim}
 %\usepackage{color}
 \usepackage{amssymb,amsmath}
+\usepackage{multibib}
 
 % this makes < > work
 \usepackage[T1]{fontenc}
@@ -70,11 +71,17 @@
 
 \subsection{Topic / General Idea}
 \begin{itemize}
-\item Problem: approximate the actual polygonal representation of a municipality 
-given a puntal representation of such a geographic entity.
-\item TODO: cite some literature: naive approach is nearest neighbours
-\item Nearest neighbours = implicit usage of ordinary voronoi diagram
-\item Idea: use the \textbf{weighted Voronoi diagram} a.k.a. the
+\item Place names are widely used in the context of geographic information
+systems\cite{alani2001voronoi}.
+\item Typically the geometric information is only available as a simple
+footprint in form of a centroid coordinate\cite{alani2001voronoi}.
+\item Interesting problem: approximate a more accurate spatial footprint
+of places\cite{alani2001voronoi}.
+\item Different methods have been developed to compute approximation 
+from different kinds of additional information\cite{schockaert2005automatic}.
+\item A really basic, naive approach is the usage of voronoi diagram with
+the places as input sites to create a spatial footprint.
+\item \textbf{Idea}: use the \textbf{weighted Voronoi diagram} a.k.a. the
 \textbf{Apollonius diagram} to produce more accurate representations of municipalities.
 \end{itemize}
 
@@ -608,5 +615,11 @@ has been increased from 74.45\% to 79.23\%.
 \section{Conclusion}
 \subsection{Summary}
 \subsection{Look-out}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Bibliography
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\bibliographystyle{alpha}
+\bibliography{literature}
 
 \end{document}
