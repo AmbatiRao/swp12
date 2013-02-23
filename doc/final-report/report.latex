@@ -372,9 +372,23 @@ reverses the direction of arcs if necessary.
 
 \lstinputlisting{code/build-polygon.c}
 
-Here should be some description for handleDual...
+The next method is \texttt{handleDual} which generates a list of points
+for an arc and adds this pointlist to a list of pointlists for later 
+assemblage.
 
-%\lstinputlisting{code/handleDual.c}
+The method determines the type of the arc and delegates each call to special 
+implementations of \texttt{handleDual} for specific types of arcs.
+
+\lstinputlisting{code/handle-dual.c}
+
+It is noteworthy that the cases of Line, Hyperbola, Ray and Hyperbola ray
+ cannot occur in the disambiguation anymore.
+This is true because the insertion of the artifical sites into the 
+graph prevents infinite points to be possible for the cells of the original
+input sites. The methods for Ray and Hyperbola ray are shown here for 
+completenes while those of Line and Hyperbola are left out.
+
+\lstinputlisting{code/handle-dual-disamb.c}
 
 \subsubsection{Exporting geometries for further usage}
 \label{sec:impl-apo-exporting}
