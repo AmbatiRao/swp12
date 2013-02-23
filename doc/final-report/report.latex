@@ -535,6 +535,22 @@ that creates the Apollonius diagram and on the other hand to estimate the
 quality of the results quantitatively. In this section we present the 
 results of these quality measurements.
 
+\begin{figure}
+\begin{tabular}{|l|l|l|l|}\hline
+resemblance factor & weight city & weight town & weight village \\\hline\hline
+\input{data/data-uniform.tex}
+\end{tabular}
+\caption{Uniform data: resemblance mesaure}
+\end{figure}
+
+\begin{figure}
+\begin{tabular}{|l|l|l|l|}\hline
+resemblance factor & weight city & weight town & weight village \\\hline\hline
+\input{data/data-highways.tex}
+\end{tabular}
+\caption{Street data: resemblance mesaure}
+\end{figure}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Summary
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
