@@ -269,13 +269,37 @@ Lorem ipsum
 \subsection{Preprocessing}
 \label{sec:impl-preprocessing}
 
-Lorem ipsum
+Input data has been extracted from data from the Openstreetmap project.
+Because the project gathers a huge amount of data, only the relevant data
+of interest had to be extracted so that this data may be processed
+conviniently.
+
+Data found in Openstreetmap carries alphanumerical information along with 
+spatial attributes. It is possible to store the basic geometric types point,
+linestring, polygon and region (polygon with holes and multiple outer
+boundaries) in Openstreetmap and a variety of so called tags is used to
+annotate data quite flexibly. A tag in this context referes to 
+the notion of storing a value in association to a key.
+
+The subset of data we were interested in were the \textit{city nodes}, i.e.
+those nodes in the database that describe the locations of cities.
+These nodes are identified by a tag with the key \textit{place} and an
+associated value of either \textit{city}, \textit{town} or \textit{village}.
+This tag does not only identify cities as such but at the same time
+categeories the size of a city in respect to its population.
+A value of \textit{city} means that a place has more than 100000 inhabitants,
+while a value of \textit{town} or \textit{village} stands for more than
+10000 or more than 1000 inhabitants respectfully.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Extracting relevant data from Openstreetmap}
 \label{sec:impl-preprocessing-extraction}
 
-Lorem ipsum
+The following program implemented in Java extracts the desired data from an
+input file with Openstreetmap data and writes it to a file in simple text
+format.
+
+\lstinputlisting[language=java]{code/preprocessing.java}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Apollonius cell generation
