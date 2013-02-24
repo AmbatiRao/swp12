@@ -3,6 +3,8 @@
 \usepackage[ngerman]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{listings}
+% this makes < > work
+\usepackage[T1]{fontenc}
 
 \lstset{
     language=c++,
@@ -12,7 +14,7 @@
 }
 \setbeamertemplate{footline}{\insertframenumber/\inserttotalframenumber}
 
-\title{Generierung von Apollonius-Diagrammen auf Basis von ortsbezogenen Daten}
+\title{Using CGAL to create Apollonius diagrams based on OpenStreetMap data}
 
 \author[Sebastian Kürten, Philipp Borgers, Lukas Maischak]{
     Sebastian Kürten
@@ -40,51 +42,60 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Voronoi-Diagramme}
+    \frametitle{Apollonius diagram (2D)}
     \begin{itemize}
-        \item Was ist das überhaupt?
-        \item Definition?
-        \item Beispiel-Bild?
+        \item aka. additively weighted Voronoi diagram
+        \item Subdivision of the plane into connected regions (cells)
+        \item Defined over a set of sites $P_i = (c_i, w_i)$
+        \item A cell contains all points that are closer to $P_i$ than to any
+            other site $P_j$
     \end{itemize}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Apollonius Diagramme (Gewichtete Voronoi-Diagrame)}
+    \frametitle{Apollonius graph}
     \begin{itemize}
-        \item Unterschied zum Voronoi-Diagramm
-        \item Definition
-        \item Beispiel
+        \item The dual of the Apollonius diagram
     \end{itemize}
 \end{frame}
 
 \begin{frame}
-    \frametitle{CGAL Implementierung}
-    \begin{itemize}
-        \item Code zur Generierung eines Graphen?
-    \end{itemize}
+    \frametitle{CGAL Apollonius graph}
+    \lstinputlisting{../final-report/code/init-apollonius-graph.c}
 \end{frame}
 
 \begin{frame}
     \frametitle{CGAL Implementierung - Dual Graph}
     \begin{itemize}
-        \item Code zur Generierung eines Graphen?
+        \item How we generate the graph
     \end{itemize}
 \end{frame}
 
 \begin{frame}
     \frametitle{Vorverarbeitung}
     \begin{itemize}
-        \item Aus den OpenStreetMap-Daten werden Place-Nodes (city, town, village) extrahiert
-        \item Zu jedem Place-Node halten wir die OSM-Id und den Koordinaten fest
+        \item Extract place nodes (city, town, village) from OpenStreetMap dataset 
+        \item Use the position information and the osm-id for later reference
         \item Format: <Openstreetmap Node Id> <Longitude> <Latitude> <type>
     \end{itemize}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Ausgabe}
-    \begin{itemize}
-        \item foo
-    \end{itemize}
+    \frametitle{Output-Formats: WKT}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Output-Formats: WKT}
+    \lstinputlisting{../final-report/code/wkt.c}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Output-Formats: GeoJSON}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Output-Formats: GeoJSON}
+    \lstinputlisting{../final-report/code/geojson.c}
 \end{frame}
 
 \begin{frame}
@@ -95,11 +106,18 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{Fragen? Danke}
+    \frametitle{Questions?}
     \begin{center}
-    Fragen?
-    \newline Vielen Dank für Ihre Geduld!
+    Questions?
+    \newline Thank you for your attention!
     \end{center}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Sources}
+    \begin{itemize}
+        \item foo
+    \end{itemize}
 \end{frame}
 
 \end{document}
