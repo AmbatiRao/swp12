@@ -123,7 +123,18 @@ Section \ref{sec:impl} is structured accordingly.
 
 \subsection{Introduction}
 
-Lorem ipsum
+The Apollonius
+diagram\footnote{http://www.cgal.org/Manual/latest/doc\_html/cgal\_manual/Apollonius\_graph\_2/Chapter\_main.html} is defined over a set of sites $P_i = (c_i, w_i),
+i = 1, ..., n$ where $c_i$ is the point and $w_i$ the weight of $P_i$. It is a
+subdivision of the plane into connected regions, called cells, associated with
+the sites. The cell of a site $Pi$ is the locus of points on the plane that are
+closer to $P_i$ than any other site $P_j, j \neq i$. The distance $\delta(x, P_i)$ of a
+point $x$ in the plane to a site $Pi$ is defined as:
+
+$\delta(x,P_i)=||x-c_i||-w_i$,
+
+where $|| ⋅ ||$ denotes the Euclidean norm.
+
 
 \subsection{Primal and Dual}
 \label{sec:apo-primal-dual}
