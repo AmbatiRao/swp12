@@ -124,7 +124,8 @@ Section \ref{sec:impl} is structured accordingly.
 \subsection{Introduction}
 
 The Apollonius
-diagram\footnote{http://www.cgal.org/Manual/latest/doc\_html/cgal\_manual/Apollonius\_graph\_2/Chapter\_main.html} is defined over a set of sites $P_i = (c_i, w_i),
+diagram\footnote{http://www.cgal.org/Manual/latest/doc\_html/cgal\_manual/Apollonius\_graph\_2/Chapter\_main.html}
+in the plane is defined over a set of sites $P_i = (c_i, w_i),
 i = 1, ..., n$ where $c_i$ is the point and $w_i$ the weight of $P_i$. It is a
 subdivision of the plane into connected regions, called cells, associated with
 the sites. The cell of a site $Pi$ is the locus of points on the plane that are
@@ -135,11 +136,17 @@ $\delta(x,P_i)=||x-c_i||-w_i$,
 
 where $|| ⋅ ||$ denotes the Euclidean norm.
 
+The Apollonius diagram is also called Additively weighted Voronoi diagram
+because of its close relationship to the Voronoi diagram. A Apollonius diagram
+with equal weights for each site can be viewed as Voronoi diagram.
 
 \subsection{Primal and Dual}
 \label{sec:apo-primal-dual}
 
-Lorem ipsum
+The Apollonius graph is the dual of the Apollonius diagram. It is a planar
+graph. The source and destination of the edges are the sites of the Apollonius
+diagram.
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Relevant CGAL packages
