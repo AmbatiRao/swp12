@@ -5,7 +5,7 @@
 int main(int argc , char* argv[])
 {
   if (argc < 7) {
-    std::cout << "usage: test <input file> <output folder> "
+    std::cerr << "usage: test <input file> <output folder> "
       "<format (wkt | geojson)> <weight city> <weight town> <weight village>" << std::endl;
     exit(1);
   }
@@ -30,7 +30,7 @@ int main(int argc , char* argv[])
   stmv.str(swv);
   stmv >> wv;
 
-  std::cout << "using weights: city: " << wc << ", town: " << wt << ", village: " << wv << std::endl;
+  std::cerr << "using weights: city: " << wc << ", town: " << wt << ", village: " << wv << std::endl;
 
   /*
    * prepare data
@@ -55,7 +55,7 @@ int main(int argc , char* argv[])
   // some points would lie on the boundary of the bounding box and so would
   // their artificial clones. This would complicate the whole stuff a lot :)
   Iso_rectangle_2 crect = extend(boundingBox(sites), 0.1*SF);
-  std::cout << "rect: " << crect << std::endl;
+  std::cerr << "rect: " << crect << std::endl;
 
   // a number of artificial sites
   SiteList artificialSites = createArtificialSites(sites, crect);
@@ -80,7 +80,7 @@ int main(int argc , char* argv[])
 
   // validate the Apollonius graph
   assert( ag.is_valid(true, 1) );
-  std::cout << std::endl;
+  std::cerr << std::endl;
 
   /*
    * create polygons from cells
@@ -100,7 +100,7 @@ int main(int argc , char* argv[])
     if (!CGAL::do_intersect(crect, point)) {
       continue;
     }
-    std::cout << "vertex " << ++vertexIndex << std::endl;
+    std::cerr << "vertex " << ++vertexIndex << std::endl;
 
     // we than circulate all incident edges. By obtaining the respective
     // dual of each edge, we get access to the objects forming the boundary
@@ -136,7 +136,7 @@ int main(int argc , char* argv[])
     for (int i = 0; i < polygon.size(); i++) {
       Point_2 p = polygon.at(i);
       if (p.x() > crect.xmax()/SF || p.x() < crect.xmin()/SF || p.y() > crect.ymax()/SF || p.y() < crect.ymin()/SF) {
-        std::cout << "out of bounds" << std::endl;
+        std::cerr << "out of bounds" << std::endl;
       }
     }
   }
@@ -200,7 +200,7 @@ void printSites(SiteList& sites)
   for (itr = sites.begin(); itr != sites.end(); ++itr) {
     Site_2 site = *itr;
     Point_2 point = site.point();
-    std::cout << "site: " << site << std::endl;
+    std::cerr << "site: " << site << std::endl;
   }
 }
 
@@ -236,13 +236,13 @@ void handleDual(Object_2 o, Iso_rectangle_2 crect, std::vector<PointList>& polyl
 
 void handleDual(Line_2 l, Iso_rectangle_2 crect, std::vector<PointList>& polylines)
 {
-        std::cout << "line" << std::endl; //str << l;
+        std::cerr << "line" << std::endl; //str << l;
         Object_2 o = CGAL::intersection(l, crect);
 
         Segment_2 seg;
         Point_2 pnt;
         if (assign(seg, o)) {
-          std::cout << "line -> segment" << std::endl;
+          std::cerr << "line -> segment" << std::endl;
           Point_2 ss = seg.source();
           Point_2 st = seg.target();
           PointList points;
@@ -250,7 +250,7 @@ void handleDual(Line_2 l, Iso_rectangle_2 crect, std::vector<PointList>& polylin
           points.push_back(st);
           polylines.push_back(points);
         } else if (assign(pnt, o)){
-          std::cout << "line -> point" << std::endl;
+          std::cerr << "line -> point" << std::endl;
           // no use for points
         }
 }
@@ -259,7 +259,7 @@ void handleDual(Segment_2 s, std::vector<PointList>& polylines)
 {
         Point_2 ss = s.source();
         Point_2 st = s.target();
-        std::cout << "segment " << ss << " " << st << std::endl; // str << s; 
+        std::cerr << "segment " << ss << " " << st << std::endl; // str << s; 
         PointList points;
         points.push_back(ss);
         points.push_back(st);
@@ -268,13 +268,13 @@ void handleDual(Segment_2 s, std::vector<PointList>& polylines)
 
 void handleDual(Ray_2 r, Iso_rectangle_2 crect, std::vector<PointList>& polylines)
 {
-        std::cout << "ray" << std::endl;  // str << r;
+        std::cerr << "ray" << std::endl;  // str << r;
         Object_2 o = CGAL::intersection(crect, r);
 
         Segment_2 seg;
         Point_2 pnt;
         if (assign(seg, o)) {
-          std::cout << "ray -> segment" << std::endl;
+          std::cerr << "ray -> segment" << std::endl;
           Point_2 ss = seg.source();
           Point_2 st = seg.target();
           PointList points;
@@ -282,20 +282,20 @@ void handleDual(Ray_2 r, Iso_rectangle_2 crect, std::vector<PointList>& polyline
           points.push_back(st);
           polylines.push_back(points);
         } else if (assign(pnt, o)){
-          std::cout << "ray -> point" << std::endl;
+          std::cerr << "ray -> point" << std::endl;
           // no use for points
         } else {
-          std::cout << "ray -> ?" << std::endl;
-          std::cout << r.source() << " " << r.point(1) << std::endl;
+          std::cerr << "ray -> ?" << std::endl;
+          std::cerr << r.source() << " " << r.point(1) << std::endl;
         }
 }
 
 void handleDual(Hyperbola_segment_2 hs, std::vector<PointList>& polylines)
 {
-        std::cout << "hyperbola segment" << std::endl; //hs.draw(str);
+        std::cerr << "hyperbola segment" << std::endl; //hs.draw(str);
         PointList p;
         hs.generate_points(p);
-        std::cout << "# hyperbola points: " << p.size() << std::endl;
+        std::cerr << "# hyperbola points: " << p.size() << std::endl;
         PointList points;
         points.insert(points.end(), p.begin(), p.end());
         polylines.push_back(points);
@@ -307,7 +307,7 @@ void handleDual(Hyperbola_segment_2 hs, std::vector<PointList>& polylines)
 
 void handleDual(Hyperbola_ray_2 hr, Iso_rectangle_2 crect, std::vector<PointList>& polylines)
 {
-        std::cout << "hyperbola ray" << std::endl; // hr.draw(str);
+        std::cerr << "hyperbola ray" << std::endl; // hr.draw(str);
         PointList p;
         hr.generate_points(p);
         PointList points;
@@ -321,7 +321,7 @@ void handleDual(Hyperbola_ray_2 hr, Iso_rectangle_2 crect, std::vector<PointList
 
 void handleDual(Hyperbola_2 h, Iso_rectangle_2 crect, std::vector<PointList>& polylines)
 {
-        std::cout << "hyperbola" << std::endl; // h.draw(str);
+        std::cerr << "hyperbola" << std::endl; // h.draw(str);
         PointList p, q;
         h.generate_points(p, q);
         // TODO: we are not adding anything to points here. This is kind of
@@ -352,7 +352,7 @@ PointList buildPolygon(Site_2 site, std::vector<PointList>& polylines)
     // polyline to perform this check for, which is why we make a more 
     // extensive checking when adding the second polyline which also takes
     // care about the first.
-    std::cout << "# polylines: " << polylines.size() << std::endl;
+    std::cerr << "# polylines: " << polylines.size() << std::endl;
     // the first polyline will just be added as it is
     if (polylines.size() > 0) {
       PointList seg = polylines.front();
@@ -391,7 +391,7 @@ PointList buildPolygon(Site_2 site, std::vector<PointList>& polylines)
         }
       }
     }
-    std::cout << "# points: " << points.size() << std::endl;
+    std::cerr << "# points: " << points.size() << std::endl;
 
     // close polygon if necessary
     if (points.size() > 0){
@@ -403,7 +403,7 @@ PointList buildPolygon(Site_2 site, std::vector<PointList>& polylines)
     }
 
     if (points.size() > 0 && points.size() < 4) {
-      std::cout << "invalid polygon: >0 but <4 points" << std::endl;
+      std::cerr << "invalid polygon: >0 but <4 points" << std::endl;
       points.clear();
     }
 
@@ -416,7 +416,7 @@ void writeGeoJSON(Site_2 site, PointList polygon, char* outdir)
   std::stringstream s;
   s << outdir << "/" << site.id() << ".geojson";
   std::string polygonFileName = s.str();
-  std::cout << "filename: " << polygonFileName << std::endl;
+  std::cerr << "filename: " << polygonFileName << std::endl;
   std::ofstream file;
   file.open(polygonFileName.c_str());
 
@@ -439,7 +439,7 @@ void writeWKT(Site_2 site, PointList polygon, char* outdir)
   std::stringstream s;
   s << outdir << "/" << site.id() << ".wkt";
   std::string polygonFileName = s.str();
-  std::cout << "filename: " << polygonFileName << std::endl;
+  std::cerr << "filename: " << polygonFileName << std::endl;
   std::ofstream file;
   file.open(polygonFileName.c_str());
 
