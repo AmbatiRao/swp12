@@ -107,8 +107,8 @@ to the original data that is available.
 Our implementation has four major components:
 \begin{itemize}
 \item Preprocessing (written in Java)
-\item Generation of Apollonius diagram cells (written in C using CGAL)
-\item Intersection of Apollonius cells with a bounding polygon (written in C
+\item Generation of Apollonius diagram cells (written in C++ using CGAL)
+\item Intersection of Apollonius cells with a bounding polygon (written in C++
 using CGAL)
 \item Evaluation code (written in Java)
 \end{itemize}
