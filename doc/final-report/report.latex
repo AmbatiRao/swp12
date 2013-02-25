@@ -35,6 +35,7 @@
 \begin{document}
 
 \selectlanguage{english}
+\numberwithin{figure}{section}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Header
@@ -554,6 +555,45 @@ This is the code for the second resemblance measuremente strategy:
 \subsection{Qualitative Results}
 
 \subsection{Quantitative Analysis}
+
+\subsubsection{Test Data}
+
+As described in section \ref{sec:impl-evaluation}, two different types of
+point data have been used for evaluating the resemblance of orignal 
+regions with the generated Apollonius regions.
+
+Figure \ref{fig:test-data-uniform} shows a sample of 4.5M points uniformly 
+distributed over the test region while figure \ref{fig:test-data-streets} 
+shows the 4.8M points of street test data. In both pictures, each test point
+has been draw as a circle with one pixel radius and with an opacity of 1\%.
+
+It can be seen from these pictures that the algorithm for selecting random
+test points uniformly appears to work as expected since the whole area 
+of concern in figure \ref{fig:test-data-uniform} appears to be nearly 
+uniformly colored.
+
+On the other hand figure \ref{fig:test-data-streets} gives an impression of
+the nature of the street-based test data. One may observe here how data
+is very dense where big cities are and is relatively sparse on the 
+countryside.
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=\textwidth]{images/points-uniform.png}
+\end{center}
+\caption{Uniformly distributed test data}
+\label{fig:test-data-uniform}
+\end{figure}
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=\textwidth]{images/points-streets.png}
+\end{center}
+\caption{Street test data}
+\label{fig:test-data-streets}
+\end{figure}
+
+\subsubsection{Results}
 
 The algorithms described in section \ref{sec:impl-evaluation} have been used
 on the one hand to find good parameters needed as input for the algorithm
