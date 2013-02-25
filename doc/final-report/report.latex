@@ -118,7 +118,8 @@ using CGAL)
 \item Evaluation code (written in Java)
 \end{itemize}
 
-Section \ref{sec:impl} is structured accordingly.
+Section \ref{sec:impl} which describes the implementation in detail is 
+structured accordingly.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % The Apollonius diagram
@@ -151,6 +152,22 @@ The Apollonius graph is the dual of the Apollonius diagram. It is a planar
 graph. The source and destination of the edges are the sites of the Apollonius
 diagram.
 
+\begin{figure}[htp]
+        \centering
+        \begin{subfigure}[b]{0.48\textwidth}
+                \centering
+                \includegraphics[width=\textwidth]{images/apollonius-graph.png}
+                \caption{Apollonius graph}
+                \label{fig:apo-graph}
+        \end{subfigure}
+        \begin{subfigure}[b]{0.48\textwidth}
+                \centering
+                \includegraphics[width=\textwidth]{images/apollonius-diagram.png}
+                \caption{Apollonius diagram}
+                \label{fig:apo-diagram}
+        \end{subfigure}
+        \caption{Apollonius graph and Apollonius diagram}\label{fig:apollonius}
+\end{figure}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Relevant CGAL packages
