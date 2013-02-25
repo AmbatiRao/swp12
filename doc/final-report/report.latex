@@ -11,6 +11,9 @@
 \usepackage{amssymb,amsmath}
 \usepackage{multibib}
 
+\usepackage{caption}
+\usepackage{subcaption}
+
 % this makes < > work
 \usepackage[T1]{fontenc}
 
@@ -552,7 +555,77 @@ This is the code for the second resemblance measuremente strategy:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Evaluation}
 
+The quality of generated Apollonius tesselations have been examined
+qualitatively by studying the visual appearance of the created cells on
+top of a map and quantitatively by measuring the resemblance of the 
+approximated cells with a training data set of real city boundaries.
+
 \subsection{Qualitative Results}
+
+The cells of the Apollonius diagram may be displayed on top of a map and
+such visualization provides the ability to inspect the characteristics of
+the created diagrams. By displaying the cells of the diagram on top of an
+ordinary map as a base layer it is possible to get an impression of
+the accuracy of the approximated city boundaries.
+Figures \ref{fig:dresden} and \ref{fig:berlin} show such overlays for
+the regions around Dresden and Berlin respectively.
+
+Figure \ref{fig:dresden} shows the city boundaries in the area around 
+Dresden approximated with both the Voronoi diagram and the Apollonius
+diagram. What one may observe here ist that in certain situations 
+the cells produced by the Apollonius diagram appear to approximate
+the real boundaries better than those produced by the Voronoi diagram.
+Since we assigned a higher weight to the site for Dresden than to
+the sites for the surrounding smaller towns, the approximated city 
+boundaries are shifted away from the center of Dresden towards the smaller
+towns. The result is that greater parts of the true administrative area
+of Dresden are included in its approximation.
+
+The situation around Berlin is illustrated in figure \ref{fig:berlin}.
+What we can see here is that in both cases the cell created for Berlin
+is much smaller than the true boundary of the city.
+Although the cell created with by the Apollonius diagram is a little bigger
+than the one created by the Voronoi diagram, we can observe that neither
+method is able to provide a really good approximation of the city.
+
+This shows us on the one hand that the cells of the Apollonius diagram may 
+in certain situations create better approximations than the ordinary Voronoi 
+diagram but also on the other hand that this method is far from providing 
+perfect approximations for true city boundaries.
+
+\begin{figure}
+        \centering
+        \begin{subfigure}[b]{0.48\textwidth}
+                \centering
+                \includegraphics[width=\textwidth]{images/dresden-equal.png}
+                \caption{Voronoi diagram}
+                \label{fig:dresden-equal}
+        \end{subfigure}
+        \begin{subfigure}[b]{0.48\textwidth}
+                \centering
+                \includegraphics[width=\textwidth]{images/dresden-weighted.png}
+                \caption{Apollonius diagram}
+                \label{fig:dresden-weighted}
+        \end{subfigure}
+        \caption{Partitioning around Dresden}\label{fig:dresden}
+\end{figure}
+
+\begin{figure}
+        \centering
+        \begin{subfigure}[b]{0.48\textwidth}
+                \centering
+                \includegraphics[width=\textwidth]{images/berlin-equal.png}
+                \caption{Voronoi diagram}
+                \label{fig:berlin-equal}
+        \end{subfigure}
+        \begin{subfigure}[b]{0.48\textwidth}
+                \centering
+                \includegraphics[width=\textwidth]{images/berlin-weighted.png}
+                \caption{Apollonius diagram}
+                \label{fig:berlin-weighted}
+        \end{subfigure}
+        \caption{Partitioning around Berlin}\label{fig:berlin}
+\end{figure}
 
 \subsection{Quantitative Analysis}
 
@@ -565,7 +638,7 @@ regions with the generated Apollonius regions.
 Figure \ref{fig:test-data-uniform} shows a sample of 4.5M points uniformly 
 distributed over the test region while figure \ref{fig:test-data-streets} 
 shows the 4.8M points of street test data. In both pictures, each test point
-has been draw as a circle with one pixel radius and with an opacity of 1\%.
+has been drawn as a circle with one pixel radius and with an opacity of 1\%.
 
 It can be seen from these pictures that the algorithm for selecting random
 test points uniformly appears to work as expected since the whole area 
@@ -629,9 +702,9 @@ In both cases we tried to maximize the resemblance factor by variating
 the parameters and observing the resemblance difference resulting from 
 those variations.
 In a first step, combinations of parameters in certain ranges with a fixed
-stepping have been computed automatically to find coarse position of the
-optimal parameters.
-In a second step, this process has been refined and further test have 
+stepping have been computed automatically to find the coarse position of
+optimal parameter configurations.
+In a second step, this process has been refined and further tests have 
 been conducted by hand now taking the difference observed into account.
 Using binary search between pairs of promising parameters configurations, 
 it has not taken too long to locate values that appear to be optimal for
@@ -640,7 +713,8 @@ the dataset used.
 It can be observed that the resemblance rate observed for the street data
 is generally higher that the rate observed for the uniform data.
 This is in principle what has been expected what would happen with such
-kind of data and this expectancy has led to the selection of this data set.
+kind of data and this expectancy has led to the selection of this data set 
+in the first place.
 The best resemblance rate observed for uniform data is 69.59\% while
 for street data the best resemblance rate has been 79.23\%.
 
@@ -664,7 +738,7 @@ equal. For uniform data the results for these parameters were around
 67.9\% while for street data the resemblance rate was at 74.45\%.
 This shows that for uniform data the Apollonius diagram approach has only 
 little advantage over the ordinary Voronoi diagram approach where the 
-resemblance could only be increased to from 67.9\% to 69.59\%.
+resemblance rate could only be increased from 67.9\% to 69.59\%.
 For street data this look a bit different: the resemblance rate
 has been increased from 74.45\% to 79.23\%.
 
