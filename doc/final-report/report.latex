@@ -325,9 +325,19 @@ These nodes are identified by a tag with the key \textit{place} and an
 associated value of either \textit{city}, \textit{town} or \textit{village}.
 This tag does not only identify cities as such but at the same time
 categeories the size of a city in respect to its population.
-A value of \textit{city} means that a place has more than 100000 inhabitants,
+A value of \textit{city} means that a place has more than 100 000 inhabitants,
 while a value of \textit{town} or \textit{village} stands for more than
-10000 or more than 1000 inhabitants respectively.
+10 000 or more than 1 000 inhabitants respectively.
+
+The following listing is an example of valid input data in a simple column
+based text format that we used for easy processing with our programs.
+The first column is the id of the entity as found in the Openstreetmap
+database,
+the second and third column are longitude and lattitude and the fourth column
+contains the category of the place as one of \textit{city}, \textit{town} 
+or \textit{village}.
+
+\lstinputlisting{data/place-nodes.txt}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Extracting relevant data from Openstreetmap}
@@ -338,6 +348,32 @@ input file with Openstreetmap data and writes it to a file in simple text
 format.
 
 \lstinputlisting[language=java]{code/preprocessing.java}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Creating an additional training data set}
+\label{sec:impl-preprocessing-training-data}
+
+As a second set of data, a training data set has been constructed to work
+with. The idea was to create a data set similar to the data set as seen
+in the previous section but with the property that more information is
+available about this data thus allowing the results of our algorithms to
+be evaluated by incorporating this surplus of information.
+
+What we did here is to take exact boundaries of cities in Germany, specified
+in form of polygons, from Openstreetmap and reduce their spatial footprint
+to a single coordinate by computing the centroid of its polygonal
+representation. The resulting dataset has the same spatial characteristics
+as the \textit{city nodes} discussed before. What was still missing was
+the characterization as one of \textit{city}, \textit{town} or 
+\textit{village}. Fortunately the population of the cities could be 
+extracted for the polygonal city boundaries which made this categorization
+easy.
+
+The following snippet of code creates the desired output format from
+a set of files containing polygonal city entities with attached population
+information in a tag with key \textit{population}.
+
+\lstinputlisting[language=java]{code/training.java}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Apollonius cell generation
@@ -387,7 +423,7 @@ This \texttt{SiteList} will then be the input to further computations.
 \label{sec:impl-apo-creation}
 
 First the algorithm computes the bounding box of the input sites so that
-artificial may be created by mirroring along the axis' of the bounding box.
+artificial sites may be created by mirroring along the axis' of the bounding box.
 The following method is used for calculation of the bounding box:
 
 \lstinputlisting{code/bbox.c}
@@ -553,7 +589,7 @@ This is the code for the second resemblance measuremente strategy:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Evaluation
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\section{Evaluation}
+\section{Results and Evaluation}
 
 The quality of generated Apollonius tesselations have been examined
 qualitatively by studying the visual appearance of the created cells on
@@ -566,9 +602,21 @@ The cells of the Apollonius diagram may be displayed on top of a map and
 such visualization provides the ability to inspect the characteristics of
 the created diagrams. By displaying the cells of the diagram on top of an
 ordinary map as a base layer it is possible to get an impression of
-the accuracy of the approximated city boundaries.
-Figures \ref{fig:dresden} and \ref{fig:berlin} show such overlays for
-the regions around Dresden and Berlin respectively.
+the accuracy of the approximated city boundaries. Figure
+\ref{fig:apollonius-bb-sachsen} displays the Apollonius diagram created 
+for the training data set in a region covering Brandenburg and Saxony.
+Figures \ref{fig:dresden} and \ref{fig:berlin} show such overlays in 
+detail for the regions around Dresden and Berlin respectively along with
+the ordinary Voronoi diagram for the same region.
+
+\begin{figure}[htp]
+\begin{center}
+\includegraphics[width=\textwidth]{images/bb-sachsen-weighted.png}
+\end{center}
+\caption{Apollonius diagram for the training data around Brandenburg
+and Saxony}
+\label{fig:apollonius-bb-sachsen}
+\end{figure}
 
 Figure \ref{fig:dresden} shows the city boundaries in the area around 
 Dresden approximated with both the Voronoi diagram and the Apollonius
@@ -584,7 +632,7 @@ of Dresden are included in its approximation.
 The situation around Berlin is illustrated in figure \ref{fig:berlin}.
 What we can see here is that in both cases the cell created for Berlin
 is much smaller than the true boundary of the city.
-Although the cell created with by the Apollonius diagram is a little bigger
+Although the cell created by the Apollonius diagram is a little bigger
 than the one created by the Voronoi diagram, we can observe that neither
 method is able to provide a really good approximation of the city.
 
@@ -593,7 +641,7 @@ in certain situations create better approximations than the ordinary Voronoi
 diagram but also on the other hand that this method is far from providing 
 perfect approximations for true city boundaries.
 
-\begin{figure}
+\begin{figure}[htp]
         \centering
         \begin{subfigure}[b]{0.48\textwidth}
                 \centering
@@ -674,7 +722,7 @@ that creates the Apollonius diagram and on the other hand to estimate the
 quality of the results quantitatively. In this section we present the 
 results of these quality measurements.
 
-\begin{figure}
+\begin{figure}[htp]
 \centering
 \begin{tabular}{|l|l|l|l|}\hline
 resemblance factor & weight city & weight town & weight village \\\hline\hline
@@ -684,7 +732,7 @@ resemblance factor & weight city & weight town & weight village \\\hline\hline
 \label{tab:data-uniform}
 \end{figure}
 
-\begin{figure}
+\begin{figure}[htp]
 \centering
 \begin{tabular}{|l|l|l|l|}\hline
 resemblance factor & weight city & weight town & weight village \\\hline\hline
