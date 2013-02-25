@@ -310,7 +310,7 @@ Lorem ipsum
 Input data has been extracted from data from the Openstreetmap project.
 Because the project gathers a huge amount of data, only the relevant data
 of interest had to be extracted so that this data may be processed
-conviniently.
+conveniently.
 
 Data found in Openstreetmap carries alphanumerical information along with 
 spatial attributes. It is possible to store the basic geometric types point,
