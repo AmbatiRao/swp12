@@ -84,7 +84,7 @@ systems\cite{alani2001voronoi}.
 \item Typically the geometric information is only available as a simple
 footprint in form of a centroid coordinate\cite{alani2001voronoi}.
 \item This is also true for the point based place information 
-found within the data of the Openstreetmap 
+found within the data of the OpenStreetMap 
 project\footnote{http://wiki.openstreetmap.org/wiki/Places}.
 \item Interesting problem: approximate a more accurate spatial footprint
 of places\cite{alani2001voronoi}.
@@ -379,15 +379,15 @@ Lorem ipsum
 \subsection{Preprocessing}
 \label{sec:impl-preprocessing}
 
-Input data has been extracted from data from the Openstreetmap project.
+Input data has been extracted from data from the OpenStreetMap project.
 Because the project gathers a huge amount of data, only the relevant data
 of interest had to be extracted so that this data may be processed
 conveniently.
 
-Data found in Openstreetmap carries alphanumerical information along with 
+Data found in OpenStreetMap carries alphanumerical information along with 
 spatial attributes. It is possible to store the basic geometric types point,
 linestring, polygon and region (polygon with holes and multiple outer
-boundaries) in Openstreetmap and a variety of so called tags is used to
+boundaries) in OpenStreetMap and a variety of so called tags is used to
 annotate data quite flexibly. A tag in this context referes to 
 the notion of storing a value in association to a key.
 
@@ -403,7 +403,7 @@ while a value of \textit{town} or \textit{village} stands for more than
 
 The following listing is an example of valid input data in a simple column
 based text format that we used for easy processing with our programs.
-The first column is the id of the entity as found in the Openstreetmap
+The first column is the id of the entity as found in the OpenStreetMap
 database,
 the second and third column are longitude and lattitude and the fourth column
 contains the category of the place as one of \textit{city}, \textit{town} 
@@ -412,11 +412,11 @@ or \textit{village}.
 \lstinputlisting{data/place-nodes.txt}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsubsection{Extracting relevant data from Openstreetmap}
+\subsubsection{Extracting relevant data from OpenStreetMap}
 \label{sec:impl-preprocessing-extraction}
 
 The following program implemented in Java extracts the desired data from an
-input file with Openstreetmap data and writes it to a file in simple text
+input file with OpenStreetMap data and writes it to a file in simple text
 format.
 
 \lstinputlisting[language=java]{code/preprocessing.java}
@@ -432,7 +432,7 @@ available about this data thus allowing the results of our algorithms to
 be evaluated by incorporating this surplus of information.
 
 What we did here is to take exact boundaries of cities in Germany, specified
-in form of polygons, from Openstreetmap and reduce their spatial footprint
+in form of polygons, from OpenStreetMap and reduce their spatial footprint
 to a single coordinate by computing the centroid of its polygonal
 representation. The resulting dataset has the same spatial characteristics
 as the \textit{city nodes} discussed before. What was still missing was
@@ -688,7 +688,7 @@ selected.
 over the covered region. The resemblance measure should reflect the 
 real geometric resemblance of the shapes under consideration.
 \item The second strategy uses as test set $\mathbb{T}$ the centroids of
-all streets stored in Openstreetmap for the area covered by input regions.
+all streets stored in OpenStreetMap for the area covered by input regions.
 The idea is that the resemblance factor reflects a measure of how good
 certain real data may be georeferenced with the geometries produced by our 
 Apollonius diagrams.
