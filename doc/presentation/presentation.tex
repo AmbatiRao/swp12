@@ -5,6 +5,9 @@
 \usepackage{listings}
 % this makes < > work
 \usepackage[T1]{fontenc}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
 
 \lstset{
     language=c++,
@@ -58,6 +61,27 @@
         \item The dual of the Apollonius diagram
     \end{itemize}
 \end{frame}
+
+\begin{frame}
+    \frametitle{Examples in 2D}
+    \begin{figure}[htp]
+            \centering
+            \begin{subfigure}[b]{0.48\textwidth}
+                    \centering
+                    \includegraphics[width=\textwidth]{../final-report/images/apollonius-graph.png}
+                    \caption{Apollonius graph}
+                    \label{fig:apo-graph}
+            \end{subfigure}
+            \begin{subfigure}[b]{0.48\textwidth}
+                    \centering
+                    \includegraphics[width=\textwidth]{../final-report/images/apollonius-diagram.png}
+                    \caption{Apollonius diagram}
+                    \label{fig:apo-diagram}
+            \end{subfigure}
+            \caption{Apollonius graph and Apollonius diagram}\label{fig:apollonius}
+    \end{figure}
+\end{frame}
+
 
 \begin{frame}
     \frametitle{CGAL Apollonius graph}
