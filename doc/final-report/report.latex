@@ -217,6 +217,10 @@ Individual components of graph and diagram are closely related:
 the corresponding nodes of the graph.
 \end{itemize}
 
+The Apollonius graph is especially relevant in this context because
+the package implemented in CGAL maintains the Apollonius graph instead
+of the Apollonius diagram internally.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Relevant CGAL packages
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
