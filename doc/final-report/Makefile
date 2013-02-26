@@ -6,3 +6,6 @@ clean:
 		report.log \
 		report.out \
 		report.pdf
+
+show: all
+	evince report.pdf

@@ -9,3 +9,6 @@ clean:
 		presentation.pdf \
 		presentation.snm \
 		presentation.toc
+
+show: all
+	evince presentation.pdf
