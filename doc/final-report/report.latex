@@ -879,6 +879,21 @@ two of 4.78\%.
 
 \subsection{Look-out}
 
+The current implementation is rather specialized on OpenStreetMap data and the
+three types of place nodes (city, town, villiage). Further work could be done to
+generalize our implementation to accept point sets with identifiers and a
+weights. We would like to bring our changes to the CGAL core upstream to ease
+the creation of Apollonius diagrams in the future.
+
+As the preprocessing is currently written in JAVA it would be nice to have this
+part in C++ as well. There are various kinds of libraries that support
+OpenStreetMap data as input so it should not be problem to do this in the
+future.
+
+We did not do any performance measurements in the curse of our project as we did
+not expect the data set size to be a problem for us. Some benchmarks on the
+performance would be another interesting task.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Bibliography
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
