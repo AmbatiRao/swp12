@@ -21,10 +21,10 @@
 
 \usepackage[pdftex,
             bookmarks,
-            pdfauthor={Sebastian Kürten},
-            pdftitle={Apollonius-Diagramme in der Geokodierung},
-            pdfsubject={Erstellung von Apollonius-Diagrammen auf Basis von Openstreetmap mit CGAL},
-            pdfkeywords={CGAL, Apollonius, Voronoi, Openstreetmap, Geocoding, Geokodierung},
+            pdfauthor={Philipp Borgers, Sebastian Kürten, Lukasch Maischak},
+            pdftitle={Apollonius diagrams in the context of Geocoding},
+            pdfsubject={Approximating the spatial footprint of OpenStreetMap place nodes},
+            pdfkeywords={CGAL, Apollonius, Voronoi, OpenStreetMap, Geocoding},
             pdfproducer={Latex with hyperref},
             pdfcreator={pdflatex}]{hyperref}
 
