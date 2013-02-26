@@ -199,7 +199,8 @@ associated cell in the diagram because it may happen that a site becomes
 covered by another site's disc. Hidden sites are called \textit{trivial}.
 In figure \ref{fig:apo-diagram} trivial sites are shown in grey whereas
 nontrivial sites are shown in red.
-Boundaries of cells are defined by straight or hyperbolic arcs.
+Boundaries of cells are defined by straight or hyperbolic arcs and are 
+depicted as blue arcs in the figure.
 
 As with Voronoi diagrams, there exists a dual graph for the Apollonius 
 diagram that is closely related to the diagram itself and is called the
@@ -217,7 +218,8 @@ Individual components of graph and diagram are closely related:
 the corresponding nodes of the graph.
 \end{itemize}
 
-The Apollonius graph is especially relevant in this context because
+The Apollonius graph is especially relevant in the context of this
+sowftware project because
 the package implemented in CGAL maintains the Apollonius graph instead
 of the Apollonius diagram internally.
 
