@@ -32,6 +32,8 @@
         colorlinks=true,
         %linktocpage=true,
         linkbordercolor=blue,
+        citecolor=blue,
+	urlcolor=blue,
         menucolor=red
 }
 
@@ -135,8 +137,13 @@ structured accordingly.
 
 \subsection{Introduction}
 
-The Apollonius
-diagram\footnote{http://www.cgal.org/Manual/latest/doc\_html/cgal\_manual/Apollonius\_graph\_2/Chapter\_main.html}
+% citing CGAL: http://www.cgal.org/bibliography.html
+%\footnote{http://www.cgal.org/Manual/latest/doc\_html/cgal\_manual/Apollonius\_graph\_2/Chapter\_main.html}:
+
+The following definition of the Apollonius diagram can be found in the 
+CGAL user manual\cite{cgal:ky-ag2-12b}:
+\begin{quote}
+The Apollonius diagram
 in the plane is defined over a set of sites $P_i = (c_i, w_i),
 i = 1, ..., n$ where $c_i$ is the point and $w_i$ the weight of $P_i$. It is a
 subdivision of the plane into connected regions, called cells, associated with
@@ -147,10 +154,12 @@ point $x$ in the plane to a site $Pi$ is defined as:
 $\delta(x,P_i)=||x-c_i||-w_i$,
 
 where $|| ⋅ ||$ denotes the Euclidean norm.
+\end{quote}
 
 The Apollonius diagram is also called Additively weighted Voronoi diagram
-because of its close relationship to the Voronoi diagram. An Apollonius diagram
-with equal weights for each site can be viewed as Voronoi diagram.
+because of its close relationship to the Voronoi diagram, which it is a
+generalization of.
+An Apollonius diagram with equal weights for each site is a Voronoi diagram.
 
 \subsection{Primal and Dual}
 \label{sec:apo-primal-dual}
