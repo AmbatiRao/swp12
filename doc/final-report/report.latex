@@ -582,6 +582,43 @@ The following code implements output in the GeoJSON format:
 
 \lstinputlisting{code/geojson.c}
 
+\subsubsection{Implementation remarks}
+\label{sec:impl-apo-remarks}
+
+During the implementation of the above algorithms some limitations of the
+CGAL package in use have been encountered that had to be circumvented by
+patching CGAL itself:
+\begin{itemize}
+\item The first limitation was the inability to access the dual of 
+arcs of the Apollonius graph.
+This feature was necessary for accessing the arcs that form the cells of the 
+diagram for being able to create polygonal representations of the cells.
+The limitation has been circumvented by changing the
+visibility of the relevant CGAL method from \textit{private} to 
+\textit{public}.
+\item The second limitation was the inability to provide a custom 
+implementation of \textit{Apollonius\_site} to the \textit{Apollonius\_graph}
+implementation so that attributes could be stored along with the sites. 
+This feature was necessary for storing the identifiers of the original
+source objects along with the sites so that the cells of the diagram 
+could be associated to the original input data.
+The main problem here was that several files concerning the Apollonius graph
+package have hard-coded include-directives that import the specific
+implementation of \textit{Apollonius\_site} so that we were not able to
+insert a different implementation. To fix this, we did two things:
+	\begin{itemize}
+	\item The file \textit{Hyperbola\_2.h} had an include statement of 
+	Apollonius\_site\_2.h that could easily be removed because it is not needed at
+	all.
+	\item The situation was a little bit more complicated for 
+	\textit{Apollonius\_graph\_traits\_2.h} and \textit{Kernel\_wrapper\_2.h}
+	which could not be easily patched in a reusable manner. 
+	To make things easy, slightly 
+	modified copies of these files have been put into our project which then
+	use our modified implementation of \textit{Apollonius\_site} as desired.
+	\end{itemize}
+\end{itemize}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Apollonius cell insersection
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
