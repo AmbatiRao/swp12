@@ -625,6 +625,12 @@ insert a different implementation. To fix this, we did two things:
 	\end{itemize}
 \end{itemize}
 
+We think that some of the changes we made here could be brought back to the 
+CGAL upstream. Although the changes so far would already be of use for
+other people using the library it would be of further interest to find
+a solution for a really flexible solution for custom implementations
+of \textit{Apollonius\_site}.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Apollonius cell insersection
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
