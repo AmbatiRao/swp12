@@ -80,27 +80,34 @@
 systems\cite{alani2001voronoi}.
 \item Typically the geometric information is only available as a simple
 footprint in form of a centroid coordinate\cite{alani2001voronoi}.
+\item This is also true for the point based place information 
+found within the data of the Openstreetmap 
+project\footnote{http://wiki.openstreetmap.org/wiki/Places}.
 \item Interesting problem: approximate a more accurate spatial footprint
 of places\cite{alani2001voronoi}.
 \item Different methods have been developed to compute approximation 
 from different kinds of additional information\cite{schockaert2005automatic}.
-\item A really basic, naive approach is the usage of voronoi diagram with
-the places as input sites to create a spatial footprint.
+\item A really basic approach that does not require additional information
+is the usage of Voronoi diagram with the places as input sites to create a 
+polygonal spatial footprint for each place.
 \item \textbf{Idea}: use the \textbf{weighted Voronoi diagram} a.k.a. the
-\textbf{Apollonius diagram} to produce more accurate representations of municipalities.
+\textbf{Apollonius diagram} to produce more accurate representations of
+municipalities.
+Weights for sites may be derived from the type of
+place\footnote{http://wiki.openstreetmap.org/wiki/Key:place}.
 \end{itemize}
 
 \subsection{Project outline}
 
 \begin{itemize}
 \item CGAL implements the Apollonius diagram within the \textbf{2D Apollonius Graphs} package.
-\item Construct such a diagram for arbitrary input data
-\item For ease of further use extract the cells of the Apollonius diagram as polygons
+\item Construct such a diagram for arbitrary input data.
+\item For ease of further use extract the cells of the Apollonius diagram as polygons.
 \item Utilize the \textbf{2D Regularized Boolean Set-Operations} package to make it possible
 to refine the results of diagram creation by computing the intersection with some additional
 bounding polygon.
 \item Visualize input and output data appopriately so that results may be inspected manually
-and to create a qualitative measure for usefulness of the results
+and to create a qualitative measure for usefulness of the results.
 \item Evaluate results quantitatively with sophisticated input data for the municipalities of
 Germany. Develope methods for evaluating the accurateness of the diagrams created and compare them
 to the original data that is available.
@@ -142,7 +149,7 @@ $\delta(x,P_i)=||x-c_i||-w_i$,
 where $|| ⋅ ||$ denotes the Euclidean norm.
 
 The Apollonius diagram is also called Additively weighted Voronoi diagram
-because of its close relationship to the Voronoi diagram. A Apollonius diagram
+because of its close relationship to the Voronoi diagram. An Apollonius diagram
 with equal weights for each site can be viewed as Voronoi diagram.
 
 \subsection{Primal and Dual}
@@ -191,7 +198,7 @@ means for creating its dual, the \textbf{Apollonius graph}.
 An Apollonius graph instance may then be used to answer the typical queries 
 to the diagram itsself, most importantly the nearest neighbor query which,
 given a point, returns the site of the diagram that is closest to that point
-with respect to the metric defined for additiveley weighted voronoi diagrams.
+with respect to the metric defined for additiveley weighted Voronoi diagrams.
 
 The data structures implemented in the package allow dynamic insertions and
 deletions to the Apollonius graph.
@@ -450,7 +457,7 @@ at each of the four axis' of the bounding box:
 
 \lstinputlisting{code/artificial.c}
 
-With input sites and artificial sites at hand, the apollonius graph
+With input sites and artificial sites at hand, the Apollonius graph
 is created like this:
 
 \lstinputlisting{code/init-apollonius-graph.c}
@@ -475,7 +482,7 @@ inifinite arcs with the clipping rectangle. The implementation of
 handleDual is shown at the end of this section.
 
 By circulating the incident edges of the site above to collect, via their 
-dual, the arcs of the apollonius cells, we ensured that the arcs arrive
+dual, the arcs of the Apollonius cells, we ensured that the arcs arrive
 in the list of arcs in their correct order in respect to the order of arcs
 forming the cell.
 Only we cannot know whether an arc is in the correct order with respect to 
@@ -594,7 +601,7 @@ Apollonius diagrams.
 The evaluation program has been implemented in Java. Both algorithms
 work with a list of input identifiers $ids$ for iteration purposes,
 as well as mappings from 
-such ids to source and apollonius geometries specified with
+such ids to source and Apollonius geometries specified with
 variables $idToSourceGeometry$ and $idToApolloniusGeometry$ respectively.
 
 This is the code for the first resemblance measuremente strategy:
