@@ -30,6 +30,11 @@
 
     PointList polygon = buildPolygon(site, polylines);
 
+    for (int i = 0; i < polygon.size(); i++) {
+      Point_2& p = polygon.at(i);
+      p = Point_2(p.x()/SF, p.y()/SF);
+    }
+
     [...]
 
   }
