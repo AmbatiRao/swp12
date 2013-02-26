@@ -92,23 +92,22 @@
 \end{frame}
 
 \begin{frame}
-    \frametitle{CGAL Apollonius graph}
+    \frametitle{Example Apollonius graph in CGAL}
     \lstinputlisting{../final-report/code/init-apollonius-graph.c}
 \end{frame}
 
 \begin{frame}
-    \frametitle{CGAL Implementierung - Dual Graph}
-    \begin{itemize}
-        \item How we generate the graph
-    \end{itemize}
+    \frametitle{Access the dual in cgal (generate cells)}
+    \lstinputlisting{../final-report/code/cell.c}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Vorverarbeitung}
+    \frametitle{Preprocessing}
     \begin{itemize}
         \item Extract place nodes (city, town, village) from OpenStreetMap dataset 
         \item Use the position information and the osm-id for later reference
         \item Format: <Openstreetmap Node Id> <Longitude> <Latitude> <type>
+        \item Written in JAVA
     \end{itemize}
 \end{frame}
 
