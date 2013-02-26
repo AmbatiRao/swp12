@@ -866,6 +866,17 @@ has been increased from 74.45\% to 79.23\%.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Conclusion}
 \subsection{Summary}
+
+With our project we have shown that it's possible to create Apollonius diagrams
+wit CGAL from OpenStreetMap data. Based on the Apollonius graph implementation
+of CGAL it was possible to create the diagram (dual) and create polygonal
+representations of the cells for later processing. Due to the the various output
+formats the data can be used in different post-processing tools, e.g qgis. The
+evaluation shows that there is now big difference between the Voronoi diagram
+and Apollonius diagram for our data set(s). The biggest difference can be
+observed in the evaluation based on street data with a difference between the
+two of 4.78\%.
+
 \subsection{Look-out}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
