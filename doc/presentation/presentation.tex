@@ -82,25 +82,32 @@
     \end{figure}
 \end{frame}
 
-
 \begin{frame}
     \frametitle{CGAL Apollonius graph}
-    \lstinputlisting{../final-report/code/init-apollonius-graph.c}
-\end{frame}
-
-\begin{frame}
-    \frametitle{CGAL Implementierung - Dual Graph}
     \begin{itemize}
-        \item How we generate the graph
+        \item CGAL implements the Apollonius graph
+        \item Access to sites, vertices, faces edges of the graph
+        \item Use the dual function to create the Apollonius diagram
     \end{itemize}
 \end{frame}
 
 \begin{frame}
-    \frametitle{Vorverarbeitung}
+    \frametitle{Example Apollonius graph in CGAL}
+    \lstinputlisting{../final-report/code/init-apollonius-graph.c}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Access the dual in cgal (generate cells)}
+    \lstinputlisting{../final-report/code/cell.c}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Preprocessing}
     \begin{itemize}
         \item Extract place nodes (city, town, village) from OpenStreetMap dataset 
         \item Use the position information and the osm-id for later reference
         \item Format: <Openstreetmap Node Id> <Longitude> <Latitude> <type>
+        \item Written in JAVA
     \end{itemize}
 \end{frame}
 
