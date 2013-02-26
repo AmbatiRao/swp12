@@ -904,9 +904,9 @@ has been increased from 74.45\% to 79.23\%.
 \section{Conclusion}
 \subsection{Summary}
 
-With our project we have shown that it's possible to create Apollonius diagrams
+With our project we have shown that it is possible to create Apollonius diagrams
 wit CGAL from OpenStreetMap data. Based on the Apollonius graph implementation
-of CGAL it was possible to create the diagram (dual) and create polygonal
+of CGAL it was possible to create the diagram (the graph's dual) and create polygonal
 representations of the cells for later processing. Due to the the various output
 formats the data can be used in different post-processing tools, e.g qgis. The
 evaluation shows that there is now big difference between the Voronoi diagram
@@ -918,16 +918,17 @@ two of 4.78\%.
 
 The current implementation is rather specialized on OpenStreetMap data and the
 three types of place nodes (city, town, villiage). Further work could be done to
-generalize our implementation to accept point sets with identifiers and a
-weights. We would like to bring our changes to the CGAL core upstream to ease
+generalize our implementation to accept point sets with more general 
+identifiers and weights. 
+We would like to bring our changes to the CGAL core upstream to simplify
 the creation of Apollonius diagrams in the future.
 
-As the preprocessing is currently written in JAVA it would be nice to have this
+As the preprocessing is currently written in Java it would be nice to have this
 part in C++ as well. There are various kinds of libraries that support
 OpenStreetMap data as input so it should not be problem to do this in the
 future.
 
-We did not do any performance measurements in the curse of our project as we did
+We did not do any performance measurements in the course of our project as we did
 not expect the data set size to be a problem for us. Some benchmarks on the
 performance would be another interesting task.
 
