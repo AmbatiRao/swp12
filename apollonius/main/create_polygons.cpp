@@ -36,8 +36,8 @@ int main(int argc , char* argv[])
    * prepare data
    */
 
-  // we use a ScalingFactor(SF) here to stretch input values at the 
-  // beginning, and divide by SF in the end. This is used because the 
+  // we use a ScalingFactor(SF) here to stretch input values at the
+  // beginning, and divide by SF in the end. This is used because the
   // point-generation of the hyperbola class is using some arbitrary
   // internal decision thresholds to decide how many points to generate for
   // a certain part of the curve. Rule of thumb is: the higher SF the more
@@ -91,8 +91,8 @@ int main(int argc , char* argv[])
   int vertexIndex = 0;
 
   // for each vertex in the apollonius graph (this are the sites)
-  for (All_vertices_iterator viter = ag.all_vertices_begin (); 
-      viter != ag.all_vertices_end(); ++viter) { 
+  for (All_vertices_iterator viter = ag.all_vertices_begin ();
+      viter != ag.all_vertices_end(); ++viter) {
     // get the corresponding site
     Site_2 site = viter->site();
     Point_2 point = site.point();
@@ -261,7 +261,7 @@ void handleDual(Segment_2 s, std::vector<PointList>& polylines)
 {
         Point_2 ss = s.source();
         Point_2 st = s.target();
-        std::cerr << "segment " << ss << " " << st << std::endl; // str << s; 
+        std::cerr << "segment " << ss << " " << st << std::endl; // str << s;
         PointList points;
         points.push_back(ss);
         points.push_back(st);
@@ -327,7 +327,7 @@ void handleDual(Hyperbola_2 h, Iso_rectangle_2 crect, std::vector<PointList>& po
         PointList p, q;
         h.generate_points(p, q);
         // TODO: we are not adding anything to points here. This is kind of
-        // obsolete since this cannot happen anymore (because of the 
+        // obsolete since this cannot happen anymore (because of the
         // artificial sites added in the beginning)
         for (unsigned int i = 0; i < p.size() - 1; i++) {
           Segment_2 seg(p[i], p[i+1]);
@@ -344,14 +344,14 @@ PointList buildPolygon(Site_2 site, std::vector<PointList>& polylines)
     // A list for the resulting points.
     PointList points;
     // We build this list from the polylines collected before.
-    // One of the problems solved here is that we actually don't know 
+    // One of the problems solved here is that we actually don't know
     // whether the polylines we get are in order or reversed because of the
     // way we obtained them via Hyperbola_2.generate_points which makes no
     // guarantees about the order of produces points. So we check at each
     // step whether a consecutive polyline has to be added in-order or
     // reversed by inspecting the first and last points respectively. A
     // special case is the first polyline, where we don't have a previous
-    // polyline to perform this check for, which is why we make a more 
+    // polyline to perform this check for, which is why we make a more
     // extensive checking when adding the second polyline which also takes
     // care about the first.
     std::cerr << "# polylines: " << polylines.size() << std::endl;
@@ -510,7 +510,7 @@ Iso_rectangle_2 boundingBox(SiteList sites)
  */
 Iso_rectangle_2 extend(Iso_rectangle_2 rect, double amount)
 {
-  Iso_rectangle_2 r(rect.xmin()-amount, rect.ymin()-amount, 
+  Iso_rectangle_2 r(rect.xmin()-amount, rect.ymin()-amount,
       rect.xmax()+amount, rect.ymax()+amount);
   return r;
 }
