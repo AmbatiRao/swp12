@@ -1,6 +1,5 @@
 void writeSQL(Site_2 site, PointList polygon, char* outdir)
 {
-
   std::cout << "INSERT INTO " << outdir << " (geom, id) VALUES (";
   std::cout << "'POLYGON ((";
   for (int i = 0; i < polygon.size(); i++) {

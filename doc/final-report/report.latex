@@ -582,6 +582,12 @@ The following code implements output in the GeoJSON format:
 
 \lstinputlisting{code/geojson.c}
 
+\paragraph{SQL}
+
+The following code implements output as SQL statements:
+
+\lstinputlisting{code/sql.c}
+
 \subsubsection{Implementation remarks}
 \label{sec:impl-apo-remarks}
 
