@@ -20,6 +20,7 @@
 \PrerenderUnicode{ü}
 
 \usepackage[pdftex,
+            bookmarks,
             pdfauthor={Sebastian Kürten},
             pdftitle={Apollonius-Diagramme in der Geokodierung},
             pdfsubject={Erstellung von Apollonius-Diagrammen auf Basis von Openstreetmap mit CGAL},
