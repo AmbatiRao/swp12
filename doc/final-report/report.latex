@@ -161,12 +161,10 @@ because of its close relationship to the Voronoi diagram, which it is a
 generalization of.
 An Apollonius diagram with equal weights for each site is a Voronoi diagram.
 
-\subsection{Primal and Dual}
-\label{sec:apo-primal-dual}
-
-The Apollonius graph is the dual of the Apollonius diagram. It is a planar
-graph. The source and destination of the edges are the sites of the Apollonius
-diagram.
+The Apollonius graph is the dual of the Apollonius diagram.
+The geometric properties of both are described in a report by 
+Karavelas and Yvinec\cite{yvinec2002dynamic} and will be discussed in 
+the following section.
 
 \begin{figure}[htp]
         \centering
@@ -184,6 +182,40 @@ diagram.
         \end{subfigure}
         \caption{Apollonius graph and Apollonius diagram}\label{fig:apollonius}
 \end{figure}
+
+\subsection{Properties of the diagram und the dual Delaunay graph}
+\label{sec:apo-primal-dual}
+
+The Apollonius diagram is a subdivision of the plane into connected regions.
+Those regions are called cells and all cells are associated with input 
+sites.
+Figure \ref{fig:apo-diagram} shows an example of such a diagram.
+Each site is a point on the plane with an associated weight
+and the diagram may be interpreted as a Voronoi diagram of discs where
+the radius of each disc depends on the weight of the site.
+Unlike with ordinary Voronoi diagrams, not necessarily every site has an 
+associated cell in the diagram because it may happen that a site becomes
+\textit{hidden}. This happens when the disc of one input site is completely
+covered by another site's disc. Hidden sites are called \textit{trivial}.
+In figure \ref{fig:apo-diagram} trivial sites are shown in grey whereas
+nontrivial sites are shown in red.
+Boundaries of cells are defined by straight or hyperbolic arcs.
+
+As with Voronoi diagrams, there exists a dual graph for the Apollonius 
+diagram that is closely related to the diagram itself and is called the
+Apollonius graph.
+The Apollonius graph is a planar, connected graph whose
+vertices are the nontrivial sites of the Apollonius diagram.
+Figure \ref{fig:apo-graph} shows the corresponding dual graph to the 
+diagram in \ref{fig:apo-diagram}.
+
+Individual components of graph and diagram are closely related:
+\begin{itemize}
+\item Nodes of the graph correspond to cells in the diagram.
+\item An arc in the graph corresponds to an edge of a cell in the diagram.
+\item If two cells of the diagram are connected, there is an arc between
+the corresponding nodes of the graph.
+\end{itemize}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Relevant CGAL packages
