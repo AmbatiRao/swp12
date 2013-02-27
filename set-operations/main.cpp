@@ -36,6 +36,7 @@ std::string polygonToWkt(const Polygon& polygon) {
         out << ", " << pointToWkt(*it);
         ++it;
     }
+    out << ", " << pointToWkt(*polygon.vertices_begin()); // close the circle.
 
     out << ")";
     return out.str();
