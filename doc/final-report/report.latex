@@ -54,7 +54,8 @@
 \noindent\rule{\textwidth}{1pt}%
 \begin{center}%
 \textbf{Softwareprojekt Geometric Computing: Introduction to CGAL}\\
-\textbf{FU-Berlin, WiSe 2012/13}\\
+\vspace{1.0em}%
+\textbf{Freie Universität Berlin, WiSe 2012/13}\\
 \vspace{1.0em}%
 Approximating the spatial footprint of OpenStreetMap place nodes with Apollonius diagrams\\
 \vspace{1.0em}%
@@ -186,7 +187,8 @@ the following section.
                 \caption{Apollonius diagram}
                 \label{fig:apo-diagram}
         \end{subfigure}
-        \caption{Apollonius graph and Apollonius diagram}\label{fig:apollonius}
+        \caption{Apollonius graph and Apollonius 
+diagram \cite{cgal:ky-ag2-12b} }\label{fig:apollonius}
 \end{figure}
 
 \subsection{Properties of the diagram und the dual Delaunay graph}
@@ -764,12 +766,49 @@ This is the code for the second resemblance measuremente strategy:
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Results and Evaluation}
 
+This section first describes briefly the results that we were able to
+create from the input data with our implemented algorithms.
+This description can be found in section \ref{eval-results}.
+
 The quality of generated Apollonius tesselations have been examined
 qualitatively by studying the visual appearance of the created cells on
 top of a map and quantitatively by measuring the resemblance of the 
 approximated cells with a training data set of real city boundaries.
+The description of these analyses can be found in sections 
+\ref{eval-qualitative} and \ref{eval-quantitative}.
 
-\subsection{Qualitative Results}
+\subsection{Results}
+\label{eval-results}
+
+The implemented algorithms have been successfully used to create
+Apollonius cells for the input of place nodes in the region of Germany
+for different configuration paremeters.
+
+Unfortunately we have not been able to intersect all created 
+Apollonius cells with
+the boundary polygon, which is the administrative boundary of Germany in
+our case.
+Although our implementation of the \textit{intersect} operation works
+fine on the test data we used in testing that implementation,
+we have not been able to use it to create
+clipped versions of all created Apollonius cell polygons.
+It turns out that the polygons created from the Apollonius cells systematically
+contain self-intersections in form of single repeated points or repeated 
+point sequences, which renders them non-simple, 
+which in consequence cause segmentation faults to occur
+while executing the \textit{intersect} operation.
+Only a subset of the resulting polygons could be successfully clipped
+with our program.
+
+Nevertheless, the resulting cell polygons could be both visualized and used
+in further processing for analysis purposes.
+Fortunately the fact that the cell polygons are not simple does not seem to
+prevent the \textit{point in polygon} test to fail, which is the key
+operation which is used in both our analyis as well as in the visualization
+of the cells.
+
+\subsection{Qualitative Analysis}
+\label{eval-qualitative}
 
 The cells of the Apollonius diagram may be displayed on top of a map and
 such visualization provides the ability to inspect the characteristics of
@@ -849,6 +888,7 @@ perfect approximations for true city boundaries.
 \end{figure}
 
 \subsection{Quantitative Analysis}
+\label{eval-quantitative}
 
 \subsubsection{Test Data}
 
@@ -987,6 +1027,12 @@ generalize our implementation to accept point sets with more general
 identifiers and weights. 
 We would like to bring our changes to the CGAL core upstream to simplify
 the creation of Apollonius diagrams in the future.
+
+The creation of the Apollonius cell diagrams still contains some bugs that
+lead to the creation of non-simple polygons as described in 
+section \ref{eval-results}. It would be nice if those bugs could be found
+and fixed so that the \textit{intersect} operation could be successfully
+applied to the results.
 
 As the preprocessing is currently written in Java it would be nice to have this
 part in C++ as well. There are various kinds of libraries that support
