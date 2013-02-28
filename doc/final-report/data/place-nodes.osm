@@ -1,0 +1,9 @@
+<node id="1234" version="3" changeset="12345" lat="1.2" lon="3.4">
+    <tag k="place" v="village">
+</node>
+<node id="1235" version="1" changeset="54321" lat="2.1" lon="3.4">
+    <tag k="place" v="city">
+    <tag k="name" v="Foo">
+    <tag k="population" v="1000000">
+</node>
+...
