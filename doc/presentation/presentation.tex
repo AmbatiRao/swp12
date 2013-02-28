@@ -59,6 +59,11 @@
     \frametitle{Apollonius graph}
     \begin{itemize}
         \item The dual of the Apollonius diagram
+        \item Nodes of the graph correspond to cells in the diagram.
+        \item An arc in the graph corresponds to an edge of a cell in the diagram.
+        \item If two cells of the diagram are connected, there is an arc between
+        the corresponding nodes of the graph.
+
     \end{itemize}
 \end{frame}
 
@@ -104,7 +109,7 @@
 \begin{frame}
     \frametitle{Preprocessing}
     \begin{itemize}
-        \item Extract place nodes (city, town, village) from OpenStreetMap dataset 
+        \item Extract place nodes (city, town, village) from OpenStreetMap dataset
         \item Use the position information and the osm-id for later reference
         \item Format: <Openstreetmap Node Id> <Longitude> <Latitude> <type>
         \item Written in JAVA
