@@ -127,6 +127,24 @@
 \end{frame}
 
 \begin{frame}
+    \frametitle{Generate apollonius graph}
+    \begin{itemize}
+        \item Insert weighted points (sites) into a apollonius graph instance
+        \item Insert artificial sites so we do not create infinite rays
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
+    \frametitle{Generate cells (polygons)}
+    \begin{itemize}
+        \item Starting from the incident edges of a vertix
+        \item Different types of objects involed
+        \item Line, Segment, Ray, Hyperbola, Hyperbola\_segment, Hyperbola\_ray
+        \item implemented in the handleDual function
+    \end{itemize}
+\end{frame}
+
+\begin{frame}
     \frametitle{Output-Formats: WKT}
     \lstinputlisting{../final-report/code/output.wkt}
 \end{frame}
@@ -154,6 +172,14 @@
 \begin{frame}
     \frametitle{Output-Formats: SQL}
     \lstinputlisting{../final-report/code/sql.c}
+\end{frame}
+
+\begin{frame}
+    \frametitle{The tool: usage}
+    \begin{itemize}
+        \item Specifiy weight for city, town, village
+        \item Specifiy output format and folder for output
+    \end{itemize}
 \end{frame}
 
 \begin{frame}
