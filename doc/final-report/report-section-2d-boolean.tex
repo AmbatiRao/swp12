@@ -1,0 +1,127 @@
+For clipping the resulting polygon set with a bounding polygon, we utilized CGAL's boolean set operations.
+These operations allow obtaining the set union, intersection, difference etc. on polygons (optionally
+with holes) or sets thereof.
+
+The intersection-operation was of particular interest to us. It comes in several flavors:
+\begin{itemize}
+\item A global function ``intersection(InputIterator, InputIterator, OutputIterator)'' that iterates over the
+  polygons (with holes) in the given range and writes their aggregate intersection to the output stream.
+  The ``OutputIterator'' is used to append the list of resulting polygons to that stream.
+  This function was of no use to us, because our input does not necessarily consist of single polygons,
+  but rather of polygon sets ("multipolygons").
+  
+\item Another global function
+  ``intersection(InputIterator1, InputIterator1, InputIterator2, InputIterator2, OutputIterator)'' that
+  takes two ranges of polygons (with holes), interprets them as multipolygons and writes their intersection
+  (which is, again, also a multipolygon) to the output stream referenced by the ``OutputIterator''.
+  
+\item There are several overloaded versions of ``intersection()'' that take ``Polygon\_2''s or ``Polygon\_with\_holes\_2''s
+  directly and write their intersection to an ``OutputIterator'' like above.
+  
+\item Also, there is a class ``Polygon\_set\_2'' that encapsulates a list of polygons (with holes), using CGAL
+  Arrangements. This class also has several ``intersection()''-methods defined, especially one that takes
+  another ``Polygon\_set\_2'' as an argument and writes the two polygon sets' intersection back into the
+  receiver.
+\end{itemize}
+  
+We decided to use the last option, because it makes the code simpler and cleaner. The following subsections
+will give a brief overview of the classes ``Polygon\_2'', ``Polygon\_with\_holes\_2'' and ``Polygon\_set\_2'', which
+we used in the process.
+
+\subsubsection{Polygon\_2}
+
+This is mostly a wrapper for a list of ``Point\_2''-instances. It can, for example, be built like this:
+
+\begin{lstlisting}[numbers=none]
+    Polygon_2 p;
+    p.push_back(Point(0, 0));
+    p.push_back(Point(0, 1));
+    p.push_back(Point(1, 0));
+\end{lstlisting}
+
+It also supports query methods and methods for modification. For example:
+
+\begin{lstlisting}[numbers=none]
+    if (p.orientation() != CGAL::COUNTERCLOCKWISE) p.reverse_orientation();
+\end{lstlisting}
+
+Also, one can iterate the contained vertices using the methods ``vertices\_begin()'' and ``vertices\_end()''.
+Other than that, we do not touch ``Polygon\_2''-instances directly.
+
+\subsubsection{Polygon\_with\_holes\_2}
+
+This contains an (optional) boundary polygon (which has to have a counter-clockwise orientation) along with a list
+of hole polygons (all of which need to have a clockwise orientation). The contained polygons are all of type
+``Polygon\_2''. Instances can be created by providing the boundary as well as the list of holes (though an iterator
+range) to the constructor:
+
+\begin{lstlisting}[numbers=none]
+    std::list<Polygon> holes;
+    Polygon_2 hole;
+    hole.push_back(Point(0.1, 0.1));
+    hole.push_back(Point(0.1, 0.9));
+    hole.push_back(Point(0.9, 0.1));
+    holes.push_back(hole)
+    
+    Polygon_with_holes_2 ph(p, holes.begin(), holes.end());
+\end{lstlisting}
+
+The boundary can be accessed with:
+
+\begin{lstlisting}[numbers=none]
+    Polygon boundary = ph.boundary();
+\end{lstlisting}
+
+Likewise, the list of holes can be accessed through the ``holes\_begin()'' and ``holes\_end()'' iterators.
+
+\subsubsection{Polygon\_set\_2}
+
+A ``Polygon\_set\_2'' is a collection of several ``Polygon\_with\_holes\_2''s and is therefore, in our opinion,
+the most natural way to use CGAL's boolean set operations. After all, the result is always a collection of potentially
+several polygons, and also our inputs have that form.
+
+It is, however, a bit tricky to use. There are several preconditions for the ``Polygon\_with\_holes\_2''s to be added
+to a set:
+
+\begin{itemize}
+\item All ``Polygon\_2''s contained must be simple polygons.
+\item Their boundaries must be closed. (When using ``push\_back()'' to construct them, this seems to be taken care of
+  automatically. However, the first and last vertex must not be equal.)
+\item They must have a correct orientation. The boundary must be oriented counter-clockwise, while all holes have to
+  be oriented clockwise.
+\item The holes must lie completely within the boundary's area (except potentially on single vertices).
+\end{itemize}
+
+According to documentation \cite{cgal:fwzh-rbso2-12b}, these rules define ``valid'' polygons (with holes) in the context of boolean set
+operations. (However, we find the documentation to be a bit vague in this regard.)
+If any of these conditions are not met, the set operations, including ``join''s and initial construction from a
+``Polygon\_with\_holes\_2'' will simply segfault without mercy. This is also true for the other versions of
+``intersection'' introduced earlier.
+
+We use two variants of building a ``Polygon\_set\_2''. The first one is simply using the default constructor
+to create an empty polygon set:
+
+\begin{lstlisting}[numbers=none]
+    Polygon_set_2 s1;
+\end{lstlisting}
+
+The second version initializes the created set to contain a first ``Polygon\_with\_holes\_2'':
+
+\begin{lstlisting}[numbers=none]
+    Polygon_set_2 s2(ph);
+\end{lstlisting}
+    
+Once created, these objects may be used with boolean set operations:
+
+\begin{lstlisting}[numbers=none]
+    s1.join(s2);
+\end{lstlisting}
+    
+When finished, the resulting collection of polygons (with holes) can be extracted like this:
+
+\begin{lstlisting}[numbers=none]
+    std::list<Polygon_with_holes_2> polygons;
+    s1.polygons_with_holes(std::back_inserter(polygons));
+\end{lstlisting}
+    
+This writes the contained list of polygons to the specified collection for further processing.

@@ -1,0 +1,84 @@
+The purpose of this part of the project is to clip the resulting geometry, represented as a
+polygon (with holes) or a set thereof, to a bounding region, also defined by a polygon.
+Both resulting geometry and bounding polygon are available as serialized strings that adhere to
+a subset of the ``well-known-text'' format.
+
+Therefore, the task is to parse the polygonal strings into instances of CGAL's ``Polygon\_set\_2''
+class, apply the ``intersection'' boolean set operation and then write the resulting polygon set
+out in that same format.
+
+WKT is a simple clear-text format. The subset used in this project defines expressions for polygons
+(``POLYGON'') or polygon sets (``MULTIPOLYGON''), with optional holes.
+The following example defines a simple polygon with one hole:
+
+\texttt{POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0), (0.2 0.2, 0.2 0.8, 0.8 0.8, 0.2 0.2))}
+
+Each polygon definition contains a mandatory boundary (the first list of points) as well as an
+arbitrary amount of holes (one in this case).
+
+The following sections will give a brief overview of the components written for that purpose.
+
+\subsubsection{Tokenizer}
+
+We first tried to use the boost-Lexer ``Spirit'', however this seemed like overkill for a language as small
+as this, so we implemented a simple hand-rolled solution.
+
+The class ``TokenStream'' takes the input stream and breaks it up into several instances of ``Token''.
+Among others, it provides the following methods:
+
+\begin{itemize}
+\item \texttt{Token peek()}: returns the next token on the input stream.
+\item \texttt{Token consume(Token::Type type)}: Removes the ``Token'' of type ``type'' from the front of the stream, or
+  throws an exception if it does not match.
+\end{itemize}
+  
+``Token''s simply contain an ``enum'' value of ``Token::Type'' that defines the token type as well as a
+``std::string'' containing the matched text. Token types include parentheses, comma, numbers and the
+recognized keywords ``POLYGON'', ``MULTIPOLYGON'' and ``EMPTY''.
+
+This is not a full-featured lexer, it only contains the features we need.
+
+\subsubsection{Parser}
+
+``Parser'' is a simple recursive descent parser that operates on a ``TokenStream'' passed in through the constructor.
+The parsing contexts are public methods that query the token stream and recursively build up the required CGAL-objects
+from the found tokens.
+The following method, for example, parses a and builds up a CGAL ``Polygon\_set\_2'':
+
+\begin{lstlisting}[numbers=none]
+    Polygon_set Parser::parsePolygonSet() {
+        _tokens.consume(Token::LEFT_PARENTHESIS);
+        Polygon_set result(parsePolygonWithHoles());
+        while (_tokens.peek().type() == Token::COMMA) {
+            _tokens.consume(Token::COMMA);
+            result.join(parsePolygonWithHoles());
+        }
+        _tokens.consume(Token::RIGHT_PARENTHESIS);
+        return result;
+    }
+\end{lstlisting}
+    
+It in turn calls the ``parsePolygonWithHoles()'' method that parses and returns ``Polygon\_with\_holes\_2''s.
+
+There is an inherent mismatch between the WKT-represantation and the CGAL-represantation of the used objects.
+For example, WKT does not specify the polygons' orientations, while CGAL requires a specific orientation.
+Also, WKT mandates the closing of the polygon vertex set to be made explicit by adding the first point again as
+a last point; in CGAL, this is interpreted as a non-simple polygon and crashes the construction of
+``Polygon\_set\_2''s with a segfault. Things like these are handled by the ``Parser''.
+
+The root parsing context is ``Polygon\_set parsePolygonSetDefinition()'', which is called by the main program
+to initiate parsing.
+
+\subsubsection{Main program}
+
+This glues the components together and calls CGAL's ``intersection'' functionality.
+It takes (at least) one polygon filename, which is read in to construct the initial ``Polygon\_set''. It then
+iterates over the remaining passed filenames, and for each of them parses the contents and aggregates the intersection
+into the original polygon set. Afterwards, the polygon set containing the aggregate intersection is written to
+standard out in WKT-format.
+
+The program has the following syntax:
+
+\begin{lstlisting}[numbers=none]
+./intersect <polygonFile>, ...
+\end{lstlisting}

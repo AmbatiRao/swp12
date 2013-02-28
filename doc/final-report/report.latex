@@ -43,6 +43,8 @@
 \selectlanguage{english}
 \numberwithin{figure}{section}
 
+\renewcommand\_{\textunderscore\allowbreak}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Header
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -367,7 +369,7 @@ This will be discussed in more detail in section \ref{sec:impl-apo-polygon-creat
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{2D Regularized Boolean Set-Operations}
 
-Lorem ipsum
+\input{report-section-2d-boolean.tex}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Core Implementation
@@ -683,7 +685,7 @@ scaling the values leads to reasonably fine results.
 \subsection{Insersecting geometries with a polygonal boundary}
 \label{sec:impl-cell-intersection}
 
-Lorem ipsum
+\input{report-section-intersecting-boundaries.tex}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Evaluation
