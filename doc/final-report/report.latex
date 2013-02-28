@@ -53,12 +53,13 @@
 \parskip 0.5em%
 \noindent\rule{\textwidth}{1pt}%
 \begin{center}%
-\textbf{Softwareprojekt Geometric Computing: Introduction to CGAL} \\
-\textbf{WiSe 2012/13} \\
+\textbf{Softwareprojekt Geometric Computing: Introduction to CGAL}\\
+\textbf{FU-Berlin, WiSe 2012/13}\\
 \vspace{1.0em}%
-Approximating the spatial footprint of OpenStreetMap place nodes with Apollonius diagrams
-\end{center}%
+Approximating the spatial footprint of OpenStreetMap place nodes with Apollonius diagrams\\
+\vspace{1.0em}%
 {Philipp Borgers, Sebastian Kürten, Lukas Maischak}\\%
+\end{center}%
 \noindent\rule{\textwidth}{1pt}%
 
 \definecolor{light-gray}{gray}{0.9}
@@ -146,7 +147,7 @@ structured accordingly.
 %\footnote{http://www.cgal.org/Manual/latest/doc\_html/cgal\_manual/Apollonius\_graph\_2/Chapter\_main.html}:
 
 The following definition of the Apollonius diagram can be found in the 
-CGAL user manual\cite{cgal:ky-ag2-12b}:
+CGAL user manual \cite{cgal:ky-ag2-12b}:
 \begin{quote}
 The Apollonius diagram
 in the plane is defined over a set of sites $P_i = (c_i, w_i),
@@ -741,7 +742,6 @@ certain real data may be georeferenced with the geometries produced by our
 Apollonius diagrams.
 \end{itemize}
 
-
 The evaluation program has been implemented in Java. Both algorithms
 work with a list of input identifiers $ids$ for iteration purposes,
 as well as mappings from 
@@ -974,10 +974,10 @@ wit CGAL from OpenStreetMap data. Based on the Apollonius graph implementation
 of CGAL it was possible to create the diagram (the graph's dual) and create polygonal
 representations of the cells for later processing. Due to the the various output
 formats the data can be used in different post-processing tools, e.g qgis. The
-evaluation shows that there is now big difference between the Voronoi diagram
+evaluation shows that there is no big difference between the Voronoi diagram
 and Apollonius diagram for our data set(s). The biggest difference can be
 observed in the evaluation based on street data with a difference between the
-two of 4.78\%.
+two of 4.78 percentage points.
 
 \subsection{Look-out}
 

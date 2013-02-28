@@ -60,7 +60,7 @@ The following method, for example, parses a and builds up a CGAL ``Polygon\_set\
     
 It in turn calls the ``parsePolygonWithHoles()'' method that parses and returns ``Polygon\_with\_holes\_2''s.
 
-There is an inherent mismatch between the WKT-represantation and the CGAL-represantation of the used objects.
+There is an inherent mismatch between the WKT represantation and the CGAL represantation of the used objects.
 For example, WKT does not specify the polygons' orientations, while CGAL requires a specific orientation.
 Also, WKT mandates the closing of the polygon vertex set to be made explicit by adding the first point again as
 a last point; in CGAL, this is interpreted as a non-simple polygon and crashes the construction of
