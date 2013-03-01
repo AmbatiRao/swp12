@@ -6,7 +6,7 @@ int main(int argc , char* argv[])
 {
   if (argc < 7) {
     std::cerr << "usage: test <input file> <output folder> "
-      "<format (wkt | geojson)> <weight city> <weight town> <weight village>" << std::endl;
+      "<format (wkt | geojson | sql)> <weight city> <weight town> <weight village>" << std::endl;
     exit(1);
   }
 
